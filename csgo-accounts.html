@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>CS:GO — Аккаунты | GlovimPlaye</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .product-table th,
+    .product-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+    }
+    .product-table th {
+      background: #333;
+      font-weight: bold;
+    }
+    .product-table tr:hover {
+      background: #3a3a3a;
+    }
+    .product-name {
+      color: #ff7f50;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .product-name:hover {
+      text-decoration: underline;
+    }
+    .price {
+      font-weight: bold;
+      color: #ff7f50;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>CS:GO — Аккаунты</h1>
+  <table class="product-table">
+    <thead>
+      <tr>
+        <th>Название</th>
+        <th>Описание</th>
+        <th>Продавец</th>
+        <th>Наличие</th>
+        <th>Цена</th>
+      </tr>
+    </thead>
+    <tbody id="productList"></tbody>
+  </table>  
+  <a href="product-details.html?id=1688210678899">Подробнее</a>
+
+
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      const productList = document.getElementById('productList');
+      let products = JSON.parse(localStorage.getItem('products')) || [];
+
+      // Фильтруем: категория = "csgo" и подкатегория = "accounts"
+      let filtered = products.filter(p => p.category === 'csgo' && p.subcategory === 'accounts');
+
+      if (filtered.length === 0) {
+        productList.innerHTML = '<tr><td colspan="5">Товаров нет</td></tr>';
+      } else {
+        filtered.forEach(product => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><a href="#" class="product-name">${product.name}</a></td>
+            <td>${product.description}</td>
+            <td>${product.sellerName}</td>
+            <td>${product.stock} шт.</td>
+            <td class="price">${product.price} ₽</td>
+          `;
+          productList.appendChild(row);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

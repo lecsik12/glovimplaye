@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Детали товара | GlovimPlaye</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+  <style>
+    /* СБРОС СТИЛЕЙ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      background-blend-mode: multiply;
+      background-color: #2b2a2a;
+      color: #fff;
+      padding: 20px;
+    }
+    header {
+      background: rgba(71, 68, 68, 0.85);
+      padding: 15px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .logo-button {
+      background: none; border: none; color: #fff;
+      font-size: 28px; font-weight: bold;
+      cursor: pointer; transition: color 0.3s, transform 0.3s;
+    }
+    .logo-button:hover { color: #ccc; transform: scale(1.1); }
+    .header-center {
+      flex: 1; display: flex; justify-content: center; align-items: center; margin: 10px 0;
+    }
+    .search-container { display: flex; max-width: 600px; width: 100%; }
+    .search-input {
+      flex: 1; padding: 10px 15px; border: none;
+      border-radius: 5px 0 0 5px; font-size: 16px;
+    }
+    .search-btn {
+      padding: 10px 20px; border: none; background: #f5f3f3; color: #fff;
+      font-size: 16px; border-radius: 0 5px 5px 0; cursor: pointer; transition: background 0.3s;
+    }
+    .search-btn:hover { background: #f3f1f0; }
+    .profile {
+      position: relative; display: flex; align-items: center;
+    }
+    .avatar {
+      width: 50px; height: 50px; border-radius: 50%; cursor: pointer;
+      border: 3px solid #fff; transition: transform 0.3s;
+    }
+    .avatar:hover { transform: scale(1.1); }
+    .profile-menu {
+      display: none; position: absolute; top: 60px; right: 0; background: #f9f8f8; color: #333;
+      border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); overflow: hidden; z-index: 10;
+    }
+    .profile-menu.active { display: block; }
+    .profile-menu a {
+      display: block; padding: 15px; text-decoration: none; color: #333; transition: background 0.3s;
+    }
+    .profile-menu a:hover { background: #f6f4f4; }
+    .logout { color: red; font-weight: bold; }
+    .auth-container { text-align: center; margin: 50px 0; }
+    .login-btn {
+      background: #fff; color: #efedec; border: none; padding: 12px 30px;
+      font-size: 18px; border-radius: 8px; cursor: pointer; transition: background 0.3s, transform 0.3s;
+    }
+    .login-btn:hover { background: #fbf8f7; transform: translateY(-2px); }
+    main { margin-top: 20px; }
+    .container {
+      background: rgba(48, 44, 44, 0.85);
+      padding: 20px; border-radius: 8px; max-width: 700px; margin: 0 auto;
+    }
+    .container h2 { margin-bottom: 15px; text-align: center; }
+    .details { line-height: 1.6; margin-bottom: 20px; }
+    .details p { margin-bottom: 10px; }
+    .details span { font-weight: bold; color: #ff7f50; }
+    .back-link {
+      display: inline-block; margin-top: 20px; color: #ff7f50;
+      text-decoration: none; font-weight: bold; transition: color 0.3s;
+    }
+    .back-link:hover { color: #ff4500; }
+    #buyBtn, #payBtn {
+      display: none; background: #ff7f50; color: #fff; border: none; border-radius: 5px;
+      padding: 10px 20px; cursor: pointer; font-size: 16px; margin-bottom: 10px;
+      transition: background 0.3s;
+    }
+    #buyBtn:hover, #payBtn:hover { background: #ff4500; }
+    .seller-info { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .seller-info img { width: 50px; height: 50px; border-radius: 50%; }
+    .reviews-section { margin-top: 30px; }
+    .review-item {
+      background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; margin-bottom: 10px;
+    }
+    .review-author { font-weight: bold; color: #ff7f50; }
+    .review-text { margin: 5px 0; }
+    .review-rating { color: gold; font-weight: bold; }
+    #addReviewForm {
+      display: none; flex-direction: column; gap: 10px; margin-top: 20px;
+    }
+    #addReviewForm select, #addReviewForm textarea {
+      padding: 8px; border: none; border-radius: 5px; font-size: 14px; color: #333;
+    }
+    #addReviewForm button {
+      background: #28a745; color: #fff; border: none; border-radius: 5px; padding: 10px;
+      cursor: pointer; font-size: 16px; transition: background 0.3s;
+    }
+    #addReviewForm button:hover { background: #218838; }
+    footer {
+      background: rgba(71, 68, 68, 0.85); padding: 20px; text-align: center; color: #fff; margin-top: 30px;
+    }
+    .social-links a {
+      margin: 0 10px; color: #fafbfb; font-size: 24px; text-decoration: none; transition: color 0.3s;
+    }
+    .social-links a:hover { color: #ff4500; }
+    .modal {
+      display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+      overflow: auto; background-color: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background: #fff; margin: 10% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 500px;
+      position: relative; animation: fadeIn 0.5s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .modal-close {
+      position: absolute; right: 15px; top: 15px; font-size: 24px; cursor: pointer; color: #333;
+    }
+    .profile-details { text-align: center; }
+    .profile-details img {
+      width: 100px; height: 100px; border-radius: 50%; border: 3px solid #ff7f50;
+    }
+    .profile-details h2 { margin: 10px 0 5px; color: #ff7f50; }
+    .profile-details p { color: #666; margin: 0; }
+    .edit-btn {
+      margin-top: 20px; padding: 10px 20px; background: #ff7f50; color: #fff;
+      border: none; border-radius: 5px; cursor: pointer; transition: background 0.3s;
+    }
+    .edit-btn:hover { background: #ff4500; }
+  </style>
+</head>
+<body>
+
+<!-- ХЕДЕР -->
+<header>
+  <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
+  <div class="header-center">
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Поиск товаров...">
+      <button class="search-btn">Поиск</button>
+    </div>
+  </div>
+  <div class="profile" id="profileSection" style="display:none;">
+    <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
+    <div class="profile-menu" id="profileMenu">
+      <a href="#" onclick="showProfileModal()">Мой профиль</a>
+      <a href="#">Заказы</a>
+      <a href="settings.html">Настройки</a>
+      <a href="#">Чат</a>
+      <a href="#">Уведомления</a>
+      <a href="#" class="logout" onclick="logout()">Выйти</a>
+    </div>
+  </div>
+</header>
+
+<!-- КОНТЕЙНЕР АВТОРИЗАЦИИ (если не залогинен) -->
+<div class="auth-container" id="authContainer">
+  <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
+</div>
+
+<main>
+  <div class="container">
+    <h2>Детали товара</h2>
+    <div id="productDetails" class="details"></div>
+
+    <!-- Кнопка «Купить» -->
+    <button id="buyBtn">Купить</button>
+    <!-- Кнопка «Оплатить/Подтвердить» -->
+    <button id="payBtn">Оплатить</button>
+
+    <!-- Блок отзывов -->
+    <div class="reviews-section">
+      <h3>Отзывы</h3>
+      <div id="reviewsContainer"></div>
+      
+      <!-- Форма добавления отзыва -->
+      <form id="addReviewForm">
+        <label>Оценка (1-5)</label>
+        <select id="reviewRating" required>
+          <option value="">--Выберите--</option>
+          <option value="1">1 ★</option>
+          <option value="2">2 ★★</option>
+          <option value="3">3 ★★★</option>
+          <option value="4">4 ★★★★</option>
+          <option value="5">5 ★★★★★</option>
+        </select>
+        
+        <label>Ваш отзыв</label>
+        <textarea id="reviewText" placeholder="Напишите что-нибудь..." required></textarea>
+        
+        <button type="submit">Оставить отзыв</button>
+      </form>
+    </div>
+
+    <a href="index.html" class="back-link" id="backLink">Вернуться на главную</a>
+  </div>
+</main>
+
+<footer>
+  <div class="social-links">
+    <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+    <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+  </div>
+  <p>© 2025 GlovimPlaye. Все права защищены.</p>
+</footer>
+
+<!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
+    <div class="profile-details">
+      <img id="modalAvatar" src="default-avatar.png" alt="Avatar">
+      <h2 id="profileName"></h2>
+      <p id="profileEmail"></p>
+      <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------------------------
+   1. Firebase конфиг (v8)
+---------------------------------- */
+var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+firebase.initializeApp(firebaseConfig);
+
+var auth = firebase.auth();
+var provider = new firebase.auth.GoogleAuthProvider();
+
+// Глобальные переменные
+let currentUser = null;    // Текущий залогиненный пользователь
+let currentProduct = null; // Текущий товар
+
+document.addEventListener("DOMContentLoaded", function() {
+  const savedUser = localStorage.getItem("user");
+  if (savedUser) {
+    updateProfile(JSON.parse(savedUser));
+  }
+  showProductDetails();
+});
+
+/* ---------------------------------
+   2. Функции аутентификации
+---------------------------------- */
+function login() {
+  auth.signInWithPopup(provider)
+    .then(function(result) {
+      var user = result.user;
+      var userData = {
+        uid: user.uid,
+        photoURL: user.photoURL,
+        displayName: user.displayName,
+        email: user.email
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
+      updateProfile(userData);
+    })
+    .catch(function(error) {
+      console.error("Ошибка входа:", error);
+    });
+}
+
+function updateProfile(user) {
+  currentUser = user;
+  document.getElementById("loginButton").style.display = "none";
+  document.getElementById("authContainer").style.display = "none";
+  document.getElementById("profileSection").style.display = "flex";
+  document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
+  document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
+  document.getElementById("profileName").innerText = user.displayName;
+  document.getElementById("profileEmail").innerText = user.email;
+}
+
+function toggleProfileMenu() {
+  document.getElementById("profileMenu").classList.toggle("active");
+}
+
+function logout() {
+  auth.signOut().then(function() {
+    localStorage.removeItem("user");
+    currentUser = null;
+    document.getElementById("loginButton").style.display = "block";
+    document.getElementById("authContainer").style.display = "block";
+    document.getElementById("profileSection").style.display = "none";
+  }).catch(function(error) {
+    console.error("Ошибка выхода:", error);
+  });
+}
+
+function showProfileModal() {
+  document.getElementById("profileModal").style.display = "block";
+  document.getElementById("profileMenu").classList.remove("active");
+}
+
+function closeProfileModal() {
+  document.getElementById("profileModal").style.display = "none";
+}
+
+function editProfile() {
+  alert("Функция редактирования профиля пока не реализована.");
+}
+
+window.onclick = function(event) {
+  var modal = document.getElementById("profileModal");
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+};
+
+/* ---------------------------------
+   3. Переход на главную (логотип)
+---------------------------------- */
+function goToHomePage() {
+  window.location.href = "index.html";
+}
+
+/* ---------------------------------
+   4. Логика товара, транзакций, отзывов
+---------------------------------- */
+function showProductDetails() {
+  const productDetails = document.getElementById('productDetails');
+  const buyBtn = document.getElementById('buyBtn');
+  const payBtn = document.getElementById('payBtn');
+
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');
+  if (!productId) {
+    productDetails.innerHTML = '<p>Не указан ID товара.</p>';
+    return;
+  }
+
+  // Находим товар
+  let products = JSON.parse(localStorage.getItem('products')) || [];
+  currentProduct = products.find(p => p.id.toString() === productId);
+  if (!currentProduct) {
+    productDetails.innerHTML = '<p>Товар не найден.</p>';
+    return;
+  }
+
+  // Отрисовываем детали
+  productDetails.innerHTML = `
+    <p><span>Название:</span> ${currentProduct.name}</p>
+    <p><span>Описание:</span> ${currentProduct.description || '—'}</p>
+    <p><span>Наличие:</span> <span id="stockField">${currentProduct.stock}</span> шт.</p>
+    <p><span>Цена:</span> ${currentProduct.price} ₽</p>
+    <h3>Продавец</h3>
+    <div class="seller-info">
+      <img src="${currentProduct.sellerPhotoURL || 'default-avatar.png'}" alt="Seller">
+      <div>
+        <p><strong>${currentProduct.sellerDisplayName || 'Неизвестен'}</strong></p>
+        <p>${currentProduct.sellerEmail || ''}</p>
+      </div>
+    </div>
+  `;
+
+  // Ищем транзакции пользователя по этому товару
+  let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  const userTx = (currentUser)
+    ? transactions.find(tx => tx.productId == currentProduct.id && tx.buyerUid == currentUser.uid && tx.status != 'completed')
+    : null;
+
+  // Если stock > 0 и нет транзакции pending — показываем «Купить»
+  if (parseInt(currentProduct.stock) > 0 && !userTx) {
+    buyBtn.style.display = 'inline-block';
+  } else {
+    buyBtn.style.display = 'none';
+  }
+
+  // Если есть транзакция pending, показываем кнопку «Оплатить»
+  if (userTx && userTx.status === 'pending') {
+    payBtn.style.display = 'inline-block';
+  } else {
+    payBtn.style.display = 'none';
+  }
+
+  // Если stock=0, товар недоступен
+  if (parseInt(currentProduct.stock) === 0) {
+    productDetails.innerHTML += `<p style="color:red;font-weight:bold;">Товар недоступен</p>`;
+  }
+
+  buyBtn.onclick = () => createTransaction(currentProduct.id);
+  payBtn.onclick = () => confirmPayment(userTx?.id);
+
+  renderReviews();
+  checkReviewFormAccess();
+}
+
+// Создать транзакцию (status=pending)
+function createTransaction(productId) {
+  if (!currentUser) {
+    alert("Войдите, чтобы купить товар.");
+    return;
+  }
+  // Если товара нет в наличии
+  if (parseInt(currentProduct.stock) === 0) {
+    alert("Товар недоступен.");
+    return;
+  }
+
+  let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  // Проверяем, нет ли уже pending
+  let existTx = transactions.find(tx => tx.productId == productId && tx.buyerUid == currentUser.uid && tx.status === 'pending');
+  if (existTx) {
+    alert("У вас уже есть незавершенная сделка по этому товару.");
+    return;
+  }
+
+  let newTx = {
+    id: Date.now(),
+    productId,
+    buyerUid: currentUser.uid,
+    status: 'pending'
+  };
+  transactions.push(newTx);
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+  alert("Сделка создана! Теперь оплатите её.");
+
+  // Обновляем интерфейс
+  showProductDetails();
+}
+
+// Подтверждаем оплату => status=completed, уменьшаем stock
+function confirmPayment(txId) {
+  if (!currentUser) {
+    alert("Войдите, чтобы оплатить.");
+    return;
+  }
+  let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  let txIndex = transactions.findIndex(t => t.id == txId);
+  if (txIndex === -1) {
+    alert("Транзакция не найдена.");
+    return;
+  }
+  transactions[txIndex].status = 'completed';
+  localStorage.setItem('transactions', JSON.stringify(transactions));
+
+  // Уменьшаем stock товара
+  let products = JSON.parse(localStorage.getItem('products')) || [];
+  let productIndex = products.findIndex(p => p.id.toString() === currentProduct.id.toString());
+  if (productIndex !== -1) {
+    let stock = parseInt(products[productIndex].stock);
+    if (stock > 0) {
+      stock--;
+      products[productIndex].stock = stock;
+      localStorage.setItem('products', JSON.stringify(products));
+      document.getElementById('stockField').textContent = stock;
+      if (stock === 0) {
+        document.getElementById('productDetails').innerHTML += `<p style="color:red;font-weight:bold;">Товар недоступен</p>`;
+      }
+    }
+  }
+  alert("Оплата подтверждена! Сделка завершена.");
+
+  // Обновляем интерфейс
+  showProductDetails();
+}
+
+// Проверяем, может ли пользователь оставлять отзыв
+function checkReviewFormAccess() {
+  const addReviewForm = document.getElementById('addReviewForm');
+  if (!currentUser || !currentProduct) {
+    addReviewForm.style.display = 'none';
+    return;
+  }
+  // Ищем транзакцию со статусом completed для этого товара
+  let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+  let hasCompletedTx = transactions.some(tx => 
+    tx.productId == currentProduct.id && 
+    tx.buyerUid == currentUser.uid && 
+    tx.status === 'completed'
+  );
+  // Если есть завершённая сделка — показываем форму отзыва
+  addReviewForm.style.display = hasCompletedTx ? 'flex' : 'none';
+}
+
+// Отрисовать отзывы
+function renderReviews() {
+  const reviewsContainer = document.getElementById('reviewsContainer');
+  reviewsContainer.innerHTML = '';
+
+  if (!currentProduct.reviews) currentProduct.reviews = [];
+  if (currentProduct.reviews.length === 0) {
+    reviewsContainer.innerHTML = '<p>Пока нет отзывов.</p>';
+    return;
+  }
+
+  currentProduct.reviews.forEach(review => {
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `
+      <p class="review-author">${review.authorName} <span class="review-rating">(${review.rating} ★)</span></p>
+      <p class="review-text">${review.text}</p>
+      <small style="opacity:0.7;">${new Date(review.createdAt).toLocaleString()}</small>
+    `;
+    reviewsContainer.appendChild(div);
+  });
+}
+
+// Добавление отзыва
+const addReviewForm = document.getElementById('addReviewForm');
+addReviewForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!currentUser || !currentProduct) {
+    alert("Невозможно оставить отзыв.");
+    return;
+  }
+
+  const rating = document.getElementById('reviewRating').value;
+  const text = document.getElementById('reviewText').value.trim();
+  if (!rating || !text) {
+    alert("Заполните все поля отзыва.");
+    return;
+  }
+
+  // Добавляем отзыв
+  if (!currentProduct.reviews) currentProduct.reviews = [];
+  currentProduct.reviews.push({
+    userId: currentUser.uid,
+    authorName: currentUser.displayName || 'Аноним',
+    rating,
+    text,
+    createdAt: Date.now()
+  });
+
+  // Сохраняем товар
+  let products = JSON.parse(localStorage.getItem('products')) || [];
+  let idx = products.findIndex(p => p.id.toString() === currentProduct.id.toString());
+  if (idx !== -1) {
+    products[idx] = currentProduct;
+    localStorage.setItem('products', JSON.stringify(products));
+  }
+
+  addReviewForm.reset();
+  renderReviews();
+  alert("Спасибо за отзыв!");
+});
+</script>
+</body>
+</html>

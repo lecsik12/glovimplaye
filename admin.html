@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glovimplaye</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #444;
+            padding: 10px;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+        .nav a:hover {
+            background-color: #555;
+        }
+        .content {
+            padding: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">Glovimplaye</div>
+    </div>
+    <div class="nav">
+        <a href="#">Currency</a>
+        <a href="#">Accounts</a>
+        <a href="#">Top Up</a>
+        <a href="#">Items</a>
+        <a href="#">Boosting</a>
+        <a href="#">Search Eldorado</a>
+    </div>
+    <div class="content">
+        <div id="products-list"></div> <!-- Контейнер для отображения товаров -->
+    </div>
+
+    <script src="script-add.js"></script> <!-- Подключение JavaScript -->
+</body>
+</html>

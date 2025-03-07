@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Оформление покупки</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: #121212;
+      color: #f0f0f0;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: linear-gradient(145deg, #2d2d2d, #1f1f1f);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 650px;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #ff7f50;
+      text-align: center;
+    }
+
+    p {
+      font-size: 16px;
+      margin: 10px 0;
+    }
+
+    .price {
+      font-weight: bold;
+      font-size: 24px;
+      color: #ff7f50;
+      text-align: center;
+    }
+
+    .category {
+      font-weight: bold;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ff7f50;
+      background-color: #333;
+      color: #fff;
+    }
+
+    .input-field:focus {
+      border-color: #ff7f50;
+      outline: none;
+    }
+
+    .order-button {
+      display: inline-block;
+      color: #fff;
+      background-color: #28a745;
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      margin-top: 15px;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .order-button:hover {
+      background-color: #218838;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Оформление покупки</h1>
+  <p><strong>Товар:</strong> <span id="product-title"></span></p>
+  <p><span class="category">Категория:</span> <span id="product-category"></span></p>
+  <p><span class="category">Цена:</span> <span id="product-price"></span></p>
+  <p><span class="category">Продавец:</span> <span id="seller-name"></span></p>
+
+  <input type="text" id="buyer-name" class="input-field" placeholder="Ваше имя" required>
+  <input type="text" id="buyer-phone" class="input-field" placeholder="Ваш телефон" required>
+  <input type="text" id="buyer-address" class="input-field" placeholder="Адрес доставки" required>
+  
+  <a id="confirm-purchase" class="order-button" href="#">Подтвердить покупку</a>
+  <a href="index.html" class="back-link">← Назад к списку</a>
+</div>
+
+<script>
+  // Получаем ID товара из URL
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get("id");
+
+  // Получаем список товаров из localStorage
+  let products = JSON.parse(localStorage.getItem("products")) || [];
+
+  // Ищем нужный товар по ID
+  const product = products.find(p => p.id == productId);
+
+  if (product) {
+    document.getElementById("product-title").textContent = product.name;
+    document.getElementById("product-category").textContent = product.category;
+    document.getElementById("product-price").textContent = product.price + " ₽";
+    document.getElementById("seller-name").textContent = product.sellerName;
+    document.getElementById("confirm-purchase").addEventListener('click', function() {
+      const buyerName = document.getElementById("buyer-name").value;
+      const buyerPhone = document.getElementById("buyer-phone").value;
+      const buyerAddress = document.getElementById("buyer-address").value;
+
+      if (buyerName && buyerPhone && buyerAddress) {
+        alert(`Спасибо за покупку, ${buyerName}!\nВаш заказ будет доставлен по адресу: ${buyerAddress}`);
+      } else {
+        alert("Пожалуйста, заполните все поля.");
+      }
+    });
+  } else {
+    document.body.innerHTML = "<h1>Товар не найден!</h1><a href='index.html'>Назад</a>";
+  }
+</script>
+
+</body>
+</html>

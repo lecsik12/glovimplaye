@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Товары | Маркетплейс</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background-color: #1e1e1e;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    
+    .product-table th,
+    .product-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+    }
+    
+    .product-table th {
+      background: #333;
+      font-weight: bold;
+    }
+    
+    .product-table tr:hover {
+      background: #3a3a3a;
+    }
+    
+    .product-name {
+      color: #ff7f50;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    
+    .product-name:hover {
+      text-decoration: underline;
+    }
+    
+    .price {
+      font-weight: bold;
+      color: #ff7f50;
+    }
+    
+    .seller {
+      display: flex;
+      align-items: center;
+    }
+    
+    .seller img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+  </style>
+</head>
+<body>
+
+<table class="product-table">
+  <thead>
+    <tr>
+      <th>Название</th>
+      <th>Продавец</th>
+      <th>Наличие</th>
+      <th>Цена</th>
+    </tr>
+  </thead>
+  <tbody id="productList"></tbody>
+</table>
+</div>
+  
+  
+ 
+ 
+
+
+
+  <script>
+    window.onload = function() {
+      const productList = document.getElementById('productList');
+      const noProducts = document.getElementById('noProducts');
+      
+      // Получаем товары из localStorage
+      let products = JSON.parse(localStorage.getItem('products')) || [];
+
+      if (products.length === 0) {
+        // Если нет товаров, показываем сообщение
+        noProducts.style.display = 'block';
+      } else {
+        // Если товары есть, скрываем сообщение
+        noProducts.style.display = 'none';
+
+        // Создаем элементы для отображения товаров
+        products.forEach(product => {
+          const productItem = document.createElement('div');
+          productItem.classList.add('product-item');
+
+          productItem.innerHTML = `
+            <div>
+              <h3>${product.name}</h3>
+              <p>${product.description}</p>
+              <p>Категория: ${product.category}</p>
+            </div>
+            <div>
+              <p class="price">${product.price} ₽</p>
+            </div>
+          `;
+          
+          // Добавляем товар в список
+          productList.appendChild(productItem);
+        });
+      }
+    };
+  </script>
+
+  <script src="script-view.js"></script>
+</body>
+</html>

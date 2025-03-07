@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Детали товара | GlovimPlaye</title>
+  <!-- ... ваши стили, Firebase ... -->
+</head>
+<body>
+
+<header>
+  <!-- ... ваш хедер ... -->
+</header>
+
+<div class="auth-container" id="authContainer">
+  <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
+</div>
+
+<main>
+  <div class="container">
+    <h2>Детали товара</h2>
+    <div id="productDetails" class="details"></div>
+    <button id="buyBtn" style="display:none;">Купить</button>
+    <a href="index.html" class="back-link" id="backLink">Вернуться на главную</a>
+  </div>
+</main>
+
+<footer>
+  <!-- ... ваш футер ... -->
+</footer>
+
+<!-- Модальное окно профиля -->
+<div id="profileModal" class="modal">
+  <!-- ... -->
+</div>
+
+<script>
+// Инициализация Firebase ...
+// Логика аутентификации ...
+
+document.addEventListener("DOMContentLoaded", function() {
+  const savedUser = localStorage.getItem("user");
+  if (savedUser) {
+    updateProfile(JSON.parse(savedUser));
+  }
+  showProductDetails();
+});
+
+// Получаем ID товара из URL, ищем в localStorage
+function showProductDetails() {
+  const productDetails = document.getElementById('productDetails');
+  const buyBtn = document.getElementById('buyBtn');
+
+  const params = new URLSearchParams(window.location.search);
+  const productId = params.get('id');
+  if (!productId) {
+    productDetails.innerHTML = '<p>Не указан ID товара.</p>';
+    return;
+  }
+
+  const products = JSON.parse(localStorage.getItem('products')) || [];
+  const product = products.find(p => p.id.toString() === productId);
+  if (!product) {
+    productDetails.innerHTML = '<p>Товар не найден.</p>';
+    return;
+  }
+
+  // Формируем HTML для деталей
+  productDetails.innerHTML = `
+    <p><span>Категория:</span> ${product.category || '—'}</p>
+    <p><span>Подкатегория:</span> ${product.subcategory || '—'}</p>
+    <p><span>Название:</span> ${product.name}</p>
+    <p><span>Описание:</span> ${product.description || '—'}</p>
+    <p><span>Наличие:</span> <span id="stockField">${product.stock}</span> шт.</p>
+    <p><span>Цена:</span> ${product.price} ₽</p>
+
+    <!-- Блок о продавце -->
+    <h3>Продавец</h3>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <img src="${product.sellerPhotoURL}" alt="Avatar" style="width:50px;height:50px;border-radius:50%;">
+      <div>
+        <p><strong>${product.sellerDisplayName || 'Неизвестен'}</strong></p>
+        <p>${product.sellerEmail || '—'}</p>
+      </div>
+    </div>
+  `;
+
+  // Показываем кнопку «Купить», если есть товар в наличии
+  if (parseInt(product.stock) > 0) {
+    buyBtn.style.display = 'inline-block';
+
+    // Навешиваем обработчик
+    buyBtn.onclick = function() {
+      buyProduct(productId);
+    };
+  } else {
+    buyBtn.style.display = 'none';
+    productDetails.innerHTML += `<p style="color:red;font-weight:bold;">Товар недоступен</p>`;
+  }
+}
+
+// Функция «Купить»
+function buyProduct(productId) {
+  // Проверяем, залогинен ли покупатель
+  const savedUser = localStorage.getItem("user");
+  if (!savedUser) {
+    alert("Войдите, чтобы купить товар.");
+    return;
+  }
+  const buyer = JSON.parse(savedUser);
+
+  let products = JSON.parse(localStorage.getItem('products')) || [];
+  let productIndex = products.findIndex(p => p.id.toString() === productId);
+  if (productIndex === -1) {
+    alert("Товар не найден");
+    return;
+  }
+
+  // Уменьшаем stock на 1
+  let currentStock = parseInt(products[productIndex].stock);
+  if (currentStock > 0) {
+    currentStock--;
+    products[productIndex].stock = currentStock;
+    localStorage.setItem('products', JSON.stringify(products));
+
+    // Обновляем поле на странице
+    document.getElementById('stockField').textContent = currentStock;
+
+    // Если stock = 0, скрываем кнопку
+    if (currentStock === 0) {
+      document.getElementById('buyBtn').style.display = 'none';
+      document.getElementById('productDetails').innerHTML += `<p style="color:red;font-weight:bold;">Товар недоступен</p>`;
+    }
+
+    alert("Поздравляем! Вы «купили» товар. (В реальном проекте тут бы была оплата)");
+  } else {
+    alert("Товар уже недоступен");
+  }
+}
+</script>
+</body>
+</html>
