@@ -12,6 +12,7 @@
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
+ 
   <style>
     /* СБРОС СТИЛЕЙ */
     * {
@@ -34,13 +35,13 @@
     /* ХЕДЕР */
     header {
       background: rgba(71, 68, 68, 0.85);
-      padding: 15px 30px;
+      padding: 10px 30px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
-      margin-bottom: 20px;
     }
+    
     .logo-button {
       background: none;
       border: none;
@@ -54,14 +55,15 @@
       color: #ccc;
       transform: scale(1.1);
     }
+
     /* Центр хедера: поиск */
     .header-center {
-      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 10px 0;
+      flex: 1;
     }
+
     .search-container {
       display: flex;
       max-width: 600px;
@@ -90,10 +92,10 @@
 
     /* ПРОФИЛЬ (АВАТАР, МЕНЮ) */
     .profile {
-      position: relative;
       display: flex;
       align-items: center;
     }
+
     .avatar {
       width: 50px;
       height: 50px;
@@ -104,35 +106,6 @@
     }
     .avatar:hover {
       transform: scale(1.1);
-    }
-    .profile-menu {
-      display: none;
-      position: absolute;
-      top: 60px;
-      right: 0;
-      background: #f9f8f8;
-      color: #333;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      overflow: hidden;
-      z-index: 10;
-    }
-    .profile-menu.active {
-      display: block;
-    }
-    .profile-menu a {
-      display: block;
-      padding: 15px;
-      text-decoration: none;
-      color: #333;
-      transition: background 0.3s;
-    }
-    .profile-menu a:hover {
-      background: #f6f4f4;
-    }
-    .logout {
-      color: red;
-      font-weight: bold;
     }
 
     /* КОНТЕЙНЕР АВТОРИЗАЦИИ (ЕСЛИ НЕ ЗАЛОГИНЕН) */
@@ -287,6 +260,47 @@
       background: #ff4500;
     }
 
+    /* МЕДИА-ЗАПРОСЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+    @media (max-width: 768px) {
+      header {
+        padding: 10px;
+        flex-direction: row;
+      }
+
+      .logo-button {
+        font-size: 24px;
+      }
+
+      .header-center {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .search-container {
+        flex-direction: row;
+        width: 100%;
+      }
+
+      .search-btn {
+        width: 100%;
+        margin-top: 10px;
+      }
+
+      .profile {
+        margin-left: 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo-button {
+        font-size: 20px;
+      }
+      .profile {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 <body>
