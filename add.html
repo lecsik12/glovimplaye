@@ -20,7 +20,7 @@
       padding: 0;
       box-sizing: border-box;
     }
-
+  
     /* ФОН, БАЗОВАЯ СТИЛИЗАЦИЯ */
     body {
       font-family: Arial, sans-serif;
@@ -31,17 +31,17 @@
       color: #fff;
       padding: 20px;
     }
-
+  
     /* ХЕДЕР */
     header {
       background: rgba(71, 68, 68, 0.85);
-      padding: 10px 30px;
+      padding: 15px 30px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       flex-wrap: wrap;
+      margin-bottom: 20px;
     }
-    
     .logo-button {
       background: none;
       border: none;
@@ -55,15 +55,14 @@
       color: #ccc;
       transform: scale(1.1);
     }
-
     /* Центр хедера: поиск */
     .header-center {
+      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      flex: 1;
+      margin: 10px 0;
     }
-
     .search-container {
       display: flex;
       max-width: 600px;
@@ -89,13 +88,13 @@
     .search-btn:hover {
       background: #f3f1f0;
     }
-
+  
     /* ПРОФИЛЬ (АВАТАР, МЕНЮ) */
     .profile {
+      position: relative;
       display: flex;
       align-items: center;
     }
-
     .avatar {
       width: 50px;
       height: 50px;
@@ -107,7 +106,36 @@
     .avatar:hover {
       transform: scale(1.1);
     }
-
+    .profile-menu {
+      display: none;
+      position: absolute;
+      top: 60px;
+      right: 0;
+      background: #f9f8f8;
+      color: #333;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .profile-menu.active {
+      display: block;
+    }
+    .profile-menu a {
+      display: block;
+      padding: 15px;
+      text-decoration: none;
+      color: #333;
+      transition: background 0.3s;
+    }
+    .profile-menu a:hover {
+      background: #f6f4f4;
+    }
+    .logout {
+      color: red;
+      font-weight: bold;
+    }
+  
     /* КОНТЕЙНЕР АВТОРИЗАЦИИ (ЕСЛИ НЕ ЗАЛОГИНЕН) */
     .auth-container {
       text-align: center;
@@ -127,12 +155,12 @@
       background: #fbf8f7;
       transform: translateY(-2px);
     }
-
+  
     /* ОСНОВНОЙ КОНТЕНТ: ФОРМА ДОБАВЛЕНИЯ */
     main {
       margin-top: 20px;
     }
-
+  
     .container {
       background: rgba(48, 44, 44, 0.85);
       padding: 20px;
@@ -144,7 +172,7 @@
       margin-bottom: 15px;
       text-align: center;
     }
-
+  
     form#addProductForm {
       display: flex;
       flex-direction: column;
@@ -175,7 +203,7 @@
     form#addProductForm button:hover {
       background: #ff4500;
     }
-
+  
     /* ФУТЕР */
     footer {
       background: rgba(71, 68, 68, 0.85);
@@ -194,7 +222,7 @@
     .social-links a:hover {
       color: #ff4500;
     }
-
+  
     /* МОДАЛЬНОЕ ОКНО ПРОФИЛЯ */
     .modal {
       display: none;
@@ -259,49 +287,48 @@
     .edit-btn:hover {
       background: #ff4500;
     }
-
-    /* МЕДИА-ЗАПРОСЫ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+  
+    /* Адаптивные стили для мобильных устройств */
     @media (max-width: 768px) {
-      header {
-        padding: 10px;
-        flex-direction: row;
-      }
-
       .logo-button {
         font-size: 24px;
       }
-
-      .header-center {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-      }
-
+  
       .search-container {
-        flex-direction: row;
-        width: 100%;
-      }
-
-      .search-btn {
-        width: 100%;
-        margin-top: 10px;
-      }
-
-      .profile {
-        margin-left: 15px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .logo-button {
-        font-size: 20px;
-      }
-      .profile {
         flex-direction: column;
-        align-items: flex-start;
+      }
+  
+      .search-input {
+        margin-bottom: 10px;
+        width: 100%;
+      }
+  
+      .profile {
+        margin-top: 20px;
+      }
+  
+      .container {
+        padding: 10px;
+        max-width: 100%;
+      }
+  
+      form#addProductForm input,
+      form#addProductForm select,
+      form#addProductForm textarea {
+        font-size: 12px;
+      }
+  
+      form#addProductForm button {
+        font-size: 14px;
+      }
+  
+      footer {
+        padding: 10px;
       }
     }
+  
   </style>
+  
 </head>
 <body>
 
