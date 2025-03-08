@@ -12,7 +12,6 @@
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
- 
   <style>
     /* СБРОС СТИЛЕЙ */
     * {
@@ -42,6 +41,7 @@
       flex-wrap: wrap;
       margin-bottom: 20px;
     }
+  
     .logo-button {
       background: none;
       border: none;
@@ -51,10 +51,12 @@
       cursor: pointer;
       transition: color 0.3s, transform 0.3s;
     }
+  
     .logo-button:hover {
       color: #ccc;
       transform: scale(1.1);
     }
+  
     /* Центр хедера: поиск */
     .header-center {
       flex: 1;
@@ -63,11 +65,13 @@
       align-items: center;
       margin: 10px 0;
     }
+  
     .search-container {
       display: flex;
       max-width: 600px;
       width: 100%;
     }
+  
     .search-input {
       flex: 1;
       padding: 10px 15px;
@@ -75,6 +79,7 @@
       border-radius: 5px 0 0 5px;
       font-size: 16px;
     }
+  
     .search-btn {
       padding: 10px 20px;
       border: none;
@@ -85,6 +90,7 @@
       cursor: pointer;
       transition: background 0.3s;
     }
+  
     .search-btn:hover {
       background: #f3f1f0;
     }
@@ -95,6 +101,7 @@
       display: flex;
       align-items: center;
     }
+  
     .avatar {
       width: 50px;
       height: 50px;
@@ -103,9 +110,11 @@
       border: 3px solid #fff;
       transition: transform 0.3s;
     }
+  
     .avatar:hover {
       transform: scale(1.1);
     }
+  
     .profile-menu {
       display: none;
       position: absolute;
@@ -118,9 +127,11 @@
       overflow: hidden;
       z-index: 10;
     }
+  
     .profile-menu.active {
       display: block;
     }
+  
     .profile-menu a {
       display: block;
       padding: 15px;
@@ -128,9 +139,11 @@
       color: #333;
       transition: background 0.3s;
     }
+  
     .profile-menu a:hover {
       background: #f6f4f4;
     }
+  
     .logout {
       color: red;
       font-weight: bold;
@@ -141,6 +154,7 @@
       text-align: center;
       margin: 50px 0;
     }
+  
     .login-btn {
       background: #fff;
       color: #efedec;
@@ -151,6 +165,7 @@
       cursor: pointer;
       transition: background 0.3s, transform 0.3s;
     }
+  
     .login-btn:hover {
       background: #fbf8f7;
       transform: translateY(-2px);
@@ -168,6 +183,7 @@
       max-width: 700px;
       margin: 0 auto;
     }
+  
     .container h2 {
       margin-bottom: 15px;
       text-align: center;
@@ -178,6 +194,7 @@
       flex-direction: column;
       gap: 10px;
     }
+  
     form#addProductForm input,
     form#addProductForm select,
     form#addProductForm textarea {
@@ -186,10 +203,12 @@
       border-radius: 5px;
       font-size: 14px;
     }
+  
     form#addProductForm textarea {
       resize: vertical;
       min-height: 60px;
     }
+  
     form#addProductForm button {
       padding: 10px 20px;
       background: #ff7f50;
@@ -200,6 +219,7 @@
       font-size: 16px;
       transition: background 0.3s;
     }
+  
     form#addProductForm button:hover {
       background: #ff4500;
     }
@@ -212,6 +232,7 @@
       color: #fff;
       margin-top: 30px;
     }
+  
     .social-links a {
       margin: 0 10px;
       color: #fafbfb;
@@ -219,6 +240,7 @@
       text-decoration: none;
       transition: color 0.3s;
     }
+  
     .social-links a:hover {
       color: #ff4500;
     }
@@ -235,6 +257,7 @@
       overflow: auto;
       background-color: rgba(0,0,0,0.6);
     }
+  
     .modal-content {
       background: #fff;
       margin: 10% auto;
@@ -245,10 +268,12 @@
       position: relative;
       animation: fadeIn 0.5s;
     }
+  
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+  
     .modal-close {
       position: absolute;
       right: 15px;
@@ -257,23 +282,28 @@
       cursor: pointer;
       color: #333;
     }
+  
     .profile-details {
       text-align: center;
     }
+  
     .profile-details img {
       width: 100px;
       height: 100px;
       border-radius: 50%;
       border: 3px solid #ff7f50;
     }
+  
     .profile-details h2 {
       margin: 10px 0 5px;
       color: #ff7f50;
     }
+  
     .profile-details p {
       color: #666;
       margin: 0;
     }
+  
     .edit-btn {
       margin-top: 20px;
       padding: 10px 20px;
@@ -284,12 +314,14 @@
       cursor: pointer;
       transition: background 0.3s;
     }
+  
     .edit-btn:hover {
       background: #ff4500;
     }
   
     /* Адаптивные стили для мобильных устройств */
     @media (max-width: 768px) {
+      /* Хедер */
       .logo-button {
         font-size: 24px;
       }
@@ -303,31 +335,72 @@
         width: 100%;
       }
   
+      /* Профиль */
       .profile {
         margin-top: 20px;
+        flex-direction: column;
       }
   
+      .profile-menu {
+        top: 50px;
+      }
+  
+      /* Контейнер */
       .container {
-        padding: 10px;
+        padding: 15px;
         max-width: 100%;
       }
   
+      /* Формы */
       form#addProductForm input,
       form#addProductForm select,
       form#addProductForm textarea {
-        font-size: 12px;
+        font-size: 16px;
       }
   
       form#addProductForm button {
         font-size: 14px;
+        padding: 12px;
       }
   
+      /* Футер */
       footer {
-        padding: 10px;
+        padding: 15px;
+      }
+  
+      /* Кнопки */
+      .login-btn,
+      .edit-btn {
+        width: 100%;
       }
     }
   
+    @media (max-width: 480px) {
+      /* Уменьшаем шрифты на очень маленьких экранах */
+      .logo-button {
+        font-size: 20px;
+      }
+  
+      .search-btn {
+        font-size: 14px;
+      }
+  
+      .profile-menu a {
+        padding: 12px;
+        font-size: 14px;
+      }
+  
+      .profile-details img {
+        width: 80px;
+        height: 80px;
+      }
+  
+      .container {
+        padding: 10px;
+      }
+    }
   </style>
+  
   
 </head>
 <body>
