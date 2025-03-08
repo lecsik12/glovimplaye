@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>CS:GO — Аккаунты | GlovimPlaye</title>
-  <!-- Обновлённый мета-тег для лучшего масштабирования на мобильных -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <style>
     /* Сброс стилей */
     * {
@@ -15,9 +13,9 @@
     }
     /* Базовые стили страницы */
     body {
-      font-family: Arial, sans-serif;
       background-color: #1e1e1e;
       color: #fff;
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
     }
@@ -25,110 +23,111 @@
       text-align: center;
       margin-bottom: 20px;
     }
-    /* Стили таблицы */
-    .product-table {
-      width: 100%;
-      border-collapse: collapse;
+
+    /* Контейнер для списка товаров */
+    .product-list {
+      display: grid;             /* Сетка */
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;                 /* Расстояние между карточками */
+    }
+
+    /* Каждая карточка товара */
+    .product-card {
       background: #2a2a2a;
       border-radius: 10px;
-      overflow: hidden;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s;
     }
-    .product-table th,
-    .product-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #444;
-    }
-    .product-table th {
-      background: #333;
-      font-weight: bold;
-    }
-    .product-table tr:hover {
+    .product-card:hover {
       background: #3a3a3a;
     }
+
+    /* Название товара */
     .product-name {
       color: #ff7f50;
       font-weight: bold;
       text-decoration: none;
+      font-size: 18px;
+      margin-bottom: 10px;
     }
     .product-name:hover {
       text-decoration: underline;
     }
-    .price {
+
+    /* Описание, продавец, наличие, цена */
+    .product-description {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    .product-seller {
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #ccc;
+    }
+    .product-stock {
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #ccc;
+    }
+    .product-price {
+      font-size: 16px;
       font-weight: bold;
       color: #ff7f50;
+      margin-bottom: 10px;
     }
 
-    /* --- Адаптивная верстка для маленьких экранов (max-width: 600px) --- */
-    @media (max-width: 600px) {
-      .product-table thead {
-        display: none; /* скрываем шапку */
-      }
-      .product-table,
-      .product-table tbody,
-      .product-table tr,
-      .product-table td {
-        display: block; /* всё блочное */
-        width: 100%;
-      }
-      .product-table tr {
-        margin-bottom: 15px; /* отступы между карточками */
-      }
-      .product-table td {
-        border-bottom: none; /* убираем нижнюю границу */
-        padding: 10px 0;
-        display: flex;
-        justify-content: space-between;
-      }
-      /* pseudo-элемент :before для названия поля */
-      .product-table td::before {
-        content: attr(data-label);
-        font-weight: bold;
-        color: #ccc;
-      }
+    /* Ссылка «Подробнее» */
+    .product-details-link {
+      margin-top: auto;  /* Прижимает ссылку вниз карточки */
+      text-align: right;
+    }
+    .product-details-link a {
+      color: #ff7f50;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .product-details-link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <h1>CS:GO — Аккаунты</h1>
-  <table class="product-table">
-    <thead>
-      <tr>
-        <th>Название</th>
-        <th>Описание</th>
-        <th>Продавец</th>
-        <th>Наличие</th>
-        <th>Цена</th>
-      </tr>
-    </thead>
-    <tbody id="productList"></tbody>
-  </table>
 
-  <p style="text-align:center; margin-top:20px;">
-    <a href="product-details.html?id=1688210678899" style="color: #ff7f50; font-weight: bold;">Подробнее (пример ссылки)</a>
-  </p>
+  <!-- Контейнер для списка товаров (карточки) -->
+  <div class="product-list" id="productList"></div>
 
   <script>
     window.addEventListener('DOMContentLoaded', function() {
-      const productList = document.getElementById('productList');
+      const productListEl = document.getElementById('productList');
       let products = JSON.parse(localStorage.getItem('products')) || [];
 
       // Фильтруем: категория = "csgo" и подкатегория = "accounts"
       let filtered = products.filter(p => p.category === 'csgo' && p.subcategory === 'accounts');
 
       if (filtered.length === 0) {
-        productList.innerHTML = '<tr><td colspan="5">Товаров нет</td></tr>';
+        productListEl.innerHTML = '<p>Товаров нет</p>';
       } else {
         filtered.forEach(product => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td data-label="Название"><a href="#" class="product-name">${product.name}</a></td>
-            <td data-label="Описание">${product.description}</td>
-            <td data-label="Продавец">${product.sellerName}</td>
-            <td data-label="Наличие">${product.stock} шт.</td>
-            <td data-label="Цена" class="price">${product.price} ₽</td>
+          // Создаем карточку
+          const card = document.createElement('div');
+          card.className = 'product-card';
+
+          // Внутренний HTML карточки
+          card.innerHTML = `
+            <a href="#" class="product-name">${product.name}</a>
+            <div class="product-description">${product.description}</div>
+            <div class="product-seller">Продавец: ${product.sellerName}</div>
+            <div class="product-stock">Наличие: ${product.stock} шт.</div>
+            <div class="product-price">${product.price} ₽</div>
+            <div class="product-details-link">
+              <a href="product-details.html?id=${product.id}">Подробнее</a>
+            </div>
           `;
-          productList.appendChild(row);
+
+          productListEl.appendChild(card);
         });
       }
     });
