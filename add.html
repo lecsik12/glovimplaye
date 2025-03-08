@@ -11,7 +11,6 @@
 
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
   <style>
     /* СБРОС СТИЛЕЙ */
     * {
@@ -20,7 +19,7 @@
       box-sizing: border-box;
     }
   
-    /* ФОН, БАЗОВАЯ СТИЛИЗАЦИЯ */
+    /* ФОН И БАЗОВАЯ СТИЛИЗАЦИЯ */
     body {
       font-family: Arial, sans-serif;
       background: url('background.jpg') no-repeat center center fixed;
@@ -34,19 +33,20 @@
     /* ХЕДЕР */
     header {
       background: rgba(71, 68, 68, 0.85);
-      padding: 15px 30px;
+      padding: 8px 15px;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       flex-wrap: wrap;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+      height: 50px;
     }
   
     .logo-button {
       background: none;
       border: none;
       color: #fff;
-      font-size: 28px;
+      font-size: 20px;
       font-weight: bold;
       cursor: pointer;
       transition: color 0.3s, transform 0.3s;
@@ -54,38 +54,37 @@
   
     .logo-button:hover {
       color: #ccc;
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
   
-    /* Центр хедера: поиск */
     .header-center {
       flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 10px 0;
+      margin: 5px 0;
     }
   
     .search-container {
       display: flex;
-      max-width: 600px;
+      max-width: 400px;
       width: 100%;
     }
   
     .search-input {
       flex: 1;
-      padding: 10px 15px;
+      padding: 6px 10px;
       border: none;
       border-radius: 5px 0 0 5px;
-      font-size: 16px;
+      font-size: 14px;
     }
   
     .search-btn {
-      padding: 10px 20px;
+      padding: 6px 12px;
       border: none;
       background: #f5f3f3;
       color: #fff;
-      font-size: 16px;
+      font-size: 14px;
       border-radius: 0 5px 5px 0;
       cursor: pointer;
       transition: background 0.3s;
@@ -95,19 +94,18 @@
       background: #f3f1f0;
     }
   
-    /* ПРОФИЛЬ (АВАТАР, МЕНЮ) */
     .profile {
-      position: relative;
       display: flex;
       align-items: center;
+      position: relative;
     }
   
     .avatar {
-      width: 50px;
-      height: 50px;
+      width: 30px;
+      height: 30px;
       border-radius: 50%;
       cursor: pointer;
-      border: 3px solid #fff;
+      border: 2px solid #fff;
       transition: transform 0.3s;
     }
   
@@ -118,13 +116,12 @@
     .profile-menu {
       display: none;
       position: absolute;
-      top: 60px;
+      top: 40px;
       right: 0;
       background: #f9f8f8;
       color: #333;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
       z-index: 10;
     }
   
@@ -134,7 +131,7 @@
   
     .profile-menu a {
       display: block;
-      padding: 15px;
+      padding: 10px;
       text-decoration: none;
       color: #333;
       transition: background 0.3s;
@@ -144,12 +141,7 @@
       background: #f6f4f4;
     }
   
-    .logout {
-      color: red;
-      font-weight: bold;
-    }
-  
-    /* КОНТЕЙНЕР АВТОРИЗАЦИИ (ЕСЛИ НЕ ЗАЛОГИНЕН) */
+    /* КОНТЕЙНЕР АВТОРИЗАЦИИ */
     .auth-container {
       text-align: center;
       margin: 50px 0;
@@ -171,14 +163,14 @@
       transform: translateY(-2px);
     }
   
-    /* ОСНОВНОЙ КОНТЕНТ: ФОРМА ДОБАВЛЕНИЯ */
+    /* ОСНОВНОЙ КОНТЕНТ */
     main {
       margin-top: 20px;
     }
   
     .container {
       background: rgba(48, 44, 44, 0.85);
-      padding: 20px;
+      padding: 15px;
       border-radius: 8px;
       max-width: 700px;
       margin: 0 auto;
@@ -245,113 +237,32 @@
       color: #ff4500;
     }
   
-    /* МОДАЛЬНОЕ ОКНО ПРОФИЛЯ */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.6);
-    }
-  
-    .modal-content {
-      background: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      position: relative;
-      animation: fadeIn 0.5s;
-    }
-  
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  
-    .modal-close {
-      position: absolute;
-      right: 15px;
-      top: 15px;
-      font-size: 24px;
-      cursor: pointer;
-      color: #333;
-    }
-  
-    .profile-details {
-      text-align: center;
-    }
-  
-    .profile-details img {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid #ff7f50;
-    }
-  
-    .profile-details h2 {
-      margin: 10px 0 5px;
-      color: #ff7f50;
-    }
-  
-    .profile-details p {
-      color: #666;
-      margin: 0;
-    }
-  
-    .edit-btn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #ff7f50;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-  
-    .edit-btn:hover {
-      background: #ff4500;
-    }
-  
-    /* Адаптивные стили для мобильных устройств */
+    /* Адаптивные стили */
     @media (max-width: 768px) {
-      /* Хедер */
       .logo-button {
-        font-size: 24px;
+        font-size: 18px;
       }
   
       .search-container {
         flex-direction: column;
+        max-width: 300px;
       }
   
       .search-input {
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         width: 100%;
       }
   
-      /* Профиль */
       .profile {
-        margin-top: 20px;
+        margin-top: 10px;
         flex-direction: column;
       }
   
-      .profile-menu {
-        top: 50px;
-      }
-  
-      /* Контейнер */
       .container {
-        padding: 15px;
+        padding: 10px;
         max-width: 100%;
       }
   
-      /* Формы */
       form#addProductForm input,
       form#addProductForm select,
       form#addProductForm textarea {
@@ -363,12 +274,10 @@
         padding: 12px;
       }
   
-      /* Футер */
       footer {
         padding: 15px;
       }
   
-      /* Кнопки */
       .login-btn,
       .edit-btn {
         width: 100%;
@@ -376,32 +285,32 @@
     }
   
     @media (max-width: 480px) {
-      /* Уменьшаем шрифты на очень маленьких экранах */
       .logo-button {
-        font-size: 20px;
+        font-size: 16px;
       }
   
       .search-btn {
-        font-size: 14px;
+        font-size: 12px;
       }
   
       .profile-menu a {
-        padding: 12px;
-        font-size: 14px;
+        padding: 8px;
+        font-size: 12px;
       }
   
       .profile-details img {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
       }
   
       .container {
-        padding: 10px;
+        padding: 5px;
       }
     }
   </style>
   
   
+
 </head>
 <body>
 
