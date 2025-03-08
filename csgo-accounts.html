@@ -3,12 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>CS:GO — Аккаунты | GlovimPlaye</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Обновлённый мета-тег для лучшего масштабирования на мобильных -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
+    /* Сброс стилей */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    /* Базовые стили страницы */
     body {
+      font-family: Arial, sans-serif;
       background-color: #1e1e1e;
       color: #fff;
-      font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
     }
@@ -16,6 +25,7 @@
       text-align: center;
       margin-bottom: 20px;
     }
+    /* Стили таблицы */
     .product-table {
       width: 100%;
       border-collapse: collapse;
@@ -48,9 +58,37 @@
       font-weight: bold;
       color: #ff7f50;
     }
+
+    /* --- Адаптивная верстка для маленьких экранов (max-width: 600px) --- */
+    @media (max-width: 600px) {
+      .product-table thead {
+        display: none; /* скрываем шапку */
+      }
+      .product-table,
+      .product-table tbody,
+      .product-table tr,
+      .product-table td {
+        display: block; /* всё блочное */
+        width: 100%;
+      }
+      .product-table tr {
+        margin-bottom: 15px; /* отступы между карточками */
+      }
+      .product-table td {
+        border-bottom: none; /* убираем нижнюю границу */
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+      }
+      /* pseudo-элемент :before для названия поля */
+      .product-table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #ccc;
+      }
+    }
   </style>
 </head>
-
 <body>
   <h1>CS:GO — Аккаунты</h1>
   <table class="product-table">
@@ -64,9 +102,11 @@
       </tr>
     </thead>
     <tbody id="productList"></tbody>
-  </table>  
-  <a href="product-details.html?id=1688210678899">Подробнее</a>
+  </table>
 
+  <p style="text-align:center; margin-top:20px;">
+    <a href="product-details.html?id=1688210678899" style="color: #ff7f50; font-weight: bold;">Подробнее (пример ссылки)</a>
+  </p>
 
   <script>
     window.addEventListener('DOMContentLoaded', function() {
@@ -82,11 +122,11 @@
         filtered.forEach(product => {
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td><a href="#" class="product-name">${product.name}</a></td>
-            <td>${product.description}</td>
-            <td>${product.sellerName}</td>
-            <td>${product.stock} шт.</td>
-            <td class="price">${product.price} ₽</td>
+            <td data-label="Название"><a href="#" class="product-name">${product.name}</a></td>
+            <td data-label="Описание">${product.description}</td>
+            <td data-label="Продавец">${product.sellerName}</td>
+            <td data-label="Наличие">${product.stock} шт.</td>
+            <td data-label="Цена" class="price">${product.price} ₽</td>
           `;
           productList.appendChild(row);
         });
