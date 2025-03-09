@@ -12,13 +12,10 @@
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <style>
-    /* ===== ВАШ ИСХОДНЫЙ ДИЗАЙН ДЛЯ ПК ===== */
-    /* Сброс стилей */
+    /* ========== ВАШ ИСХОДНЫЙ ДИЗАЙН ДЛЯ ПК ========== */
     * {
       margin: 0; padding: 0; box-sizing: border-box;
     }
-
-    /* Фон, базовая стилизация */
     body {
       font-family: Arial, sans-serif;
       background: url('background.jpg') no-repeat center center fixed;
@@ -28,15 +25,13 @@
       color: #fff;
       padding: 20px;
     }
-
-    /* Шапка (header) */
     header {
       background: rgba(71, 68, 68, 0.85);
       padding: 15px 30px;
       display: flex;
       align-items: center;
-      justify-content: space-between; /* Логотип слева, профиль справа */
-      flex-wrap: nowrap; /* На ПК всё в одну строку */
+      justify-content: space-between; /* Лого слева, профиль справа */
+      flex-wrap: nowrap;
       margin-bottom: 20px;
     }
     .logo-button {
@@ -52,10 +47,8 @@
       color: #ccc;
       transform: scale(1.1);
     }
-
-    /* Центр хедера: поиск */
     .header-center {
-      flex: 1; /* Заставляет поисковую строку занимать всё свободное пространство */
+      flex: 1; 
       display: flex;
       justify-content: center;
       align-items: center;
@@ -86,8 +79,7 @@
     .search-btn:hover {
       background: #f3f1f0;
     }
-
-    /* Профиль (аватар, меню) */
+    /* Профиль в хедере */
     .profile {
       position: relative;
       display: flex;
@@ -128,10 +120,10 @@
       background: #f6f4f4;
     }
     .logout {
-      color: red; font-weight: bold;
+      color: red;
+      font-weight: bold;
     }
-
-    /* Контейнер авторизации (если не залогинен) */
+    /* Авторизация */
     .auth-container {
       text-align: center;
       margin: 50px 0;
@@ -150,8 +142,7 @@
       background: #fbf8f7;
       transform: translateY(-2px);
     }
-
-    /* Основной контент */
+    /* Контент */
     main {
       margin-top: 20px;
     }
@@ -196,7 +187,6 @@
     form#addProductForm button:hover {
       background: #ff4500;
     }
-
     /* Футер */
     footer {
       background: rgba(71, 68, 68, 0.85);
@@ -215,7 +205,6 @@
     .social-links a:hover {
       color: #ff4500;
     }
-
     /* Модальное окно профиля */
     .modal {
       display: none;
@@ -273,59 +262,54 @@
       background: #ff4500;
     }
 
-    /* ======== АДАПТИВНОСТЬ ДЛЯ ТЕЛЕФОНОВ (новое расположение) ======== */
+    /* ========== НИЖНЯЯ ПАНЕЛЬ (КАК playerok.com) ========== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: #1e1e1e;
+      display: none; /* По умолчанию скрыта (для ПК) */
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+      z-index: 9999;
+    }
+    .bottom-nav a {
+      text-decoration: none;
+      color: #ccc;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a i {
+      font-size: 20px;
+      margin-bottom: 3px;
+    }
+    .bottom-nav a:hover {
+      color: #fff;
+    }
+
+    /* ========== АДАПТИВНОСТЬ ========== */
     @media (max-width: 768px) {
-      /* Меняем расположение шапки на телефоне */
-      header {
-        flex-wrap: wrap;        /* Чтобы элементы могли переноситься */
-        flex-direction: column; /* Логотип, поиск, аватар – всё в столбик */
-        align-items: flex-start; /* Прижимаем к левой стороне */
-      }
-
-      /* Чтобы логотип был сверху, поиск в середине, аватар снизу */
-      .logo-button {
-        order: 1; /* Первый элемент */
-        font-size: 22px; /* Чуть меньше шрифт */
-        margin-bottom: 10px;
-      }
-      .header-center {
-        order: 2;
-        width: 100%;
-        justify-content: flex-start; /* Поиск прижать к левой */
-        margin-bottom: 10px;
-      }
-      .search-container {
-        max-width: 100%; /* Растягиваем на всю ширину */
-      }
+      /* Прячем профиль сверху */
       .profile {
-        order: 3; /* Аватар – третий элемент */
-        margin-bottom: 10px;
+        display: none !important; 
       }
-
-      /* Уменьшаем размеры полей, если нужно */
-      .search-input {
-        font-size: 14px;
+      /* Показываем нижнюю панель */
+      .bottom-nav {
+        display: flex; 
       }
-      .search-btn {
-        font-size: 14px;
-        padding: 8px 10px;
-      }
-      .avatar {
-        width: 40px; height: 40px;
-      }
-
-      /* Контейнер с формой */
-      .container {
-        max-width: 100%;
-        margin: 0;
-        padding: 15px;
-      }
-      form#addProductForm button {
-        font-size: 14px;
-        padding: 12px;
+      /* Можно чуть уменьшить верхний паддинг body, если хотите */
+      body {
+        padding-bottom: 80px; /* чтобы нижняя панель не перекрывала контент */
       }
     }
   </style>
+ 
+
+
+
   
 
 </head>
