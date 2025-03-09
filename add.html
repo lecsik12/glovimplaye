@@ -12,13 +12,12 @@
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <style>
-    /* =============== БАЗОВЫЕ СТИЛИ ДЛЯ ПК =============== */
+    /* ===== ВАШ ИСХОДНЫЙ ДИЗАЙН ДЛЯ ПК ===== */
     /* Сброс стилей */
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+      margin: 0; padding: 0; box-sizing: border-box;
     }
+
     /* Фон, базовая стилизация */
     body {
       font-family: Arial, sans-serif;
@@ -29,14 +28,15 @@
       color: #fff;
       padding: 20px;
     }
+
     /* Шапка (header) */
     header {
       background: rgba(71, 68, 68, 0.85);
       padding: 15px 30px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
+      justify-content: space-between; /* Логотип слева, профиль справа */
+      flex-wrap: nowrap; /* На ПК всё в одну строку */
       margin-bottom: 20px;
     }
     .logo-button {
@@ -52,9 +52,10 @@
       color: #ccc;
       transform: scale(1.1);
     }
+
     /* Центр хедера: поиск */
     .header-center {
-      flex: 1;
+      flex: 1; /* Заставляет поисковую строку занимать всё свободное пространство */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -93,8 +94,7 @@
       align-items: center;
     }
     .avatar {
-      width: 50px;
-      height: 50px;
+      width: 50px; height: 50px;
       border-radius: 50%;
       cursor: pointer;
       border: 3px solid #fff;
@@ -106,8 +106,7 @@
     .profile-menu {
       display: none;
       position: absolute;
-      top: 60px;
-      right: 0;
+      top: 60px; right: 0;
       background: #f9f8f8;
       color: #333;
       border-radius: 8px;
@@ -129,8 +128,7 @@
       background: #f6f4f4;
     }
     .logout {
-      color: red;
-      font-weight: bold;
+      color: red; font-weight: bold;
     }
 
     /* Контейнер авторизации (если не залогинен) */
@@ -153,7 +151,7 @@
       transform: translateY(-2px);
     }
 
-    /* Основной контент: форма добавления */
+    /* Основной контент */
     main {
       margin-top: 20px;
     }
@@ -161,7 +159,7 @@
       background: rgba(48, 44, 44, 0.85);
       padding: 20px;
       border-radius: 8px;
-      max-width: 700px; /* Десктопная ширина */
+      max-width: 700px;
       margin: 0 auto;
     }
     .container h2 {
@@ -223,10 +221,8 @@
       display: none;
       position: fixed;
       z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
       overflow: auto;
       background-color: rgba(0,0,0,0.6);
     }
@@ -246,8 +242,7 @@
     }
     .modal-close {
       position: absolute;
-      right: 15px;
-      top: 15px;
+      right: 15px; top: 15px;
       font-size: 24px;
       cursor: pointer;
       color: #333;
@@ -256,8 +251,7 @@
       text-align: center;
     }
     .profile-details img {
-      width: 100px;
-      height: 100px;
+      width: 100px; height: 100px;
       border-radius: 50%;
       border: 3px solid #ff7f50;
     }
@@ -266,43 +260,49 @@
       color: #ff7f50;
     }
     .profile-details p {
-      color: #666;
-      margin: 0;
+      color: #666; margin: 0;
     }
     .edit-btn {
       margin-top: 20px;
       padding: 10px 20px;
-      background: #ff7f50;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
+      background: #ff7f50; color: #fff;
+      border: none; border-radius: 5px;
+      cursor: pointer; transition: background 0.3s;
     }
     .edit-btn:hover {
       background: #ff4500;
     }
 
-    /* =============== АДАПТИВНЫЕ СТИЛИ ДЛЯ МОБИЛЬНЫХ =============== */
+    /* ======== АДАПТИВНОСТЬ ДЛЯ ТЕЛЕФОНОВ (новое расположение) ======== */
     @media (max-width: 768px) {
-      /* Уменьшаем отступы, делаем элементы более компактными */
-      body {
-        padding: 10px;
-        background-position: center; /* Если хотите упростить фон на мобилке */
-      }
+      /* Меняем расположение шапки на телефоне */
       header {
-        flex-wrap: nowrap;
-        padding: 10px;
+        flex-wrap: wrap;        /* Чтобы элементы могли переноситься */
+        flex-direction: column; /* Логотип, поиск, аватар – всё в столбик */
+        align-items: flex-start; /* Прижимаем к левой стороне */
       }
+
+      /* Чтобы логотип был сверху, поиск в середине, аватар снизу */
       .logo-button {
-        font-size: 20px;
+        order: 1; /* Первый элемент */
+        font-size: 22px; /* Чуть меньше шрифт */
+        margin-bottom: 10px;
       }
       .header-center {
-        margin: 5px 0;
+        order: 2;
+        width: 100%;
+        justify-content: flex-start; /* Поиск прижать к левой */
+        margin-bottom: 10px;
       }
       .search-container {
-        max-width: 300px;
+        max-width: 100%; /* Растягиваем на всю ширину */
       }
+      .profile {
+        order: 3; /* Аватар – третий элемент */
+        margin-bottom: 10px;
+      }
+
+      /* Уменьшаем размеры полей, если нужно */
       .search-input {
         font-size: 14px;
       }
@@ -311,14 +311,12 @@
         padding: 8px 10px;
       }
       .avatar {
-        width: 40px;
-        height: 40px;
+        width: 40px; height: 40px;
       }
-      .auth-container {
-        margin: 20px 0;
-      }
+
+      /* Контейнер с формой */
       .container {
-        max-width: 100%; /* Чтобы форма растягивалась на всю ширину экрана */
+        max-width: 100%;
         margin: 0;
         padding: 15px;
       }
