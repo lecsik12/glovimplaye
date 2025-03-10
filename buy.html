@@ -399,7 +399,7 @@
 
 <!-- ===== НИЖНЯЯ ПАНЕЛЬ (для мобильных) ===== -->
 <div class="bottom-nav">
-  <a href="#">
+  <a href="index.html">
     <i class="fas fa-search"></i>
     <span>Поиск</span>
   </a>
@@ -432,12 +432,29 @@
 
 <script>
 /* ---------- Firebase конфиг ---------- */
-var firebaseConfig = { /* ... */ };
-firebase.initializeApp(firebaseConfig);
+  // Firebase конфиг – замените данные на свои!
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  // Инициализация Firebase
+  firebase.initializeApp(firebaseConfig);
 
-var auth = firebase.auth();
-var provider = new firebase.auth.GoogleAuthProvider();
+  var auth = firebase.auth();
+  var provider = new firebase.auth.GoogleAuthProvider();
 
+  // Проверка сохранённого пользователя при загрузке страницы
+  document.addEventListener("DOMContentLoaded", function(){
+    var savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      updateProfile(JSON.parse(savedUser));
+    }
+  });  
 /* ---------- При загрузке проверяем пользователя ---------- */
 document.addEventListener("DOMContentLoaded", function() {
   var savedUser = localStorage.getItem("user");
