@@ -555,6 +555,39 @@
               </div>
             </div>
           </div>
+
+          <!-- ===== НИЖНЯЯ ПАНЕЛЬ (для мобильных) ===== -->
+<div class="bottom-nav">
+  <a href="index.html">
+    <i class="fas fa-search"></i>
+    <span>Поиск</span>
+  </a>
+  <a href="add.html">
+    <i class="fas fa-plus"></i>
+    <span>Продать</span>
+  </a>
+  <a href="#">
+    <i class="fas fa-comments"></i>
+    <span>Чаты</span>
+  </a>
+  <a href="#" onclick="showProfileModal()">
+    <i class="fas fa-user"></i>
+    <span>Профиль</span>
+  </a>
+</div>
+
+<!-- Модальное окно профиля -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
+    <div class="profile-details">
+      <img id="modalAvatar" src="default-avatar.png" alt="Avatar">
+      <h2 id="profileName"></h2>
+      <p id="profileEmail"></p>
+      <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
+    </div>
+  </div>
+</div>
           
           <!-- Футер с соц. сетями -->
           <footer>
