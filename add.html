@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Добавить товар | GlovimPlaye</title>
+  <title>GlovimPlaye | Добавить товар</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
   <!-- Firebase v8 -->
@@ -11,6 +11,7 @@
 
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
   <style>
     /* ========== ВАШ ИСХОДНЫЙ ДИЗАЙН ДЛЯ ПК ========== */
     * {
@@ -30,7 +31,7 @@
       padding: 15px 30px;
       display: flex;
       align-items: center;
-      justify-content: space-between; /* Лого слева, профиль справа */
+      justify-content: space-between; /* Логотип слева, профиль справа */
       flex-wrap: nowrap;
       margin-bottom: 20px;
     }
@@ -48,7 +49,7 @@
       transform: scale(1.1);
     }
     .header-center {
-      flex: 1; 
+      flex: 1;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -79,7 +80,8 @@
     .search-btn:hover {
       background: #f3f1f0;
     }
-    /* Профиль в хедере */
+
+    /* Профиль в шапке (ПК) */
     .profile {
       position: relative;
       display: flex;
@@ -123,7 +125,8 @@
       color: red;
       font-weight: bold;
     }
-    /* Авторизация */
+
+    /* Контейнер авторизации (если не залогинен) */
     .auth-container {
       text-align: center;
       margin: 50px 0;
@@ -142,7 +145,8 @@
       background: #fbf8f7;
       transform: translateY(-2px);
     }
-    /* Контент */
+
+    /* Основной контент */
     main {
       margin-top: 20px;
     }
@@ -187,6 +191,7 @@
     form#addProductForm button:hover {
       background: #ff4500;
     }
+
     /* Футер */
     footer {
       background: rgba(71, 68, 68, 0.85);
@@ -205,7 +210,72 @@
     .social-links a:hover {
       color: #ff4500;
     }
+
     /* Модальное окно профиля */
+    header {
+      background: linear-gradient(135deg, #3a3a3a, #222);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+  }
+  
+  .logo-button {
+      font-size: 32px;
+      font-weight: bold;
+      color: #ff7f50;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s, text-shadow 0.3s;
+  }
+  
+  .logo-button:hover {
+      transform: scale(1.1);
+      text-shadow: 3px 3px 6px rgba(255, 127, 80, 0.8);
+  }
+  
+  .search-container {
+      display: flex;
+      max-width: 500px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .search-input {
+      flex: 1;
+      padding: 12px 18px;
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+  }
+  
+  .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .search-btn {
+      padding: 12px 20px;
+      border: none;
+      background: #ff7f50;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+      border-radius: 0 30px 30px 0;
+  }
+  
+  .search-btn:hover {
+      background: #ff4500;
+  }
+  
+    
+    
     .modal {
       display: none;
       position: fixed;
@@ -262,29 +332,38 @@
       background: #ff4500;
     }
 
-    /* ========== НИЖНЯЯ ПАНЕЛЬ (КАК playerok.com) ========== */
+    /* ========== НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ) ========== */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
       height: 60px;
       background: #1e1e1e;
-      display: none; /* По умолчанию скрыта (для ПК) */
+      display: none; /* По умолчанию скрыто (для ПК) */
       justify-content: space-around;
       align-items: center;
       box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
       z-index: 9999;
     }
+
+    .search-bar {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+  }
+
+
     .bottom-nav a {
       text-decoration: none;
       color: #ccc;
-      font-size: 14px;
+      font-size: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
     .bottom-nav a i {
       font-size: 20px;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
     }
     .bottom-nav a:hover {
       color: #fff;
@@ -292,7 +371,7 @@
 
     /* ========== АДАПТИВНОСТЬ ========== */
     @media (max-width: 768px) {
-      /* Прячем профиль сверху */
+      /* Прячем профиль сверху на телефоне */
       .profile {
         display: none !important; 
       }
@@ -300,22 +379,45 @@
       .bottom-nav {
         display: flex; 
       }
-      /* Можно чуть уменьшить верхний паддинг body, если хотите */
+      /* Чтобы контент не залез под панель */
       body {
-        padding-bottom: 80px; /* чтобы нижняя панель не перекрывала контент */
+        padding-bottom: 80px; 
       }
     }
-  </style>
- 
 
-
-
+    @media (max-width: 768px) {
+      header {
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 15px;
+      }
   
-
+      .logo-button {
+          font-size: 24px;
+          margin-bottom: 10px;
+      }
+  
+      .search-container {
+          width: 100%;
+          max-width: 90%;
+      }
+  
+      .search-input {
+          font-size: 14px;
+          padding: 10px;
+      }
+  
+      .search-btn {
+          padding: 10px;
+      }
+  }
+  
+  </style>
 </head>
 <body>
 
-<!-- ХЕДЕР -->
+<!-- Хедер (ПК) -->
 <header>
   <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
   <div class="header-center">
@@ -324,6 +426,7 @@
       <button class="search-btn">Поиск</button>
     </div>
   </div>
+  <!-- Профиль (только на ПК) -->
   <div class="profile" id="profileSection" style="display:none;">
     <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
     <div class="profile-menu" id="profileMenu">
@@ -337,12 +440,12 @@
   </div>
 </header>
 
-<!-- КОНТЕЙНЕР АВТОРИЗАЦИИ (если не залогинен) -->
+<!-- Авторизация (если не залогинен) -->
 <div class="auth-container" id="authContainer">
   <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
 </div>
 
-<!-- ОСНОВНОЙ КОНТЕНТ: ТОЛЬКО ФОРМА ДОБАВЛЕНИЯ -->
+<!-- Основной контент -->
 <main>
   <div class="container">
     <h2>Добавить товар</h2>
@@ -367,26 +470,26 @@
       </select>
 
       <label for="productName">Название</label>
-      <input type="text" id="productName" placeholder="Название товара" required />
+      <input type="text" id="productName" required />
 
       <label for="description">Описание</label>
-      <textarea id="description" placeholder="Опишите товар..."></textarea>
+      <textarea id="description"></textarea>
 
       <label for="sellerName">Продавец</label>
-      <input type="text" id="sellerName" placeholder="Имя продавца" required />
+      <input type="text" id="sellerName" required />
 
       <label for="price">Цена</label>
-      <input type="number" id="price" placeholder="Цена" required />
+      <input type="number" id="price" required />
 
       <label for="stock">Наличие (шт.)</label>
-      <input type="number" id="stock" placeholder="Количество" required />
+      <input type="number" id="stock" required />
 
       <button type="submit">Добавить</button>
     </form>
   </div>
 </main>
 
-<!-- ФУТЕР -->
+<!-- Футер -->
 <footer>
   <div class="social-links">
     <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
@@ -396,7 +499,27 @@
   <p>© 2025 GlovimPlaye. Все права защищены.</p>
 </footer>
 
-<!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ -->
+<!-- ===== НИЖНЯЯ ПАНЕЛЬ (для мобильных) ===== -->
+<div class="bottom-nav">
+  <a href="index.html">
+    <i class="fas fa-search"></i>
+    <span>Поиск</span>
+  </a>
+  <a href="add.html">
+    <i class="fas fa-plus"></i>
+    <span>Продать</span>
+  </a>
+  <a href="#">
+    <i class="fas fa-comments"></i>
+    <span>Чаты</span>
+  </a>
+  <a href="#" onclick="showProfileModal()">
+    <i class="fas fa-user"></i>
+    <span>Профиль</span>
+  </a>
+</div>
+
+<!-- Модальное окно профиля -->
 <div id="profileModal" class="modal">
   <div class="modal-content">
     <span class="modal-close" onclick="closeProfileModal()">&times;</span>
@@ -409,26 +532,63 @@
   </div>
 </div>
 
+<!-- JS для поиска -->
 <script>
-/* ---------------------------------
-   1. Firebase конфиг (v8)
----------------------------------- */
-var firebaseConfig = {
-  apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-  authDomain: "glovimplaye-b1023.firebaseapp.com",
-  databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-  projectId: "glovimplaye-b1023",
-  storageBucket: "glovimplaye-b1023.firebasestorage.app",
-  messagingSenderId: "553440591519",
-  appId: "1:553440591519:web:b7be45a9253689f322acaa"
-};
-// Инициализация Firebase
-firebase.initializeApp(firebaseConfig);
+  function filterCategories() {
+    let input = document.getElementById('searchInput').value.toLowerCase();
+    let sections = document.querySelectorAll('.categories-section'); // Все секции (Игры, Приложения)
+  
+    sections.forEach(section => {
+      let cards = section.querySelectorAll('.category-card');
+      let hasVisible = false; // Флаг, есть ли видимые элементы в секции
+  
+      cards.forEach(card => {
+        let titleElement = card.querySelector('.subcategory');
+        // На всякий случай проверяем, что элемент существует
+        if (!titleElement) return;
+  
+        let title = titleElement.textContent.toLowerCase();
+        if (title.includes(input)) {
+          card.style.display = 'block'; // Показываем совпадения
+          hasVisible = true;
+        } else {
+          card.style.display = 'none'; // Прячем несоответствия
+        }
+      });
+  
+      // Если в секции нет видимых карточек, скрываем секцию
+      section.style.display = hasVisible ? 'block' : 'none';
+    });
+  }
+  </script>
 
-var auth = firebase.auth();
-var provider = new firebase.auth.GoogleAuthProvider();
 
-// При загрузке проверяем, есть ли сохранённый пользователь
+<script>
+/* ---------- Firebase конфиг ---------- */
+  // Firebase конфиг – замените данные на свои!
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  // Инициализация Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  var auth = firebase.auth();
+  var provider = new firebase.auth.GoogleAuthProvider();
+
+  // Проверка сохранённого пользователя при загрузке страницы
+  document.addEventListener("DOMContentLoaded", function(){
+    var savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      updateProfile(JSON.parse(savedUser));
+    }
+  });  
+/* ---------- При загрузке проверяем пользователя ---------- */
 document.addEventListener("DOMContentLoaded", function() {
   var savedUser = localStorage.getItem("user");
   if (savedUser) {
@@ -436,9 +596,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-/* ---------------------------------
-   2. Функции аутентификации
----------------------------------- */
+/* ---------- Авторизация ---------- */
 function login() {
   auth.signInWithPopup(provider)
     .then(function(result) {
@@ -458,12 +616,9 @@ function login() {
 }
 
 function updateProfile(user) {
-  // Скрываем кнопку "Войти"
   document.getElementById("loginButton").style.display = "none";
   document.getElementById("authContainer").style.display = "none";
-
-  // Показываем профиль
-  document.getElementById("profileSection").style.display = "flex";
+  document.getElementById("profileSection").style.display = "flex"; // Показываем профиль на ПК
   document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
   document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
   document.getElementById("profileName").innerText = user.displayName;
@@ -485,19 +640,18 @@ function logout() {
   });
 }
 
+/* ---------- Модальное окно профиля ---------- */
 function showProfileModal() {
   document.getElementById("profileModal").style.display = "block";
-  document.getElementById("profileMenu").classList.remove("active");
+  var menu = document.getElementById("profileMenu");
+  if (menu) menu.classList.remove("active");
 }
-
 function closeProfileModal() {
   document.getElementById("profileModal").style.display = "none";
 }
-
 function editProfile() {
-  alert("Функция редактирования профиля пока не реализована.");
+  alert("Редактирование профиля пока не реализовано.");
 }
-
 window.onclick = function(event) {
   var modal = document.getElementById("profileModal");
   if (event.target == modal) {
@@ -505,24 +659,18 @@ window.onclick = function(event) {
   }
 };
 
-/* ---------------------------------
-   3. Переход на главную (логотип)
----------------------------------- */
+/* ---------- Переход на главную ---------- */
 function goToHomePage() {
-  // Если ваша страница со списком товаров называется index.html:
   window.location.href = "index.html";
 }
 
-/* ---------------------------------
-   4. Добавление товара в localStorage
----------------------------------- */
+/* ---------- Добавление товара в localStorage ---------- */
 const addForm = document.getElementById('addProductForm');
 addForm.addEventListener('submit', function(e) {
   e.preventDefault();
   let products = JSON.parse(localStorage.getItem('products')) || [];
-
   const newProduct = {
-    id: Date.now(), // простая генерация ID
+    id: Date.now(),
     category: document.getElementById('category').value,
     subcategory: document.getElementById('subcategory').value,
     name: document.getElementById('productName').value,
@@ -531,36 +679,11 @@ addForm.addEventListener('submit', function(e) {
     price: document.getElementById('price').value,
     stock: document.getElementById('stock').value
   };
-
   products.push(newProduct);
   localStorage.setItem('products', JSON.stringify(products));
-
   addForm.reset();
-  alert('Товар добавлен! Теперь он появится на соответствующей странице подкатегории.');
+  alert('Товар добавлен!');
 });
-
-
-const savedUser = localStorage.getItem("user");
-const user = JSON.parse(savedUser); // данные о текущем залогиненном пользователе
-
-const newProduct = {
-  id: Date.now(),
-  name: document.getElementById('productName').value,
-  description: document.getElementById('description').value,
-  price: document.getElementById('price').value,
-  stock: document.getElementById('stock').value,
-  
-  // Поля о продавце:
-  sellerUid: user.uid,
-  sellerEmail: user.email,
-  sellerPhotoURL: user.photoURL, 
-  sellerDisplayName: user.displayName,
-
-  // Если нужны отзывы
-  reviews: []
-};
-
 </script>
-
 </body>
 </html>
