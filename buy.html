@@ -212,6 +212,70 @@
     }
 
     /* Модальное окно профиля */
+    header {
+      background: linear-gradient(135deg, #3a3a3a, #222);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+  }
+  
+  .logo-button {
+      font-size: 32px;
+      font-weight: bold;
+      color: #ff7f50;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      transition: transform 0.3s, text-shadow 0.3s;
+  }
+  
+  .logo-button:hover {
+      transform: scale(1.1);
+      text-shadow: 3px 3px 6px rgba(255, 127, 80, 0.8);
+  }
+  
+  .search-container {
+      display: flex;
+      max-width: 500px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .search-input {
+      flex: 1;
+      padding: 12px 18px;
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 16px;
+      outline: none;
+  }
+  
+  .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .search-btn {
+      padding: 12px 20px;
+      border: none;
+      background: #ff7f50;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+      border-radius: 0 30px 30px 0;
+  }
+  
+  .search-btn:hover {
+      background: #ff4500;
+  }
+  
+    
+    
     .modal {
       display: none;
       position: fixed;
@@ -288,7 +352,7 @@
       transform: translateY(-50%);
   }
 
-  
+
     .bottom-nav a {
       text-decoration: none;
       color: #ccc;
