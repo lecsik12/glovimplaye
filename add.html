@@ -13,9 +13,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
   <style>
-    /* ========== ВАШ ИСХОДНЫЙ ДИЗАЙН ДЛЯ ПК ========== */
     * {
-      margin: 0; padding: 0; box-sizing: border-box;
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
     }
     body {
       font-family: Arial, sans-serif;
@@ -26,28 +27,35 @@
       color: #fff;
       padding: 20px;
     }
+
+    /* Хедер */
     header {
-      background: rgba(71, 68, 68, 0.85);
-      padding: 15px 30px;
+      background: linear-gradient(135deg, #3a3a3a, #222);
+      padding: 20px 40px;
       display: flex;
       align-items: center;
-      justify-content: space-between; /* Логотип слева, профиль справа */
-      flex-wrap: nowrap;
+      justify-content: space-between; 
+      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
       margin-bottom: 20px;
     }
     .logo-button {
       background: none;
       border: none;
-      color: #fff;
-      font-size: 28px;
+      color: #ff7f50;
+      font-size: 32px;
       font-weight: bold;
       cursor: pointer;
-      transition: color 0.3s, transform 0.3s;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      transition: color 0.3s, transform 0.3s, text-shadow 0.3s;
     }
     .logo-button:hover {
-      color: #ccc;
+      color: #fff;
       transform: scale(1.1);
+      text-shadow: 3px 3px 6px rgba(255, 127, 80, 0.8);
     }
+
+    /* Центр хедера */
     .header-center {
       flex: 1;
       display: flex;
@@ -59,36 +67,46 @@
       display: flex;
       max-width: 600px;
       width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
     }
     .search-input {
       flex: 1;
-      padding: 10px 15px;
+      padding: 12px 18px;
       border: none;
-      border-radius: 5px 0 0 5px;
-      font-size: 16px;
-    }
-    .search-btn {
-      padding: 10px 20px;
-      border: none;
-      background: #f5f3f3;
+      background: transparent;
       color: #fff;
       font-size: 16px;
-      border-radius: 0 5px 5px 0;
+      outline: none;
+    }
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    .search-btn {
+      padding: 12px 20px;
+      border: none;
+      background: #ff7f50;
+      color: #fff;
+      font-size: 16px;
       cursor: pointer;
       transition: background 0.3s;
+      border-radius: 0 30px 30px 0;
     }
     .search-btn:hover {
-      background: #f3f1f0;
+      background: #ff4500;
     }
 
-    /* Профиль в шапке (ПК) */
+    /* Профиль в хедере (ПК) */
     .profile {
       position: relative;
       display: flex;
       align-items: center;
     }
     .avatar {
-      width: 50px; height: 50px;
+      width: 50px; 
+      height: 50px;
       border-radius: 50%;
       cursor: pointer;
       border: 3px solid #fff;
@@ -100,7 +118,8 @@
     .profile-menu {
       display: none;
       position: absolute;
-      top: 60px; right: 0;
+      top: 60px; 
+      right: 0;
       background: #f9f8f8;
       color: #333;
       border-radius: 8px;
@@ -124,6 +143,26 @@
     .logout {
       color: red;
       font-weight: bold;
+    }
+
+    /* Блок рекламного баннера */
+    .ad-banner {
+      max-width: 1200px;
+      margin: 0 auto 20px auto;
+      background: linear-gradient(90deg, #ff7f50, #ff4500);
+      color: #fff;
+      text-align: center;
+      padding: 25px 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .ad-banner h2 {
+      margin-bottom: 8px;
+      font-size: 24px;
+    }
+    .ad-banner p {
+      margin-bottom: 0;
+      font-size: 16px;
     }
 
     /* Контейнер авторизации (если не залогинен) */
@@ -199,6 +238,7 @@
       text-align: center;
       color: #fff;
       margin-top: 30px;
+      border-radius: 8px;
     }
     .social-links a {
       margin: 0 10px;
@@ -212,76 +252,14 @@
     }
 
     /* Модальное окно профиля */
-    header {
-      background: linear-gradient(135deg, #3a3a3a, #222);
-      padding: 20px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-  }
-  
-  .logo-button {
-      font-size: 32px;
-      font-weight: bold;
-      color: #ff7f50;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s, text-shadow 0.3s;
-  }
-  
-  .logo-button:hover {
-      transform: scale(1.1);
-      text-shadow: 3px 3px 6px rgba(255, 127, 80, 0.8);
-  }
-  
-  .search-container {
-      display: flex;
-      max-width: 500px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 30px;
-      overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-  }
-  
-  .search-input {
-      flex: 1;
-      padding: 12px 18px;
-      border: none;
-      background: transparent;
-      color: #fff;
-      font-size: 16px;
-      outline: none;
-  }
-  
-  .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-  }
-  
-  .search-btn {
-      padding: 12px 20px;
-      border: none;
-      background: #ff7f50;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s;
-      border-radius: 0 30px 30px 0;
-  }
-  
-  .search-btn:hover {
-      background: #ff4500;
-  }
-  
-    
-    
     .modal {
       display: none;
       position: fixed;
       z-index: 100;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
+      left: 0; 
+      top: 0;
+      width: 100%; 
+      height: 100%;
       overflow: auto;
       background-color: rgba(0,0,0,0.6);
     }
@@ -301,7 +279,8 @@
     }
     .modal-close {
       position: absolute;
-      right: 15px; top: 15px;
+      right: 15px; 
+      top: 15px;
       font-size: 24px;
       cursor: pointer;
       color: #333;
@@ -310,7 +289,8 @@
       text-align: center;
     }
     .profile-details img {
-      width: 100px; height: 100px;
+      width: 100px; 
+      height: 100px;
       border-radius: 50%;
       border: 3px solid #ff7f50;
     }
@@ -319,20 +299,24 @@
       color: #ff7f50;
     }
     .profile-details p {
-      color: #666; margin: 0;
+      color: #666; 
+      margin: 0;
     }
     .edit-btn {
       margin-top: 20px;
       padding: 10px 20px;
-      background: #ff7f50; color: #fff;
-      border: none; border-radius: 5px;
-      cursor: pointer; transition: background 0.3s;
+      background: #ff7f50; 
+      color: #fff;
+      border: none; 
+      border-radius: 5px;
+      cursor: pointer; 
+      transition: background 0.3s;
     }
     .edit-btn:hover {
       background: #ff4500;
     }
 
-    /* ========== НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ) ========== */
+    /* НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ) */
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -344,15 +328,6 @@
       box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
       z-index: 9999;
     }
-
-    .search-bar {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      transform: translateY(-50%);
-  }
-
-
     .bottom-nav a {
       text-decoration: none;
       color: #ccc;
@@ -369,7 +344,7 @@
       color: #fff;
     }
 
-    /* ========== АДАПТИВНОСТЬ ========== */
+    /* АДАПТИВНОСТЬ */
     @media (max-width: 768px) {
       /* Прячем профиль сверху на телефоне */
       .profile {
@@ -383,36 +358,29 @@
       body {
         padding-bottom: 80px; 
       }
-    }
 
-    @media (max-width: 768px) {
       header {
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          padding: 15px;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 15px;
       }
-  
       .logo-button {
-          font-size: 24px;
-          margin-bottom: 10px;
+        font-size: 24px;
+        margin-bottom: 10px;
       }
-  
       .search-container {
-          width: 100%;
-          max-width: 90%;
+        width: 100%;
+        max-width: 90%;
       }
-  
       .search-input {
-          font-size: 14px;
-          padding: 10px;
+        font-size: 14px;
+        padding: 10px;
       }
-  
       .search-btn {
-          padding: 10px;
+        padding: 10px;
       }
-  }
-  
+    }
   </style>
 </head>
 <body>
@@ -439,6 +407,12 @@
     </div>
   </div>
 </header>
+
+<!-- Рекламный баннер -->
+<div class="ad-banner">
+  <h2>Специальная акция!</h2>
+  <p>Купите прямо сейчас и получите бонусы!</p>
+</div>
 
 <!-- Авторизация (если не залогинен) -->
 <div class="auth-container" id="authContainer">
@@ -499,7 +473,7 @@
   <p>© 2025 GlovimPlaye. Все права защищены.</p>
 </footer>
 
-<!-- ===== НИЖНЯЯ ПАНЕЛЬ (для мобильных) ===== -->
+<!-- НИЖНЯЯ ПАНЕЛЬ (для мобильных) -->
 <div class="bottom-nav">
   <a href="index.html">
     <i class="fas fa-search"></i>
@@ -532,7 +506,7 @@
   </div>
 </div>
 
-<!-- JS для поиска -->
+<!-- JS для поиска (пример) -->
 <script>
   function filterCategories() {
     let input = document.getElementById('searchInput').value.toLowerCase();
@@ -544,36 +518,32 @@
   
       cards.forEach(card => {
         let titleElement = card.querySelector('.subcategory');
-        // На всякий случай проверяем, что элемент существует
         if (!titleElement) return;
-  
         let title = titleElement.textContent.toLowerCase();
         if (title.includes(input)) {
-          card.style.display = 'block'; // Показываем совпадения
+          card.style.display = 'block';
           hasVisible = true;
         } else {
-          card.style.display = 'none'; // Прячем несоответствия
+          card.style.display = 'none';
         }
       });
   
-      // Если в секции нет видимых карточек, скрываем секцию
       section.style.display = hasVisible ? 'block' : 'none';
     });
   }
-  </script>
-
+</script>
 
 <script>
 /* ---------- Firebase конфиг ---------- */
-  // Firebase конфиг – замените данные на свои!
+  // Замените данные на свои!
   var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-    authDomain: "glovimplaye-b1023.firebaseapp.com",
-    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-    projectId: "glovimplaye-b1023",
-    storageBucket: "glovimplaye-b1023.firebasestorage.app",
-    messagingSenderId: "553440591519",
-    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    apiKey: "Ваш-API-ключ",
+    authDomain: "ваш-проект.firebaseapp.com",
+    databaseURL: "https://ваш-проект.firebaseio.com",
+    projectId: "ваш-проект",
+    storageBucket: "ваш-проект.appspot.com",
+    messagingSenderId: "номер",
+    appId: "appId"
   };
   // Инициализация Firebase
   firebase.initializeApp(firebaseConfig);
@@ -587,14 +557,7 @@
     if (savedUser) {
       updateProfile(JSON.parse(savedUser));
     }
-  });  
-/* ---------- При загрузке проверяем пользователя ---------- */
-document.addEventListener("DOMContentLoaded", function() {
-  var savedUser = localStorage.getItem("user");
-  if (savedUser) {
-    updateProfile(JSON.parse(savedUser));
-  }
-});
+  });
 
 /* ---------- Авторизация ---------- */
 function login() {
@@ -618,7 +581,7 @@ function login() {
 function updateProfile(user) {
   document.getElementById("loginButton").style.display = "none";
   document.getElementById("authContainer").style.display = "none";
-  document.getElementById("profileSection").style.display = "flex"; // Показываем профиль на ПК
+  document.getElementById("profileSection").style.display = "flex"; 
   document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
   document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
   document.getElementById("profileName").innerText = user.displayName;
