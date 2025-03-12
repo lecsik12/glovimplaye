@@ -13,478 +13,492 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
   <style>
-    /* ========== ВАШ ИСХОДНЫЙ ДИЗАЙН ДЛЯ ПК ========== */
-    * {
-      margin: 0; padding: 0; box-sizing: border-box;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
-      background-blend-mode: multiply;
-      background-color: #2b2a2a;
-      color: #fff;
-      padding: 20px;
-    }
-    header {
-      background: rgba(71, 68, 68, 0.85);
-      padding: 15px 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between; /* Логотип слева, профиль справа */
-      flex-wrap: nowrap;
-      margin-bottom: 20px;
-    }
-    .logo-button {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.3s, transform 0.3s;
-    }
-    .logo-button:hover {
-      color: #ccc;
-      transform: scale(1.1);
-    }
-    .header-center {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 10px 0;
-    }
-    .search-container {
-      display: flex;
-      max-width: 600px;
-      width: 100%;
-    }
-    .search-input {
-      flex: 1;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px 0 0 5px;
-      font-size: 16px;
-    }
-    .search-btn {
-      padding: 10px 20px;
-      border: none;
-      background: #f5f3f3;
-      color: #fff;
-      font-size: 16px;
-      border-radius: 0 5px 5px 0;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .search-btn:hover {
-      background: #f3f1f0;
-    }
-
-    /* Профиль в шапке (ПК) */
-    .profile {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    .avatar {
-      width: 50px; height: 50px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 3px solid #fff;
-      transition: transform 0.3s;
-    }
-    .avatar:hover {
-      transform: scale(1.1);
-    }
-    .profile-menu {
-      display: none;
-      position: absolute;
-      top: 60px; right: 0;
-      background: #f9f8f8;
-      color: #333;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      overflow: hidden;
-      z-index: 10;
-    }
-    .profile-menu.active {
-      display: block;
-    }
-    .profile-menu a {
-      display: block;
-      padding: 15px;
-      text-decoration: none;
-      color: #333;
-      transition: background 0.3s;
-    }
-    .profile-menu a:hover {
-      background: #f6f4f4;
-    }
-    .logout {
-      color: red;
-      font-weight: bold;
-    }
-
-    /* Контейнер авторизации (если не залогинен) */
-    .auth-container {
-      text-align: center;
-      margin: 50px 0;
-    }
-    .login-btn {
-      background: #fff;
-      color: #efedec;
-      border: none;
-      padding: 12px 30px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    .login-btn:hover {
-      background: #fbf8f7;
-      transform: translateY(-2px);
-    }
-
-    /* Основной контент */
-    main {
-      margin-top: 20px;
-    }
-    .container {
-      background: rgba(48, 44, 44, 0.85);
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-    .container h2 {
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    form#addProductForm {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    form#addProductForm input,
-    form#addProductForm select,
-    form#addProductForm textarea {
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
-    }
-    form#addProductForm textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-    form#addProductForm button {
-      padding: 10px 20px;
-      background: #ff7f50;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      color: #fff;
-      font-size: 16px;
-      transition: background 0.3s;
-    }
-    form#addProductForm button:hover {
-      background: #ff4500;
-    }
-
-    /* Футер */
-    footer {
-      background: rgba(71, 68, 68, 0.85);
-      padding: 20px;
-      text-align: center;
-      color: #fff;
-      margin-top: 30px;
-    }
-    .social-links a {
-      margin: 0 10px;
-      color: #fafbfb;
-      font-size: 24px;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    .social-links a:hover {
-      color: #ff4500;
-    }
-
-    /* Модальное окно профиля */
-    header {
-      background: linear-gradient(135deg, #3a3a3a, #222);
-      padding: 20px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-  }
-  
-  .logo-button {
-      font-size: 32px;
-      font-weight: bold;
-      color: #ff7f50;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      transition: transform 0.3s, text-shadow 0.3s;
-  }
-  
-  .logo-button:hover {
-      transform: scale(1.1);
-      text-shadow: 3px 3px 6px rgba(255, 127, 80, 0.8);
-  }
-  
-  .search-container {
-      display: flex;
-      max-width: 500px;
-      width: 100%;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 30px;
-      overflow: hidden;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-  }
-  
-  .search-input {
-      flex: 1;
-      padding: 12px 18px;
-      border: none;
-      background: transparent;
-      color: #fff;
-      font-size: 16px;
-      outline: none;
-  }
-  
-  .search-input::placeholder {
-      color: rgba(255, 255, 255, 0.6);
-  }
-  
-  .search-btn {
-      padding: 12px 20px;
-      border: none;
-      background: #ff7f50;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s;
-      border-radius: 0 30px 30px 0;
-  }
-  
-  .search-btn:hover {
-      background: #ff4500;
-  }
-  
-    
-    
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.6);
-    }
-    .modal-content {
-      background: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      position: relative;
-      animation: fadeIn 0.5s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .modal-close {
-      position: absolute;
-      right: 15px; top: 15px;
-      font-size: 24px;
-      cursor: pointer;
-      color: #333;
-    }
-    .profile-details {
-      text-align: center;
-    }
-    .profile-details img {
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      border: 3px solid #ff7f50;
-    }
-    .profile-details h2 {
-      margin: 10px 0 5px;
-      color: #ff7f50;
-    }
-    .profile-details p {
-      color: #666; margin: 0;
-    }
-    .edit-btn {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #ff7f50; color: #fff;
-      border: none; border-radius: 5px;
-      cursor: pointer; transition: background 0.3s;
-    }
-    .edit-btn:hover {
-      background: #ff4500;
-    }
-
-    }/* Категории */
-.categories-section {
-  padding: 20px;
-  background: transparent;
-  border-radius: 12px;
-  margin: 20px auto;
-  max-width: 90%;
-  text-align: center;
+ /* =============================
+   БАЗОВЫЕ СТИЛИ И СБРОС
+============================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: Arial, sans-serif;
+  background: #2b2a2a; /* Тёмный фон */
+  color: #fff;
+  min-height: 100vh;
+  margin: 0;
+  padding-bottom: 60px; /* Отступ под нижнюю панель */
 }
 
-.categories-section h2 {
-  font-size: 24px; /* Уменьшили размер заголовка */
-  margin-bottom: 20px;
+/* =============================
+   ШАПКА (HEADER)
+============================= */
+header {
+  width: 100%;
+  background: #1f1f1f; /* Ещё темнее */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+/* Логотип (слева) */
+.logo-button {
+  background: none;
+  border: none;
+  color: #ff7f50; /* Оранжевый акцент */
+  font-size: 26px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.3s;
+}
+.logo-button:hover {
+  color: #ff4500;
+  transform: scale(1.05);
+}
+
+/* Центр шапки: можно вставить категории, если нужно
+   либо оставить пустым (header-center).
+*/
+.header-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Поисковая строка */
+.search-container {
+  display: flex;
+  background: rgba(255,255,255,0.1);
+  border-radius: 30px;
+  overflow: hidden;
+  border: 2px solid rgba(255,255,255,0.2);
+  max-width: 400px;
+  width: 100%;
+}
+.search-input {
+  flex: 1;
+  padding: 10px 15px;
+  border: none;
+  background: transparent;
   color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+.search-input::placeholder {
+  color: rgba(255,255,255,0.6);
+}
+.search-btn {
+  padding: 10px 20px;
+  background: #ff7f50;
+  color: #fff;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.search-btn:hover {
+  background: #ff4500;
+}
+
+/* Профиль (справа, только ПК) */
+.profile {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.avatar:hover {
+  transform: scale(1.1);
+}
+.profile-menu {
+  display: none;
+  position: absolute;
+  top: 50px; 
+  right: 0;
+  background: #f9f8f8;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  overflow: hidden;
+  z-index: 10;
+}
+.profile-menu.active {
+  display: block;
+}
+.profile-menu a {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.3s;
+}
+.profile-menu a:hover {
+  background: #f6f4f4;
+}
+.logout {
+  color: red;
+  font-weight: bold;
+}
+
+/* =============================
+   АВТОРИЗАЦИЯ
+============================= */
+.auth-container {
+  text-align: center;
+  margin: 20px 0;
+}
+.login-btn {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+.login-btn:hover {
+  background: #ff7f50;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* =============================
+   КАТЕГОРИИ (Игры, Приложения)
+============================= */
+.categories-section {
+  padding: 15px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.categories-section h2 {
+  font-size: 22px;
   font-weight: 700;
-}.categories-container {
+  margin-bottom: 15px;
+  text-align: center;
+}
+.categories-container {
   display: flex;
   flex-wrap: wrap;
+  gap: 15px;
   justify-content: center;
-  gap: 10px; /* Еще меньше отступы между карточками */
 }
-
 .category-card {
-  width: 90px; /* Уменьшили размер карточки */
+  width: 100px;
   text-align: center;
-  transition: transform 0.2s;
   cursor: pointer;
+  transition: transform 0.2s;
 }
-    .category-card img {
-      width: 80px; /* Меньше ширина изображения */
-      height: 80px; /* Меньше высота изображения */
-      object-fit: cover;
-      border-radius: 8px; /* Уменьшенные округлые углы */
-    }
-    
-    .category-card .subcategory {
-      margin-top: 6px; /* Меньше отступ под изображением */
-      font-size: 12px; /* Уменьшенный размер текста */
-      color: #e0e0e0;
-      font-weight: 600;
-      text-decoration: none; /* Убираем подчеркивание */
-    }
+.category-card:hover {
+  transform: scale(1.05);
+}
+.category-card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 5px;
+}
+.category-card .subcategory {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
 
-    /* ========== НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ) ========== */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 60px;
-      background: #1e1e1e;
-      display: none; /* По умолчанию скрыто (для ПК) */
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
-      z-index: 9999;
-    }
+/* =============================
+   РЕКЛАМНЫЙ БАННЕР
+============================= */
+.advertisement {
+  margin: 20px auto;
+  max-width: 1200px;
+  text-align: center;
+}
+.advertisement img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
 
-    .search-bar {
-      position: absolute;
-      top: 50%;
-      right: 10px;
-      transform: translateY(-50%);
+/* =============================
+   ОСНОВНОЙ КОНТЕНТ
+============================= */
+main {
+  margin-top: 20px;
+}
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: rgba(48, 44, 44, 0.85);
+  padding: 20px;
+  border-radius: 8px;
+}
+.container h2 {
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 20px;
+}
+
+/* Форма добавления товара */
+form#addProductForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+form#addProductForm input,
+form#addProductForm select,
+form#addProductForm textarea {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+form#addProductForm textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+form#addProductForm button {
+  padding: 10px 20px;
+  background: #ff7f50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+form#addProductForm button:hover {
+  background: #ff4500;
+}
+
+/* =============================
+   ФУТЕР
+============================= */
+footer {
+  background: #1f1f1f;
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+  margin-top: 30px;
+}
+.social-links a {
+  margin: 0 10px;
+  color: #fafbfb;
+  font-size: 24px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.social-links a:hover {
+  color: #ff4500;
+}
+
+/* =============================
+   МОДАЛЬНОЕ ОКНО ПРОФИЛЯ
+============================= */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0; top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+}
+.modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  animation: fadeIn 0.5s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal-close {
+  position: absolute;
+  right: 15px; 
+  top: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+.profile-details {
+  text-align: center;
+}
+.profile-details img {
+  width: 100px; 
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #ff7f50;
+}
+.profile-details h2 {
+  margin: 10px 0 5px;
+  color: #ff7f50;
+}
+.profile-details p {
+  color: #666; 
+  margin: 0;
+}
+.edit-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #ff7f50; 
+  color: #fff;
+  border: none; 
+  border-radius: 5px;
+  cursor: pointer; 
+  transition: background 0.3s;
+}
+.edit-btn:hover {
+  background: #ff4500;
+}
+
+/* =============================
+   НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ)
+============================= */
+.bottom-nav {
+  display: none; /* По умолчанию скрыта (на ПК) */
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: #1e1e1e;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+  z-index: 999;
+}
+.bottom-nav a {
+  text-decoration: none;
+  color: #ccc;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.bottom-nav a i {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+.bottom-nav a:hover {
+  color: #fff;
+}
+
+/* =============================
+   АДАПТИВНОСТЬ
+============================= */
+/* Мобильные (до 768px) */
+@media (max-width: 768px) {
+  /* Шапка: логотип по центру, профиль скрыт */
+  header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+  }
+  .logo-button {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+  .header-center {
+    margin-bottom: 10px;
+  }
+  .search-container {
+    max-width: 100%;
+    width: 90%;
+    margin: 0 auto;
+  }
+  .profile {
+    display: none;
   }
 
-
-    .bottom-nav a {
-      text-decoration: none;
-      color: #ccc;
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .bottom-nav a i {
-      font-size: 20px;
-      margin-bottom: 2px;
-    }
-    .bottom-nav a:hover {
-      color: #fff;
-    }
-
-    /* ========== АДАПТИВНОСТЬ ========== */
-    @media (max-width: 768px) {
-      /* Прячем профиль сверху на телефоне */
-      .profile {
-        display: none !important; 
-      }
-      /* Показываем нижнюю панель */
-      .bottom-nav {
-        display: flex; 
-      }
-      /* Чтобы контент не залез под панель */
-      body {
-        padding-bottom: 80px; 
-      }
-    }
-
-    @media (max-width: 480px) {
-      .categories-section {
-        padding: 10px;
-        margin: 10px auto;
-      }
-    
-      .categories-section h2 {
-        font-size: 18px;      /* Уменьшаем заголовок */
-        margin-bottom: 10px;  /* Меньше отступ */
-      }
-    
-      .categories-container {
-        gap: 5px;             /* Сокращаем промежутки между карточками */
-      }
-    
-      .category-card {
-        width: 70px;          /* Еще меньше ширина карточки */
-      }
-    
-      .category-card img {
-        width: 60px;          /* Меньше изображение */
-        height: 60px;
-      }
-    
-      .category-card .subcategory {
-        font-size: 10px;      /* Сокращаем размер шрифта */
-        margin-top: 4px;      /* Меньше отступ над текстом */
-      }
-    }
-
-    @media (max-width: 768px) {
-      header {
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-          padding: 15px;
-      }
-  
-      .logo-button {
-          font-size: 24px;
-          margin-bottom: 10px;
-      }
-  
-      .search-container {
-          width: 100%;
-          max-width: 90%;
-      }
-  
-      .search-input {
-          font-size: 14px;
-          padding: 10px;
-      }
-  
-      .search-btn {
-          padding: 10px;
-      }
+  /* Показываем нижнюю панель */
+  .bottom-nav {
+    display: flex;
   }
+
+  /* Контейнер категорий: упрощаем */
+  .categories-section {
+    padding: 10px;
+  }
+  .categories-container {
+    gap: 10px;
+    justify-content: center;
+  }
+  .category-card {
+    width: 80px;
+  }
+  .category-card img {
+    width: 60px;
+    height: 60px;
+  }
+  .category-card .subcategory {
+    font-size: 11px;
+  }
+
+  /* Основной контент на всю ширину */
+  .container {
+    max-width: 100%;
+    margin-top: 0;
+    padding: 15px;
+  }
+
+  /* Форма */
+  form#addProductForm input,
+  form#addProductForm select,
+  form#addProductForm textarea {
+    font-size: 12px;
+  }
+  form#addProductForm button {
+    font-size: 14px;
+  }
+}
+
+/* Очень маленькие экраны (до 480px) */
+@media (max-width: 480px) {
+  .logo-button {
+    font-size: 18px;
+  }
+  .search-container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .search-input {
+    font-size: 12px;
+    padding: 8px;
+  }
+  .search-btn {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .category-card {
+    width: 70px;
+  }
+  .category-card img {
+    width: 50px;
+    height: 50px;
+  }
+  .category-card .subcategory {
+    font-size: 10px;
+  }
+}
+
   
   </style>
 </head>
@@ -605,6 +619,14 @@
       </a>
     </div>
   </div>
+
+  <div class="advertisement">
+    <img src="images/avatar.png" alt="Реклама">
+</div>
+
+<div class="advertisement">
+  <img src="images/avatar.png" alt="Реклама">
+</div>
 </div>
 <!-- Модальное окно профиля -->
 <div id="profileModal" class="modal">
