@@ -2,98 +2,169 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Настройки | GlovimPlaye</title>
+  <title>GlovimPlaye | PlayerOK-стиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
   <style>
-    /* Сброс стилей */
+    /* СБРОС */
     * {
-      margin: 0;
-      padding: 0;
+      margin: 0; 
+      padding: 0; 
       box-sizing: border-box;
     }
-    /* Фон и базовая стилизация */
     body {
       font-family: Arial, sans-serif;
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
-      background-blend-mode: multiply;
-      background-color: #2b2a2a;
+      background: #131313; /* Ещё более тёмный фон, как в PlayerOK */
       color: #fff;
+      min-height: 100vh;
+      margin: 0;
+      padding-bottom: 70px; /* Отступ под нижнюю панель */
     }
-    /* Хедер */
-    header {
-      background: rgba(71,68,68,0.85);
-      padding: 15px 30px;
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* ===== ВЕРХНЯЯ ПАНЕЛЬ (ЛОГО + РЕЙТИНГ) ===== */
+    .top-bar {
+      background: #1f1f1f;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
+      padding: 10px 15px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
     }
-    .logo-button {
-      background: none;
-      border: none;
-      color: #fff; /* Цвет текста */
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.3s, transform 0.3s;
-    }
-    
-    .logo-button:hover {
-      color: #ccc; /* Цвет при наведении */
-      transform: scale(1.1);
-    }
-  
-    /* Поисковая строка в хедере */
-    .header-center {
-      flex: 1;
+    .logo-rating {
       display: flex;
-      justify-content: center;
       align-items: center;
-      margin: 10px 0;
+      gap: 10px;
     }
-    .search-container {
+    .logo-text {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ff7f50;
+      cursor: pointer;
+    }
+    .rating {
+      font-size: 12px;
+      color: #fff;
+      opacity: 0.7;
+    }
+
+    /* Большое поле поиска */
+    .search-wrapper {
+      padding: 10px 15px;
+      background: #131313; /* основной фон */
+    }
+    .search-bar {
       display: flex;
-      max-width: 600px;
-      width: 100%;
+      background: #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .search-input {
       flex: 1;
       padding: 10px 15px;
       border: none;
-      border-radius: 5px 0 0 5px;
-      font-size: 16px;
+      background: transparent;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.6);
     }
     .search-btn {
-      padding: 10px 20px;
-      border: none;
-      background: #f5f3f3;
+      padding: 10px 15px;
+      background: #ff7f50;
       color: #fff;
-      font-size: 16px;
-      border-radius: 0 5px 5px 0;
+      font-size: 14px;
+      border: none;
       cursor: pointer;
       transition: background 0.3s;
     }
     .search-btn:hover {
-      background: #f3f1f0;
+      background: #ff4500;
     }
-    /* Блок профиля */
-    .profile {
-      position: relative;
+
+    /* Кнопки категорий (Донат, Аккаунты, Предметы) */
+    .categories-row {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+      background: #131313;
+    }
+    .categories-row button {
+      background: #2a2a2a;
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .categories-row button:hover {
+      background: #3a3a3a;
+    }
+
+    /* Зелёный баннер (пример) */
+    .green-banner {
+      background: #0eb030; /* Примерно зелёный */
+      margin: 10px;
+      border-radius: 8px;
+      padding: 15px;
       display: flex;
       align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .green-banner h2 {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    /* Авторизация (если не залогинен) */
+    .auth-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .login-btn {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .login-btn:hover {
+      background: #ff7f50;
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    /* Профиль (скрыт на мобильном) */
+    .profile {
+      display: flex;
+      align-items: center;
+      position: relative;
     }
     .avatar {
-      width: 50px;
-      height: 50px;
+      width: 40px; 
+      height: 40px;
       border-radius: 50%;
+      border: 2px solid #fff;
       cursor: pointer;
-      border: 3px solid #fff;
       transition: transform 0.3s;
     }
     .avatar:hover {
@@ -102,7 +173,7 @@
     .profile-menu {
       display: none;
       position: absolute;
-      top: 60px;
+      top: 50px; 
       right: 0;
       background: #f9f8f8;
       color: #333;
@@ -116,7 +187,7 @@
     }
     .profile-menu a {
       display: block;
-      padding: 15px;
+      padding: 10px 15px;
       text-decoration: none;
       color: #333;
       transition: background 0.3s;
@@ -128,86 +199,64 @@
       color: red;
       font-weight: bold;
     }
-    /* Контейнер авторизации */
-    .auth-container {
-      text-align: center;
-      margin: 50px 0;
-    }
-    .login-btn {
-      background: #fff;
-      color: #efedec;
-      border: none;
-      padding: 12px 30px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    .login-btn:hover {
-      background: #fbf8f7;
-      transform: translateY(-2px);
-    }
-    /* Основной контент – Настройки */
-    main {
-      padding: 20px;
-      max-width: 800px;
+
+    /* Раздел «Игры» / «Приложения» */
+    .categories-section {
+      padding: 15px;
+      max-width: 1200px;
       margin: 0 auto;
     }
-    .settings-section {
-      background: rgba(48,44,44,0.9);
-      padding: 20px;
-      border-radius: 12px;
-      margin-top: 20px;
-    }
-    .settings-section h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
+    .categories-section h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 15px;
       text-align: center;
     }
-    .settings-item {
-      margin-bottom: 20px;
+    .categories-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
     }
-    .settings-item label {
-      display: block;
-      font-size: 18px;
+    .category-card {
+      width: 100px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .category-card:hover {
+      transform: scale(1.05);
+    }
+    .category-card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
       margin-bottom: 5px;
     }
-    .settings-item input, .settings-item select {
-      width: 100%;
-      padding: 10px;border-radius: 8px;
-      border: none;
-      font-size: 16px;
+    .category-card .subcategory {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e0e0e0;
     }
-    .settings-actions {
+
+    /* Пример баннеров (реклама) */
+    .advertisement {
+      margin: 20px auto;
+      max-width: 1200px;
       text-align: center;
-      margin-top: 20px;
     }
-    .settings-actions button {
-      padding: 10px 20px;
-      margin: 0 10px;
-      border: none;
+    .advertisement img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
       border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
-    .save-btn {
-      background: #4caf50;
-      color: #fff;
-    }
-    .save-btn:hover {
-      background: #43a047;
-    }
-    .cancel-btn {
-      background: #f44336;
-      color: #fff;
-    }
-    .cancel-btn:hover {
-      background: #e53935;
-    }
+
     /* Футер */
     footer {
-      background: rgba(71,68,68,0.85);
+      background: #1f1f1f;
       padding: 20px;
       text-align: center;
       color: #fff;
@@ -223,14 +272,14 @@
     .social-links a:hover {
       color: #ff4500;
     }
-    /* Стили модального окна профиля */
+
+    /* Модальное окно профиля */
     .modal {
       display: none;
       position: fixed;
       z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
+      left: 0; top: 0;
+      width: 100%; 
       height: 100%;
       overflow: auto;
       background-color: rgba(0,0,0,0.6);
@@ -251,7 +300,7 @@
     }
     .modal-close {
       position: absolute;
-      right: 15px;
+      right: 15px; 
       top: 15px;
       font-size: 24px;
       cursor: pointer;
@@ -261,7 +310,7 @@
       text-align: center;
     }
     .profile-details img {
-      width: 100px;
+      width: 100px; 
       height: 100px;
       border-radius: 50%;
       border: 3px solid #ff7f50;
@@ -271,216 +320,292 @@
       color: #ff7f50;
     }
     .profile-details p {
-      color: #666;
+      color: #666; 
       margin: 0;
     }
     .edit-btn {
       margin-top: 20px;
       padding: 10px 20px;
-      background: #ff7f50;
+      background: #ff7f50; 
       color: #fff;
-      border: none;
+      border: none; 
       border-radius: 5px;
-      cursor: pointer;
+      cursor: pointer; 
       transition: background 0.3s;
     }
     .edit-btn:hover {
       background: #ff4500;
     }
+
+    /* НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ) */
+    .bottom-nav {
+      display: none; /* На ПК скрыта */
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: #1e1e1e;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+    .bottom-nav a {
+      text-decoration: none;
+      color: #ccc;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a i {
+      font-size: 20px;
+      margin-bottom: 2px;
+    }
+    .bottom-nav a:hover {
+      color: #fff;
+    }
+
+    /* ====== АДАПТИВНОСТЬ (МОБИЛЬНАЯ) ====== */
+    @media (max-width: 768px) {
+      /* Прячем профиль сверху */
+      .profile {
+        display: none;
+      }
+      /* Показываем нижнюю панель */
+      .bottom-nav {
+        display: flex;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- Хедер -->
-  <header>
-    <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
-    <div class="header-center">
-      <div class="search-container">
-        <input type="text" class="search-input" placeholder="Поиск товаров...">
-        <button class="search-btn">Поиск</button>
-      </div>
-    </div>
-    <div class="profile" id="profileSection" style="display:none;">
-      <img id="avatar" class="avatar" src="" alt="Avatar" onclick="toggleProfileMenu()">
-      <div class="profile-menu" id="profileMenu">
-        <a href="#" onclick="showProfileModal()">Мой профиль</a>
-        <a href="#">Заказы</a>
-        <a href="settings.html">Настройки</a>
-        <a href="#">Чат</a>
-        <a href="#">Уведомления</a>
-        <a href="#" class="logout" onclick="logout()">Выйти</a>
-      </div>
-    </div>
-  </header>
-  
-  <!-- Контейнер авторизации (если пользователь не залогинен) -->
-  <div class="auth-container" id="authContainer">
-    <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
-  </div>
-  
-  <!-- Основной контент: Настройки -->
-  <main>
-    <div class="settings-section">
-      <h1>Настройки</h1>
-      <div class="settings-item">
-        <label for="displayName">Имя пользователя:</label>
-        <input type="text" id="displayName" placeholder="Введите имя пользователя">
-      </div>
-      <div class="settings-item">
-        <label for="emailNotifications">Уведомления по электронной почте:</label><select id="emailNotifications">
-            <option value="enabled">Включены</option>
-            <option value="disabled">Отключены</option>
-          </select>
-        </div>
-        <div class="settings-item">
-          <label for="theme">Тема:</label>
-          <select id="theme">
-            <option value="light">Светлая</option>
-            <option value="dark">Тёмная</option>
-          </select>
-        </div>
-        <div class="settings-actions">
-          <button class="save-btn" onclick="saveSettings()">Сохранить</button>
-          <button class="cancel-btn" onclick="cancelSettings()">Отмена</button>
-        </div>
-      </div>
-    </main>
-    
-    <!-- Футер -->
-    <footer>
-      <div class="social-links">
-        <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-        <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-        <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-        <p>© 2025 GlovimPlaye. Все права защищены.</p>
-      </div>
-    </footer>
-    
-    <!-- Модальное окно профиля -->
-    <div id="profileModal" class="modal">
-      <div class="modal-content">
-        <span class="modal-close" onclick="closeProfileModal()">&times;</span>
-        <div class="profile-details">
-          <img id="modalAvatar" src="" alt="Avatar">
-          <h2 id="profileName"></h2>
-          <p id="profileEmail"></p>
-          <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
-        </div>
-      </div>
-    </div>
-    
-    <script>
-      // Firebase конфиг – замените данные на свои!
-      var firebaseConfig = {
-        apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-        authDomain: "glovimplaye-b1023.firebaseapp.com",
-        databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-        projectId: "glovimplaye-b1023",
-        storageBucket: "glovimplaye-b1023.firebasestorage.app",
-        messagingSenderId: "553440591519",
-        appId: "1:553440591519:web:b7be45a9253689f322acaa"
-      };
-      firebase.initializeApp(firebaseConfig);
-      
-      var auth = firebase.auth();
-      var provider = new firebase.auth.GoogleAuthProvider();
-      
-      document.addEventListener("DOMContentLoaded", function() {
-        var savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          updateProfile(JSON.parse(savedUser));
-        }
-      });
-      
-      function login() {
-        auth.signInWithPopup(provider)
-          .then(function(result) {
-            var user = result.user;
-            var userData = {
-              uid: user.uid,
-              photoURL: user.photoURL,
-              displayName: user.displayName,
-              email: user.email
-            };
-            localStorage.setItem("user", JSON.stringify(userData));
-            updateProfile(userData);
-          })
-          .catch(function(error) {
-            console.error("Ошибка входа:", error);
-          });
-      }
-      
-      function updateProfile(user) {
-        document.getElementById("loginButton").style.display = "none";
-        document.getElementById("authContainer").style.display = "none";
-        document.getElementById("profileSection").style.display = "flex";
-        document.getElementById("avatar").src = user.photoURL;
-        document.getElementById("modalAvatar").src = user.photoURL;
-        document.getElementById("profileName").innerText = user.displayName;
-        document.getElementById("profileEmail").innerText = user.email;
-        // Если есть окно чата – обновляем его данные
-        var chatAvatar = document.getElementById("chatAvatar");
-        if (chatAvatar) {
-          chatAvatar.src = user.photoURL;
-          document.getElementById("chatName").innerText = user.displayName;
-        }
-        // Можно установить текущие значения настроек, например:
-        // document.getElementById("displayName").value = user.displayName;
-      }
-      
-      function toggleProfileMenu() {
-        document.getElementById("profileMenu").classList.toggle("active");
-      }
-      
-      function logout() {
-        auth.signOut().then(function() {
-          localStorage.removeItem("user");
-          document.getElementById("loginButton").style.display = "block";
-          document.getElementById("authContainer").style.display = "block";
-          document.getElementById("profileSection").style.display = "none";
-        }).catch(function(error) {
-          console.error("Ошибка выхода:", error);
-        });
-      }
-      
-      function showProfileModal() {
-        document.getElementById("profileModal").style.display = "block";
-        document.getElementById("profileMenu").classList.remove("active");
-      }
-      
-      function closeProfileModal() {
-        document.getElementById("profileModal").style.display = "none";
-      }
-      
-      function editProfile() {
-        alert("Функция редактирования профиля пока не реализована.");
-      }
-      
-      // Функции для настроек
-      function saveSettings() {
-        var newDisplayName = document.getElementById("displayName").value;
-        var emailNotifications = document.getElementById("emailNotifications").value;
-        var theme = document.getElementById("theme").value;
-        // Здесь можно сохранить настройки в базу данных или localStorage
-        alert("Настройки сохранены:\nИмя: " + newDisplayName +
-              "\nУведомления: " + emailNotifications +
-              "\nТема: " + theme);
-      }
-      
-      function cancelSettings() {
-        // Сброс формы или перезагрузка страницы
-        location.reload();
-      }
-      
-      window.onclick = function(event) {
-        var modal = document.getElementById("profileModal");
-        if (event.target == modal) {
-          modal.style.display = "none";
-        }
-      };
 
-      function goToHomePage() {
-        window.location.href = "index.html"; // Или укажите нужный URL
-      }
-    </script>
-  </body>
-  </html>
+<!-- ========== Верхняя панель (логотип + рейтинг) ========== -->
+<div class="top-bar">
+  <div class="logo-rating">
+    <div class="logo-text" onclick="goToHomePage()">GlovimPlaye</div>
+    <div class="rating">⭐ 5.0 10,1 млн</div>
+  </div>
+
+  <!-- Профиль (только на ПК) -->
+  <div class="profile" id="profileSection" style="display:none;">
+    <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
+    <div class="profile-menu" id="profileMenu">
+      <a href="#" onclick="showProfileModal()">Мой профиль</a>
+      <a href="#">Заказы</a>
+      <a href="settings.html">Настройки</a>
+      <a href="#">Чат</a>
+      <a href="#">Уведомления</a>
+      <a href="pr.html">Правила</a>
+      <a href="#" class="logout" onclick="logout()">Выйти</a>
+    </div>
+  </div>
+</div>
+
+<!-- ========== Большое поле поиска ========== -->
+<div class="search-wrapper">
+  <div class="search-bar">
+    <input type="text" class="search-input" placeholder="Поиск игр и приложений..." />
+    <button class="search-btn">Поиск</button>
+  </div>
+</div>
+
+<!-- ========== Кнопки категорий (как на PlayerOK) ========== -->
+<div class="categories-row">
+  <button>Донат</button>
+  <button>Аккаунты</button>
+  <button>Предметы</button>
+</div>
+
+<!-- ========== Зелёный баннер (пример) ========== -->
+<div class="green-banner">
+  <h2>Комиссия в 2 раза ниже! Стань продавцом</h2>
+</div>
+
+<!-- Авторизация (если не залогинен) -->
+<div class="auth-container" id="authContainer">
+  <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
+</div>
+
+<!-- Раздел «Игры» -->
+<div class="categories-section">
+  <h2>Игры</h2>
+  <div class="categories-container">
+    <!-- Ваши карточки -->
+    <a href="#" class="category-card">
+      <img src="images/cal of duty.jpg" alt="Игра 1">
+      <div class="subcategory">Call of Duty</div>
+    </a>
+    <a href="csgo.html" class="category-card">
+      <img src="images/csgo.jpg" alt="CS:GO">
+      <div class="subcategory">Counter-Strike</div>
+    </a>
+    <a href="index.html" class="category-card">
+      <img src="images/dota.jpg" alt="Dota 2">
+      <div class="subcategory">Dota 2</div>
+    </a>
+    <!-- Добавьте остальные по аналогии... -->
+  </div>
+</div>
+
+<!-- Раздел «Приложения» -->
+<div class="categories-section">
+  <h2>Приложения</h2>
+  <div class="categories-container">
+    <a href="#" class="category-card">
+      <img src="images/diccord.jpg" alt="Discord">
+      <div class="subcategory">Discord</div>
+    </a>
+    <a href="#" class="category-card">
+      <img src="images/epgems.jpg" alt="Epic Gems">
+      <div class="subcategory">Epic Gems</div>
+    </a>
+    <a href="#" class="category-card">
+      <img src="images/netflix.png" alt="Netflix">
+      <div class="subcategory">Netflix</div>
+    </a>
+    <!-- Добавьте остальные... -->
+  </div>
+</div>
+
+<!-- Пример баннеров-рекламы -->
+<div class="advertisement">
+  <img src="images/avatar.png" alt="Реклама 1">
+</div>
+<div class="advertisement">
+  <img src="images/avatar.png" alt="Реклама 2">
+</div>
+
+<!-- Футер -->
+<footer>
+  <div class="social-links">
+    <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+    <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+  </div>
+  <p>© 2025 GlovimPlaye. Все права защищены.</p>
+</footer>
+
+<!-- НИЖНЯЯ ПАНЕЛЬ (для мобильных) -->
+<div class="bottom-nav">
+  <a href="index.html">
+    <i class="fas fa-search"></i>
+    <span>Поиск</span>
+  </a>
+  <a href="add.html">
+    <i class="fas fa-plus"></i>
+    <span>Продать</span>
+  </a>
+  <a href="#">
+    <i class="fas fa-comments"></i>
+    <span>Чаты</span>
+  </a>
+  <a href="#" onclick="showProfileModal()">
+    <i class="fas fa-user"></i>
+    <span>Профиль</span>
+  </a>
+</div>
+
+<!-- Модальное окно профиля -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
+    <div class="profile-details">
+      <img id="modalAvatar" src="default-avatar.png" alt="Avatar">
+      <h2 id="profileName"></h2>
+      <p id="profileEmail"></p>
+      <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== ВАШИ СКРИПТЫ (Firebase, Авторизация, итд.) ========== -->
+<script>
+  // Firebase конфиг – замените на свои данные
+  var firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "YOUR_ID",
+    appId: "YOUR_APP_ID"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  var auth = firebase.auth();
+  var provider = new firebase.auth.GoogleAuthProvider();
+
+  document.addEventListener("DOMContentLoaded", function(){
+    var savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      updateProfile(JSON.parse(savedUser));
+    }
+  });
+
+  function login() {
+    auth.signInWithPopup(provider)
+      .then(function(result) {
+        var user = result.user;
+        var userData = {
+          uid: user.uid,
+          photoURL: user.photoURL,
+          displayName: user.displayName,
+          email: user.email
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        updateProfile(userData);
+      })
+      .catch(function(error) {
+        console.error("Ошибка входа:", error);
+      });
+  }
+
+  function updateProfile(user) {
+    document.getElementById("loginButton").style.display = "none";
+    document.getElementById("authContainer").style.display = "none";
+    document.getElementById("profileSection").style.display = "flex";
+    document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
+    document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
+    document.getElementById("profileName").innerText = user.displayName;
+    document.getElementById("profileEmail").innerText = user.email;
+  }
+
+  function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("active");
+  }
+
+  function logout() {
+    auth.signOut().then(function() {
+      localStorage.removeItem("user");
+      document.getElementById("loginButton").style.display = "block";
+      document.getElementById("authContainer").style.display = "block";
+      document.getElementById("profileSection").style.display = "none";
+    }).catch(function(error) {
+      console.error("Ошибка выхода:", error);
+    });
+  }
+
+  function showProfileModal() {
+    document.getElementById("profileModal").style.display = "block";
+    var menu = document.getElementById("profileMenu");
+    if (menu) menu.classList.remove("active");
+  }
+  function closeProfileModal() {
+    document.getElementById("profileModal").style.display = "none";
+  }
+  function editProfile() {
+    alert("Редактирование профиля пока не реализовано.");
+  }
+  window.onclick = function(event) {
+    var modal = document.getElementById("profileModal");
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  function goToHomePage() {
+    window.location.href = "index.html";
+  }
+</script>
+</body>
+</html>
