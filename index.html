@@ -41,10 +41,11 @@ header {
   justify-content: space-between;
   padding: 15px 20px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  border-radius: 0 0 8px 8px;
   position: relative;
 }
 
-/* Логотип слева (ПК) */
+/* Логотип слева */
 .logo-button {
   background: none;
   border: none;
@@ -59,7 +60,7 @@ header {
   transform: scale(1.05);
 }
 
-/* Поисковая строка (ПК) */
+/* Поисковая строка (по центру) */
 .search-container {
   display: flex;
   background: rgba(255,255,255,0.1);
@@ -95,7 +96,7 @@ header {
   background: #ff4500;
 }
 
-/* Профиль (ПК) */
+/* Профиль (справа, только на ПК) */
 .profile {
   display: flex;
   align-items: center;
@@ -143,10 +144,229 @@ header {
 }
 
 /* =============================
+   АВТОРИЗАЦИЯ
+============================= */
+.auth-container {
+  text-align: center;
+  margin: 20px 0;
+}
+.login-btn {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+.login-btn:hover {
+  background: #ff7f50;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* =============================
+   КАТЕГОРИИ
+============================= */
+.categories-section {
+  padding: 15px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.categories-section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: center;
+}
+.categories-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+.category-card {
+  width: 100px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.category-card:hover {
+  transform: scale(1.05);
+}
+.category-card img {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 5px;
+}
+.category-card .subcategory {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+/* =============================
+   РЕКЛАМНЫЙ БАННЕР
+============================= */
+.advertisement {
+  margin: 20px auto;
+  max-width: 1200px;
+  text-align: center;
+}
+.advertisement img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* =============================
+   ОСНОВНОЙ КОНТЕНТ
+============================= */
+main {
+  margin-top: 20px;
+}
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: rgba(48, 44, 44, 0.85);
+  padding: 20px;
+  border-radius: 8px;
+}
+.container h2 {
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 20px;
+}
+
+/* Форма добавления товара */
+form#addProductForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+form#addProductForm input,
+form#addProductForm select,
+form#addProductForm textarea {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+form#addProductForm textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+form#addProductForm button {
+  padding: 10px 20px;
+  background: #ff7f50;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+  transition: background 0.3s;
+}
+form#addProductForm button:hover {
+  background: #ff4500;
+}
+
+/* =============================
+   ФУТЕР
+============================= */
+footer {
+  background: #1f1f1f;
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+  margin-top: 30px;
+}
+.social-links a {
+  margin: 0 10px;
+  color: #fafbfb;
+  font-size: 24px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.social-links a:hover {
+  color: #ff4500;
+}
+
+/* =============================
+   МОДАЛЬНОЕ ОКНО ПРОФИЛЯ
+============================= */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0; top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+}
+.modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  animation: fadeIn 0.5s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal-close {
+  position: absolute;
+  right: 15px; 
+  top: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+.profile-details {
+  text-align: center;
+}
+.profile-details img {
+  width: 100px; 
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #ff7f50;
+}
+.profile-details h2 {
+  margin: 10px 0 5px;
+  color: #ff7f50;
+}
+.profile-details p {
+  color: #666; 
+  margin: 0;
+}
+.edit-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #ff7f50; 
+  color: #fff;
+  border: none; 
+  border-radius: 5px;
+  cursor: pointer; 
+  transition: background 0.3s;
+}
+.edit-btn:hover {
+  background: #ff4500;
+}
+
+/* =============================
    НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ)
 ============================= */
 .bottom-nav {
-  display: none; /* Скрыта на ПК */
+  display: none; /* По умолчанию скрыта (на ПК) */
   position: fixed;
   bottom: 0; left: 0; right: 0;
   height: 60px;
@@ -173,10 +393,11 @@ header {
 }
 
 /* =============================
-   АДАПТИВНОСТЬ: МОБИЛЬНАЯ ВЕРСИЯ
+   АДАПТИВНОСТЬ
 ============================= */
+/* Мобильные (до 768px) */
 @media (max-width: 768px) {
-  /* Убираем тёмный фон у шапки */
+  /* Делаем шапку прозрачной: убираем тёмный фон */
   header {
     background: none !important;
     box-shadow: none;
@@ -185,15 +406,16 @@ header {
   /* Логотип по центру, чуть меньше */
   .logo-button {
     font-size: 20px;
-    margin: 0 auto;
   }
 
-  /* Скрываем поиск (пусть он будет в нижней панели) */
+  /* Поиск на всю ширину */
   .search-container {
-    display: none;
+    max-width: 100%;
+    width: 90%;
+    margin: 10px auto;
   }
 
-  /* Скрываем профиль вверху (откроется через нижнюю панель) */
+  /* Профиль (аватар) скрыт, т.к. неудобно вверху на мобиле */
   .profile {
     display: none;
   }
@@ -202,9 +424,72 @@ header {
   .bottom-nav {
     display: flex;
   }
+
+  /* Категории компактнее */
+  .categories-section {
+    padding: 10px;
+  }
+  .categories-container {
+    gap: 10px;
+    justify-content: center;
+  }
+  .category-card {
+    width: 80px;
+  }
+  .category-card img {
+    width: 60px;
+    height: 60px;
+  }
+  .category-card .subcategory {
+    font-size: 11px;
+  }
+
+  /* Основной контент на всю ширину */
+  .container {
+    max-width: 100%;
+    margin-top: 0;
+    padding: 15px;
+  }
+
+  /* Форма */
+  form#addProductForm input,
+  form#addProductForm select,
+  form#addProductForm textarea {
+    font-size: 12px;
+  }
+  form#addProductForm button {
+    font-size: 14px;
+  }
 }
 
-
+/* Очень маленькие экраны (до 480px) */
+@media (max-width: 480px) {
+  .logo-button {
+    font-size: 18px;
+  }
+  .search-container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  .search-input {
+    font-size: 12px;
+    padding: 8px;
+  }
+  .search-btn {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .category-card {
+    width: 70px;
+  }
+  .category-card img {
+    width: 50px;
+    height: 50px;
+  }
+  .category-card .subcategory {
+    font-size: 10px;
+  }
+}
 
   
   </style>
