@@ -35,16 +35,21 @@ body {
 ============================= */
 header {
   width: 100%;
-  background: #1f1f1f; /* Ещё темнее */
+  display: flex;
+  flex-direction: column; /* Для возможности второй строки */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  border-radius: 0 0 8px 8px;
+}
+
+/* ----- Верхняя часть шапки ----- */
+.header-top {
+  background: #1f1f1f; /* Тёмная полоса на ПК */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 15px 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
   position: relative;
 }
-
-/* Логотип (слева) */
 .logo-button {
   background: none;
   border: none;
@@ -57,16 +62,6 @@ header {
 .logo-button:hover {
   color: #ff4500;
   transform: scale(1.05);
-}
-
-/* Центр шапки: можно вставить категории, если нужно
-   либо оставить пустым (header-center).
-*/
-.header-center {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Поисковая строка */
@@ -104,7 +99,7 @@ header {
   background: #ff4500;
 }
 
-/* Профиль (справа, только ПК) */
+/* Профиль (справа, только на ПК) */
 .profile {
   display: flex;
   align-items: center;
@@ -151,6 +146,24 @@ header {
   font-weight: bold;
 }
 
+/* ----- Вторая строка (горизонтальное меню на ПК) ----- */
+.header-bottom {
+  background: rgba(71, 68, 68, 0.85);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+.header-bottom a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+  transition: color 0.3s;
+}
+.header-bottom a:hover {
+  color: #ff7f50;
+}
+
 /* =============================
    АВТОРИЗАЦИЯ
 ============================= */
@@ -175,7 +188,7 @@ header {
 }
 
 /* =============================
-   КАТЕГОРИИ (Игры, Приложения)
+   КАТЕГОРИИ
 ============================= */
 .categories-section {
   padding: 15px;
@@ -405,25 +418,31 @@ footer {
 ============================= */
 /* Мобильные (до 768px) */
 @media (max-width: 768px) {
-  /* Шапка: логотип по центру, профиль скрыт */
-  header {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 10px;
+  /* Делаем шапку прозрачной: убираем тёмный фон */
+  .header-top {
+    background: none !important;
+    box-shadow: none;
   }
+
+  /* Скрываем вторую строку (меню) на мобильном */
+  .header-bottom {
+    display: none;
+  }
+
+  /* Логотип по центру, чуть меньше */
   .logo-button {
     font-size: 20px;
     margin-bottom: 10px;
   }
-  .header-center {
-    margin-bottom: 10px;
-  }
+
+  /* Поиск на всю ширину */
   .search-container {
     max-width: 100%;
     width: 90%;
     margin: 0 auto;
   }
+
+  /* Профиль (аватар) скрыт, т.к. неудобно вверху на мобиле */
   .profile {
     display: none;
   }
@@ -433,7 +452,7 @@ footer {
     display: flex;
   }
 
-  /* Контейнер категорий: упрощаем */
+  /* Категории компактнее */
   .categories-section {
     padding: 10px;
   }
@@ -499,6 +518,7 @@ footer {
   }
 }
 
+
   
   </style>
 </head>
@@ -513,6 +533,9 @@ footer {
       <button class="search-btn">Поиск</button>
     </div>
   </div>
+
+
+  
   <!-- Профиль (только на ПК) -->
   <div class="profile" id="profileSection" style="display:none;">
     <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
@@ -526,7 +549,18 @@ footer {
       <a href="#" class="logout" onclick="logout()">Выйти</a>
     </div>
   </div>
+
+  <div class="header-top">
+    <!-- Логотип, Поиск, Профиль -->
+  </div>
+  <div class="header-bottom">
+    <!-- Горизонтальное меню (ссылки) -->
+    <a href="#">Главная</a>
+    <a href="#">Категории</a>
+    <a href="#">Контакты</a>
+  </div>
 </header>
+
 
 <!-- Авторизация (если не залогинен) -->
 <div class="auth-container" id="authContainer">
