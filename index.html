@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
   <style>
- /* =============================
+/* =============================
    БАЗОВЫЕ СТИЛИ И СБРОС
 ============================= */
 * {
@@ -35,21 +35,17 @@ body {
 ============================= */
 header {
   width: 100%;
-  display: flex;
-  flex-direction: column; /* Для возможности второй строки */
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  border-radius: 0 0 8px 8px;
-}
-
-/* ----- Верхняя часть шапки ----- */
-.header-top {
-  background: #1f1f1f; /* Тёмная полоса на ПК */
+  background: #1f1f1f; /* Тёмная шапка на ПК */
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 15px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  border-radius: 0 0 8px 8px;
   position: relative;
 }
+
+/* Логотип слева */
 .logo-button {
   background: none;
   border: none;
@@ -64,7 +60,7 @@ header {
   transform: scale(1.05);
 }
 
-/* Поисковая строка */
+/* Поисковая строка (по центру) */
 .search-container {
   display: flex;
   background: rgba(255,255,255,0.1);
@@ -73,6 +69,7 @@ header {
   border: 2px solid rgba(255,255,255,0.2);
   max-width: 400px;
   width: 100%;
+  margin: 0 20px; /* Отступ между логотипом и профилем */
 }
 .search-input {
   flex: 1;
@@ -144,24 +141,6 @@ header {
 .logout {
   color: red;
   font-weight: bold;
-}
-
-/* ----- Вторая строка (горизонтальное меню на ПК) ----- */
-.header-bottom {
-  background: rgba(71, 68, 68, 0.85);
-  padding: 10px 20px;
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-}
-.header-bottom a {
-  text-decoration: none;
-  color: #fff;
-  font-weight: 600;
-  transition: color 0.3s;
-}
-.header-bottom a:hover {
-  color: #ff7f50;
 }
 
 /* =============================
@@ -419,27 +398,21 @@ footer {
 /* Мобильные (до 768px) */
 @media (max-width: 768px) {
   /* Делаем шапку прозрачной: убираем тёмный фон */
-  .header-top {
+  header {
     background: none !important;
     box-shadow: none;
-  }
-
-  /* Скрываем вторую строку (меню) на мобильном */
-  .header-bottom {
-    display: none;
   }
 
   /* Логотип по центру, чуть меньше */
   .logo-button {
     font-size: 20px;
-    margin-bottom: 10px;
   }
 
   /* Поиск на всю ширину */
   .search-container {
     max-width: 100%;
     width: 90%;
-    margin: 0 auto;
+    margin: 10px auto;
   }
 
   /* Профиль (аватар) скрыт, т.к. неудобно вверху на мобиле */
@@ -519,6 +492,7 @@ footer {
 }
 
 
+
   
   </style>
 </head>
@@ -548,16 +522,6 @@ footer {
       <a href="pr.html">Правила</a>
       <a href="#" class="logout" onclick="logout()">Выйти</a>
     </div>
-  </div>
-
-  <div class="header-top">
-    <!-- Логотип, Поиск, Профиль -->
-  </div>
-  <div class="header-bottom">
-    <!-- Горизонтальное меню (ссылки) -->
-    <a href="#">Главная</a>
-    <a href="#">Категории</a>
-    <a href="#">Контакты</a>
   </div>
 </header>
 
