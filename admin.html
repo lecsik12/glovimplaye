@@ -94,11 +94,11 @@
             loadUsers(); // Загружаем список пользователей
           } else {
             alert("Нет прав доступа!");
-            window.location.href = "profile.html";
+            window.location.href = "profile.html"; // Если не админ, перенаправляем на страницу профиля
           }
         });
       } else {
-        window.location.href = "login.html";
+        window.location.href = "login.html"; // Если пользователь не авторизован, перенаправляем на страницу входа
       }
     });
 
@@ -106,7 +106,7 @@
     function loadUsers() {
       firebase.database().ref("users").on("value", snapshot => {
         let table = document.getElementById("userTable");
-        table.innerHTML = "";
+        table.innerHTML = ""; // Очищаем таблицу перед загрузкой новых данных
 
         snapshot.forEach(child => {
           let user = child.val();
@@ -133,7 +133,7 @@
     // Функция бана пользователя
     function banUser(userId, isBanned) {
       firebase.database().ref("users/" + userId).update({
-        banned: !isBanned
+        banned: !isBanned // Переключаем статус бана
       });
     }
 

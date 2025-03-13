@@ -11,274 +11,114 @@
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <style>
-    /* Сброс стилей */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    /* Фон и базовая стилизация */
-    body {
-      font-family: Arial, sans-serif;
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
-      background-blend-mode: multiply;
-      background-color: #2b2a2a;
-      color: #fff;
-    }
-    /* Хедер с Firebase-авторизацией, поиском и профилем */
-    header {
-      background: rgba(71, 68, 68, 0.85);
-      padding: 15px 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-    }
-    .logo-button {
-      background: none;
-      border: none;
-      color: #fff; /* Цвет текста */
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: color 0.3s, transform 0.3s;
-    }
-    
-    .logo-button:hover {
-      color: #ccc; /* Цвет при наведении */
-      transform: scale(1.1);
-    }
-    header nav a {
-      margin-left: 20px;
-      color: #fff;
-      text-decoration: none;
-      font-size: 16px;
-      transition: color 0.3s;
-    }
-    header nav a:hover {
-      color: #333;
-    }
-    /* Поисковая строка */
-    .header-center {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 10px 0;
-    }
-    .search-container {
-      display: flex;
-      max-width: 600px;
-      width: 100%;
-    }
-    .search-input {
-      flex: 1;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px 0 0 5px;
-      font-size: 16px;
-    }
-    .search-btn {
-      padding: 10px 20px;
-      border: none;
-      background: #f5f3f3;
-      color: #fff;
-      font-size: 16px;
-      border-radius: 0 5px 5px 0;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .search-btn:hover {
-      background: #f3f1f0;
-    }
-    /* Блок профиля */
-    .profile {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    .avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 3px solid #fff;
-      transition: transform 0.3s;
-    }
-    .avatar:hover {
-      transform: scale(1.1);
-    }
-    .profile-menu {
-      display: none;
-      position: absolute;
-      top: 60px;
-      right: 0;
-      background: #f9f8f8;
-      color: #333;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      overflow: hidden;
-      z-index: 10;
-    }
-    .profile-menu.active {
-      display: block;
-    }
-    .profile-menu a {
-      display: block;
-      padding: 15px;
-      text-decoration: none;
-      color: #333;
-      transition: background 0.3s;
-    }
-    .profile-menu a:hover {
-      background: #f6f4f4;
-    }
-    .logout {
-      color: red;
-      font-weight: bold;
-    }
-    /* Контейнер авторизации (кнопка входа) */
-    .auth-container {
-      text-align: center;
-      margin: 50px 0;
-    }
-    .login-btn {
-      background: #fff;
-      color: #efedec;
-      border: none;
-      padding: 12px 30px;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    .login-btn:hover {
-      background: #fbf8f7;
-      transform: translateY(-2px);
-    }
-    /* Основной контент – секция CS:GO и подкатегории */
-    main {
-      padding: 20px;
-    }
-    .csgo-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .csgo-header img {
-      width: 80px;
-      height: auto;
-      margin-right: 15px;
-    }
-    .csgo-header h1 {
-      font-size: 36px;
-    }
-    p {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .subcategories {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }.subcategory-card {background: rgba(48, 44, 44, 0.9);
-        border-radius: 8px;
-        padding: 20px;
-        width: 150px;
-        text-align: center;
-        text-decoration: none;
-        color: #fff;
-        transition: transform 0.3s, background 0.3s;
-      }
-      .subcategory-card:hover {
-        transform: scale(1.05);
-        background: rgba(48, 44, 44, 1);
-      }
-      /* Футер */
-      footer {
-        background: rgba(71, 68, 68, 0.85);
-        padding: 20px;
-        text-align: center;
-        color: #fff;
-        margin-top: 30px;
-      }
-      .social-links a {
-        margin: 0 10px;
-        color: #fafbfb;
-        font-size: 24px;
-        text-decoration: none;
-        transition: color 0.3s;
-      }
-      .social-links a:hover {
-        color: #ff4500;
-      }
-      /* Стили модального окна профиля */
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 100;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0,0,0,0.6);
-      }
-      .modal-content {
-        background: #fff;
-        margin: 10% auto;
-        padding: 20px;
-        border-radius: 10px;
-        width: 90%;
-        max-width: 500px;
-        position: relative;
-        animation: fadeIn 0.5s;
-      }    
+/* Общие стили */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: Arial, sans-serif;
+  background: #2b2a2a url('background.jpg') no-repeat center center fixed;
+  background-size: cover;
+  background-blend-mode: multiply;
+  color: #fff;
+}
 
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .modal-close {
-        position: absolute;
-        right: 15px;
-        top: 15px;
-        font-size: 24px;
-        cursor: pointer;
-        color: #333;
-      }
-      .profile-details {
-        text-align: center;
-      }
-      .profile-details img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        border: 3px solid #ff7f50;
-      }
-      .profile-details h2 {
-        margin: 10px 0 5px;
-        color: #ff7f50;
-      }
-      .profile-details p {
-        color: #666;
-        margin: 0;
-      }
-      .edit-btn {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background: #ff7f50;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background 0.3s;
-      }
-      .edit-btn:hover {
-        background: #ff4500;
-      }
+/* Адаптивный хедер */
+header {
+  background: rgba(71, 68, 68, 0.85);
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.logo-button {
+  font-size: 22px;
+  padding: 5px;
+}
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.search-container {
+  display: flex;
+  max-width: 100%;
+  width: 100%;
+}
+.search-input {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.search-btn {
+  padding: 8px 15px;
+  font-size: 14px;
+}
+
+/* Блок профиля */
+.profile {
+  display: flex;
+  align-items: center;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+}
+
+/* Подкатегории */
+.subcategories {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 15px;
+  text-align: center;
+}
+.subcategory-card {
+  padding: 15px;
+  font-size: 14px;
+}
+
+/* Таблица товаров */
+.product-table {
+  width: 100%;
+  font-size: 14px;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .header-center {
+    width: 100%;
+    margin-top: 10px;
+  }
+  .search-input {
+    font-size: 12px;
+    padding: 6px;
+  }
+  .search-btn {
+    font-size: 12px;
+    padding: 6px;
+  }
+  .subcategories {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .product-table th,
+  .product-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+  .modal-content {
+    width: 90%;
+    padding: 15px;
+  }
+}
+
     </style>
   </head>
   <body>

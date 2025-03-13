@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Firebase v8 -->
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -20,6 +20,7 @@
       --accent-color: #ff7f50;
       --accent-hover: #ff4500;
       --text-color: #fff;
+      --ban-bg: #8b0000;
     }
     
     * {
@@ -36,9 +37,9 @@
       display: flex;
       flex-direction: column;
     }
-    
+
     a { text-decoration: none; color: inherit; }
-    
+
     /* Header */
     header {
       background: var(--header-bg);
@@ -48,14 +49,14 @@
       top: 0;
       z-index: 10;
     }
-    
+
     header .logo {
       font-size: 28px;
       font-weight: bold;
       color: var(--text-color);
       cursor: pointer;
     }
-    
+
     /* Профиль */
     .profile-container {
       flex: 1;
@@ -64,7 +65,7 @@
       align-items: center;
       padding: 40px 20px;
     }
-    
+
     .profile-container img {
       width: 120px;
       height: 120px;
@@ -72,26 +73,27 @@
       border: 4px solid var(--accent-color);
       object-fit: cover;
       margin-bottom: 20px;
+      transition: filter 0.3s ease;
     }
-    
+
     .profile-container h1 {
       font-size: 24px;
       margin-bottom: 8px;
     }
-    
+
     .profile-container p {
       font-size: 16px;
       color: #ccc;
       margin-bottom: 10px;
     }
-    
+
     .balance {
       font-size: 20px;
       font-weight: bold;
       margin-bottom: 24px;
       color: var(--accent-color);
     }
-    
+
     .profile-container .btn {
       width: 80%;
       max-width: 300px;
@@ -105,11 +107,37 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
-    
+
     .profile-container .btn:hover {
       background: var(--accent-hover);
     }
-    
+
+    /* Стиль для забаненного аккаунта */
+    .banned {
+      background: var(--ban-bg);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .banned img {
+      filter: grayscale(100%);
+      border-color: gray;
+    }
+
+    .banned .btn {
+      background: gray;
+      cursor: not-allowed;
+    }
+
+    .banned .balance, .banned h1, .banned p {
+      display: none;
+    }
+
     /* Footer */
     footer {
       background: var(--header-bg);
@@ -125,11 +153,17 @@
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
   </header>
   
-  <main class="profile-container">
+  <main class="profile-container" id="profileContainer">
     <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
     <h1 id="profileNickname">Загрузка...</h1>
     <p id="profileEmail">Загрузка...</p>
     <p class="balance">Баланс: <span id="balanceAmount">0</span> ₽</p>
+
+    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
+<button class="btn" onclick="document.getElementById('avatarInput').click()">
+  <i class="fas fa-camera"></i> Сменить аватар
+</button>
+
 
     <button class="btn" onclick="editProfile()">
       <i class="fas fa-edit"></i> Редактировать профиль
@@ -163,16 +197,29 @@
       if (user) {
         let userId = user.uid;
 
-        // Получаем никнейм и баланс из Firebase
+        // Получаем данные пользователя
         firebase.database().ref('users/' + userId).once('value').then(snapshot => {
           let userData = snapshot.val();
-          document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
-          document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+
+          if (userData.banned) {
+            // Если пользователь забанен, изменяем стиль страницы
+            let profile = document.getElementById('profileContainer');
+            profile.innerHTML = `
+              <div class="banned">
+                <img id="profileAvatar" src="${user.photoURL || 'default-avatar.png'}" alt="Avatar">
+                <p>Ваш аккаунт заблокирован</p>
+                <button class="btn" disabled><i class="fas fa-ban"></i> Доступ ограничен</button>
+              </div>
+            `;
+          } else {
+            // Отображаем нормальный профиль
+            document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
+            document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+            document.getElementById('profileEmail').innerText = user.email || "user@example.com";
+            document.getElementById('profileAvatar').src = user.photoURL || "default-avatar.png";
+          }
         });
 
-        // Заполняем email и фото
-        document.getElementById('profileEmail').innerText = user.email || "user@example.com";
-        document.getElementById('profileAvatar').src = user.photoURL || "default-avatar.png";
       } else {
         window.location.href = "login.html"; // Если не авторизован, отправляем на вход
       }
@@ -189,6 +236,46 @@
         console.error("Ошибка выхода:", error);
       });
     }
+
+
+
+    document.getElementById('avatarInput').addEventListener('change', function(event) {
+      let file = event.target.files[0]; // Получаем файл
+      if (!file) return;
+  
+      let userId = firebase.auth().currentUser.uid;
+      let storageRef = firebase.storage().ref('avatars/' + userId); // Путь хранения
+      let uploadTask = storageRef.put(file);
+  
+      uploadTask.on('state_changed', 
+        (snapshot) => {
+          let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("Загрузка: " + progress + "%");
+        }, 
+        (error) => {
+          console.error("Ошибка загрузки:", error);
+        }, 
+        () => {
+          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+            // Сохраняем URL в базе данных
+            firebase.database().ref('users/' + userId).update({ avatar: downloadURL });
+  
+            // Обновляем аватар в профиле
+            document.getElementById('profileAvatar').src = downloadURL;
+          });
+        }
+      );
+  });
+  firebase.database().ref('users/' + userId).once('value').then(snapshot => {
+    let userData = snapshot.val();
+    document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
+    document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+    
+    // Загружаем аватар
+    let avatarUrl = userData.avatar || "default-avatar.png"; // Если нет, ставим стандартный
+    document.getElementById('profileAvatar').src = avatarUrl;
+  });
+  
   </script>
 
 </body>
