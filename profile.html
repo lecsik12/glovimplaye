@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <!-- Font Awesome для иконок -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
@@ -21,12 +21,13 @@
       --accent-hover: #ff4500;
       --text-color: #fff;
     }
-    /* Общие стили */
+    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+    
     body {
       background: var(--bg-color);
       color: var(--text-color);
@@ -35,6 +36,7 @@
       display: flex;
       flex-direction: column;
     }
+    
     a { text-decoration: none; color: inherit; }
     
     /* Header */
@@ -46,6 +48,7 @@
       top: 0;
       z-index: 10;
     }
+    
     header .logo {
       font-size: 28px;
       font-weight: bold;
@@ -53,7 +56,7 @@
       cursor: pointer;
     }
     
-    /* Основной блок профиля */
+    /* Профиль */
     .profile-container {
       flex: 1;
       display: flex;
@@ -61,6 +64,7 @@
       align-items: center;
       padding: 40px 20px;
     }
+    
     .profile-container img {
       width: 120px;
       height: 120px;
@@ -69,15 +73,25 @@
       object-fit: cover;
       margin-bottom: 20px;
     }
+    
     .profile-container h1 {
       font-size: 24px;
       margin-bottom: 8px;
     }
+    
     .profile-container p {
       font-size: 16px;
       color: #ccc;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
+    
+    .balance {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 24px;
+      color: var(--accent-color);
+    }
+    
     .profile-container .btn {
       width: 80%;
       max-width: 300px;
@@ -91,6 +105,7 @@
       cursor: pointer;
       transition: background 0.3s ease;
     }
+    
     .profile-container .btn:hover {
       background: var(--accent-hover);
     }
@@ -105,15 +120,17 @@
   </style>
 </head>
 <body>
+
   <header>
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
   </header>
   
   <main class="profile-container">
     <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
-    <h1 id="profileName">Имя пользователя</h1>
-    <p id="profileEmail">user@example.com</p>
-    <p id="profileBalance">Баланс: Загрузка... GCoins</p>
+    <h1 id="profileNickname">Загрузка...</h1>
+    <p id="profileEmail">Загрузка...</p>
+    <p class="balance">Баланс: <span id="balanceAmount">0</span> ₽</p>
+
     <button class="btn" onclick="editProfile()">
       <i class="fas fa-edit"></i> Редактировать профиль
     </button>
@@ -128,7 +145,7 @@
   <footer>
     © 2025 GlovimPlaye. Все права защищены.
   </footer>
-  
+
   <script>
     // Firebase конфигурация
     var firebaseConfig = {
@@ -141,47 +158,38 @@
       appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
     firebase.initializeApp(firebaseConfig);
-    
-    // Функция обновления данных профиля
-    function updateProfile(user) {
-      document.getElementById('profileName').innerText = user.displayName || "Имя пользователя";
-      document.getElementById('profileEmail').innerText = user.email || "user@example.com";
-      document.getElementById('profileAvatar').src = user.photoURL || "default-avatar.png";
-      
-      var userId = user.uid;
-      var userRef = firebase.database().ref("users/" + userId);
 
-      userRef.once("value").then((snapshot) => {
-        if (snapshot.exists()) {
-          var balance = snapshot.val().balance || 0;
-          document.getElementById("profileBalance").innerText = "Баланс: " + balance + " GCoins";
-        } else {
-          document.getElementById("profileBalance").innerText = "Баланс: 0 GCoins";
-        }
-      });
-    }
-    
-    // Проверка состояния аутентификации Firebase
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        updateProfile(user);
+        let userId = user.uid;
+
+        // Получаем никнейм и баланс из Firebase
+        firebase.database().ref('users/' + userId).once('value').then(snapshot => {
+          let userData = snapshot.val();
+          document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
+          document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+        });
+
+        // Заполняем email и фото
+        document.getElementById('profileEmail').innerText = user.email || "user@example.com";
+        document.getElementById('profileAvatar').src = user.photoURL || "default-avatar.png";
       } else {
-        // Если пользователь не авторизован, перенаправляем на страницу входа (например, login.html)
-        window.location.href = "login.html";
+        window.location.href = "login.html"; // Если не авторизован, отправляем на вход
       }
     });
-    
+
     function editProfile() {
       alert("Редактирование профиля пока не реализовано.");
     }
-    
+
     function logout() {
-      firebase.auth().signOut().then(function() {
+      firebase.auth().signOut().then(() => {
         window.location.href = "login.html";
-      }).catch(function(error) {
+      }).catch(error => {
         console.error("Ошибка выхода:", error);
       });
     }
   </script>
+
 </body>
 </html>

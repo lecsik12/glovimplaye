@@ -8,8 +8,9 @@
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <!-- Font Awesome для иконок -->
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
@@ -76,6 +77,36 @@
       margin-right: 8px;
     }
     
+    .nickname-container {
+      display: none;
+      margin-top: 20px;
+    }
+    
+    .nickname-input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    
+    .save-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .save-btn:hover {
+      background: var(--accent-hover);
+    }
+
     footer {
       margin-top: 20px;
       font-size: 14px;
@@ -90,6 +121,12 @@
     <button class="login-btn" onclick="loginWithGoogle()">
       <i class="fab fa-google"></i> Войти через Google
     </button>
+
+    <div class="nickname-container" id="nicknameContainer">
+      <h2>Выберите никнейм</h2>
+      <input type="text" id="nicknameInput" class="nickname-input" placeholder="Введите ник">
+      <button class="save-btn" onclick="saveNickname()">Сохранить</button>
+    </div>
   </div>
 
   <footer>
@@ -101,6 +138,7 @@
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
+      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
       projectId: "glovimplaye-b1023",
       storageBucket: "glovimplaye-b1023.firebasestorage.app",
       messagingSenderId: "553440591519",
@@ -108,12 +146,45 @@
     };
     firebase.initializeApp(firebaseConfig);
 
+    let currentUser;
+
     function loginWithGoogle() {
       var provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider).then((result) => {
-        window.location.href = "profile.html"; // После входа перебрасывает в профиль
+        currentUser = result.user;
+        checkNickname();
       }).catch((error) => {
         console.error("Ошибка входа:", error);
+      });
+    }
+
+    function checkNickname() {
+      let userId = currentUser.uid;
+      firebase.database().ref('users/' + userId).once('value').then(snapshot => {
+        if (snapshot.exists() && snapshot.val().nickname) {
+          window.location.href = "profile.html"; // У пользователя уже есть ник, перекидываем в профиль
+        } else {
+          document.querySelector('.login-btn').style.display = 'none'; // Скрываем кнопку входа
+          document.getElementById('nicknameContainer').style.display = 'block'; // Показываем форму ввода
+        }
+      });
+    }
+
+    function saveNickname() {
+      let nickname = document.getElementById('nicknameInput').value.trim();
+      if (nickname === "") {
+        alert("Введите никнейм!");
+        return;
+      }
+
+      let userId = currentUser.uid;
+      firebase.database().ref('users/' + userId).set({
+        nickname: nickname,
+        email: currentUser.email
+      }).then(() => {
+        window.location.href = "profile.html";
+      }).catch(error => {
+        console.error("Ошибка сохранения ника:", error);
       });
     }
   </script>
