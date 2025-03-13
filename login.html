@@ -1,19 +1,122 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авторизация</title>
-    <link rel="stylesheet" href="/css/style.css">
+  <meta charset="UTF-8">
+  <title>GlovimPlaye | Вход</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-color: #2b2a2a;
+      --header-bg: #1f1f1f;
+      --accent-color: #ff7f50;
+      --accent-hover: #ff4500;
+      --text-color: #fff;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    
+    .login-container {
+      background: var(--header-bg);
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      width: 90%;
+      max-width: 350px;
+    }
+    
+    .login-container h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .login-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .login-btn i {
+      margin-right: 8px;
+    }
+    
+    footer {
+      margin-top: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <h1>Авторизация</h1>
-    <form id="login-form">
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="password" id="password" placeholder="Пароль" required />
-        <button type="submit">Войти</button>
-    </form>
 
-    <script src="login.js"></script>
+  <div class="login-container">
+    <h2>Войти в GlovimPlaye</h2>
+    <button class="login-btn" onclick="loginWithGoogle()">
+      <i class="fab fa-google"></i> Войти через Google
+    </button>
+  </div>
+
+  <footer>
+    © 2025 GlovimPlaye. Все права защищены.
+  </footer>
+
+  <script>
+    // Firebase конфигурация
+    var firebaseConfig = {
+      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+      authDomain: "glovimplaye-b1023.firebaseapp.com",
+      projectId: "glovimplaye-b1023",
+      storageBucket: "glovimplaye-b1023.firebasestorage.app",
+      messagingSenderId: "553440591519",
+      appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    function loginWithGoogle() {
+      var provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithPopup(provider).then((result) => {
+        window.location.href = "profile.html"; // После входа перебрасывает в профиль
+      }).catch((error) => {
+        console.error("Ошибка входа:", error);
+      });
+    }
+  </script>
+
 </body>
 </html>
