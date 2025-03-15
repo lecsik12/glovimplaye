@@ -2,308 +2,620 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye | Пример структуры</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Font Awesome (иконки) -->
+  <title>GlovimPlaye | Главная</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
   <style>
-    /* ====== Минимальный CSS для структуры ====== */
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      background: #131313; /* Тёмный фон */
-      color: #fff;
-      padding-bottom: 60px; /* Отступ под нижнюю панель (моб) */
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
+/* =============================
+   БАЗОВЫЕ СТИЛИ И СБРОС
+============================= */
+* {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+body {
+  font-family: Arial, sans-serif;
+  background: #2b2a2a; /* Тёмный фон */
+  color: #fff;
+  min-height: 100vh;
+  margin: 0;
+  padding-bottom: 60px; /* Отступ под нижнюю панель */
+}
 
-    /* Верхняя панель (логотип + рейтинг + профиль) */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 15px;
-      background: #1f1f1f;
-    }
-    .logo-rating {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .logo-text {
-      font-weight: bold;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    .rating {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-    .profile {
-      display: flex;
-      align-items: center;
-      position: relative;
-    }
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      cursor: pointer;
-    }
-    .profile-menu {
-      display: none;
-      position: absolute;
-      top: 50px; 
-      right: 0;
-      background: #f9f8f8;
-      color: #333;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-      z-index: 999;
-    }
-    .profile-menu.active {
-      display: block;
-    }
+/* =============================
+   ШАПКА (HEADER)
+============================= */
+header {
+  width: 100%;
+  background: #1f1f1f; /* Тёмная шапка на ПК */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  border-radius: 0 0 8px 8px;
+  position: relative;
+}
 
-    /* Поле поиска */
-    .search-wrapper {
-      padding: 10px 15px;
-      background: #131313;
-    }
-    .search-bar {
-      display: flex;
-      background: #2a2a2a;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .search-input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      background: transparent;
-      color: #fff;
-    }
-    .search-btn {
-      padding: 10px 15px;
-      border: none;
-      background: #ff7f50;
-      color: #fff;
-      cursor: pointer;
-    }
+/* Логотип слева */
+.logo-button {
+  background: none;
+  border: none;
+  color: #ff7f50; /* Оранжевый акцент */
+  font-size: 26px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s, transform 0.3s;
+}
+.logo-button:hover {
+  color: #ff4500;
+  transform: scale(1.05);
+}
 
-    /* Кнопки категорий (Донат, Аккаунты, Предметы) */
-    .categories-row {
-      display: flex;
-      justify-content: space-around;
-      padding: 10px;
-      background: #131313;
-    }
-    .categories-row button {
-      background: #2a2a2a;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 16px;
-      cursor: pointer;
-    }
+/* Кнопка (иконка) поиска справа от логотипа (пример) */
+.search-icon-button {
+  background: none;
+  border: none;
+  color: #ff7f50;
+  font-size: 20px;
+  cursor: pointer;
+  margin-left: 15px;
+}
+.search-icon-button:hover {
+  color: #ff4500;
+}
 
-    /* Пример баннера (зелёный) */
-    .green-banner {
-      margin: 10px;
-      padding: 15px;
-      background: #0eb030;
-      border-radius: 8px;
-      text-align: center;
-    }
+/* Профиль (справа, только на ПК) */
+.profile {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+.avatar:hover {
+  transform: scale(1.1);
+}
+.profile-menu {
+  display: none;
+  position: absolute;
+  top: 50px; 
+  right: 0;
+  background: #f9f8f8;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  overflow: hidden;
+  z-index: 10;
+}
+.profile-menu.active {
+  display: block;
+}
+.profile-menu a {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.3s;
+}
+.profile-menu a:hover {
+  background: #f6f4f4;
+}
+.logout {
+  color: red;
+  font-weight: bold;
+}
 
-    /* Авторизация */
-    .auth-container {
-      text-align: center;
-      margin: 15px 0;
-    }
+/* =============================
+   АВТОРИЗАЦИЯ
+============================= */
+.auth-container {
+  text-align: center;
+  margin: 20px 0;
+}
+.login-btn {
+  background: #fff;
+  color: #000;
+  border: none;
+  padding: 12px 30px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+.login-btn:hover {
+  background: #ff7f50;
+  color: #fff;
+  transform: translateY(-2px);
+}
 
-    /* Разделы «Игры» / «Приложения» */
-    .categories-section {
-      padding: 10px 15px;
-    }
-    .categories-section h2 {
-      text-align: center;
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-    .categories-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-    .category-card {
-      width: 80px;
-      text-align: center;
-      cursor: pointer;
-    }
-    .category-card img {
-      width: 70px;
-      height: 70px;
-      border-radius: 6px;
-      object-fit: cover;
-      margin-bottom: 5px;
-    }
+/* =============================
+   КАТЕГОРИИ
+============================= */
+.categories-section {
+  padding: 15px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.categories-section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: center;
+}
+.categories-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+}
+.category-card {
+  width: 100px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.category-card:hover {
+  transform: scale(1.05);
+}
+.category-card img {
+  width: 80px; height: 80px;
+  border-radius: 8px;
+  object-fit: cover;
+  margin-bottom: 5px;
+}
+.category-card .subcategory {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e0e0e0;
+}
 
-    /* Рекламные баннеры */
-    .advertisement {
-      margin: 10px 15px;
-      text-align: center;
-    }
-    .advertisement img {
-      width: 100%;
-      border-radius: 6px;
-      max-height: 250px;
-      object-fit: cover;
-    }
+/* =============================
+   РЕКЛАМНЫЙ БАННЕР
+============================= */
+.advertisement {
+  margin: 20px auto;
+  max-width: 1200px;
+  text-align: center;
+}
+.advertisement img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
 
-    /* Футер */
-    footer {
-      background: #1f1f1f;
-      text-align: center;
-      padding: 20px;
-      margin-top: 15px;
-    }
+/* =============================
+   ОСНОВНОЙ КОНТЕНТ
+============================= */
+main {
+  margin-top: 20px;
+}
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: rgba(48, 44, 44, 0.85);
+  padding: 20px;
+  border-radius: 8px;
+}
+.container h2 {
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 20px;
+}
 
-    /* Нижняя панель (мобильная) */
-    .bottom-nav {
-      display: none; /* По умолчанию скрыта на ПК */
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 60px;
-      background: #1e1e1e;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-    }
-    .bottom-nav a {
-      color: #ccc;
-      font-size: 12px;
-      text-decoration: none;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .bottom-nav a i {
-      font-size: 18px;
-    }
+/* =============================
+   ФУТЕР
+============================= */
+footer {
+  background: #1f1f1f;
+  padding: 20px;
+  text-align: center;
+  color: #fff;
+  margin-top: 30px;
+}
+.social-links a {
+  margin: 0 10px;
+  color: #fafbfb;
+  font-size: 24px;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.social-links a:hover {
+  color: #ff4500;
+}
 
-    /* Адаптивность (мобильные) */
-    @media (max-width: 768px) {
-      .profile {
-        display: none; /* Скрываем профиль вверху на телефоне */
-      }
-      .bottom-nav {
-        display: flex; /* Показываем нижнюю панель */
-      }
-    }
+/* =============================
+   МОДАЛЬНОЕ ОКНО ПРОФИЛЯ
+============================= */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 100;
+  left: 0; top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+}
+.modal-content {
+  background: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  animation: fadeIn 0.5s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.modal-close {
+  position: absolute;
+  right: 15px; 
+  top: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+.profile-details {
+  text-align: center;
+}
+.profile-details img {
+  width: 100px; 
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #ff7f50;
+}
+.profile-details h2 {
+  margin: 10px 0 5px;
+  color: #ff7f50;
+}
+.profile-details p {
+  color: #666; 
+  margin: 0;
+}
+.edit-btn {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #ff7f50; 
+  color: #fff;
+  border: none; 
+  border-radius: 5px;
+  cursor: pointer; 
+  transition: background 0.3s;
+}
+.edit-btn:hover {
+  background: #ff4500;
+}
+
+/* =============================
+   НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ)
+============================= */
+.bottom-nav {
+  display: none; /* По умолчанию скрыта (на ПК) */
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: #1e1e1e;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+  z-index: 999;
+}
+.bottom-nav a {
+  text-decoration: none;
+  color: #ccc;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.bottom-nav a i {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+.bottom-nav a:hover {
+  color: #fff;
+}
+
+/* =============================
+   АДАПТИВНОСТЬ
+============================= */
+/* Мобильные (до 768px) */
+@media (max-width: 768px) {
+  header {
+    background: none !important;
+    box-shadow: none;
+  }
+  .logo-button {
+    font-size: 20px;
+  }
+  .profile {
+    display: none;
+  }
+  .bottom-nav {
+    display: flex;
+  }
+  .categories-section {
+    padding: 10px;
+  }
+  .categories-container {
+    gap: 10px;
+    justify-content: center;
+  }
+  .category-card {
+    width: 80px;
+  }
+  .category-card img {
+    width: 60px; height: 60px;
+  }
+  .category-card .subcategory {
+    font-size: 11px;
+  }
+  .container {
+    max-width: 100%;
+    margin-top: 0;
+    padding: 15px;
+  }
+}
+
+/* Очень маленькие экраны (до 480px) */
+@media (max-width: 480px) {
+  .logo-button {
+    font-size: 18px;
+  }
+  .category-card {
+    width: 70px;
+  }
+  .category-card img {
+    width: 50px; height: 50px;
+  }
+  .category-card .subcategory {
+    font-size: 10px;
+  }
+}
+
+/* =============================
+   ОВЕРЛЕЙ ПОИСКА (как Eldorado)
+============================= */
+.search-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.9); /* Тёмный фон */
+  display: none;                  /* скрыт по умолчанию */
+  flex-direction: column;
+  align-items: center;
+  padding-top: 50px;
+  z-index: 9999;
+}
+.search-overlay.active {
+  display: flex; /* показываем оверлей, когда добавлен класс .active */
+}
+/* Контейнер, чтобы ограничить ширину */
+.search-wrapper {
+  width: 90%;
+  max-width: 600px;
+  color: #fff;
+}
+/* Поле ввода + иконка */
+.search-input-overlay {
+  width: 100%;
+  background: #1f1f1f;
+  border: 2px solid #ff7f50;
+  border-radius: 8px;
+  font-size: 16px;
+  color: #fff;
+  padding: 10px 45px 10px 15px;
+  outline: none;
+  box-sizing: border-box;
+}
+/* Иконка поиска слева внутри поля */
+.search-input-wrapper {
+  position: relative;
+  margin-bottom: 10px;
+}
+.search-input-wrapper i {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ff7f50;
+  cursor: pointer;
+}
+
+/* Список результатов */
+.search-results {
+  list-style: none;
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  margin: 0;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+.search-results li {
+  padding: 10px 15px;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.search-results li i {
+  margin-right: 10px;
+  color: #ff7f50;
+}
+.search-results li:hover {
+  background: #2b2a2a;
+}
+.search-results li:last-child {
+  border-bottom: none;
+}
+
+/* Кнопка закрытия оверлея (вверху слева) */
+.close-overlay-btn {
+  position: absolute;
+  top: 15px; 
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 26px;
+  color: #ff7f50;
+  cursor: pointer;
+}
+.close-overlay-btn:hover {
+  color: #ff4500;
+}
   </style>
 </head>
 <body>
 
-<!-- ВЕРХНЯЯ ПАНЕЛЬ -->
-<div class="top-bar">
-  <div class="logo-rating">
-    <div class="logo-text" onclick="goToHomePage()">GlovimPlaye</div>
-    <div class="rating">⭐ 5.0 10,1 млн</div>
+<!-- ======= ШАПКА ======= -->
+<header>
+  <div style="display: flex; align-items: center;">
+    <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
+    <!-- Кнопка (иконка) для открытия оверлея поиска -->
+    <button class="search-icon-button" onclick="openSearchOverlay()">
+      <i class="fas fa-search"></i>
+    </button>
   </div>
+
   <!-- Профиль (только на ПК) -->
   <div class="profile" id="profileSection" style="display:none;">
     <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
     <div class="profile-menu" id="profileMenu">
       <a href="#" onclick="showProfileModal()">Мой профиль</a>
       <a href="#">Заказы</a>
-      <a href="#">Настройки</a>
+      <a href="settings.html">Настройки</a>
       <a href="#">Чат</a>
       <a href="#">Уведомления</a>
       <a href="pr.html">Правила</a>
       <a href="#" class="logout" onclick="logout()">Выйти</a>
     </div>
   </div>
-</div>
+</header>
 
-<!-- ПОЛЕ ПОИСКА -->
-<div class="search-wrapper">
-  <div class="search-bar">
-    <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
-    <button class="search-btn">Поиск</button>
+<!-- ======= ОВЕРЛЕЙ ПОИСКА ======= -->
+<div class="search-overlay" id="searchOverlay" onclick="closeOverlayByClick(event)">
+  <!-- Кнопка закрытия (крестик) в левом верхнем углу -->
+  <button class="close-overlay-btn" onclick="closeSearchOverlay()">
+    <i class="fas fa-times"></i>
+  </button>
+
+  <!-- Контейнер для поиска -->
+  <div class="search-wrapper">
+    <div class="search-input-wrapper">
+      <input
+        type="text"
+        class="search-input-overlay"
+        placeholder="Поиск Eldorado"
+        id="searchOverlayInput"
+        oninput="updateSearchResults()"
+      />
+      <!-- Иконка поиска внутри поля (справа) -->
+      <i class="fas fa-search"></i>
+    </div>
+
+    <!-- Список результатов -->
+    <ul class="search-results" id="searchResults"></ul>
   </div>
 </div>
 
-<!-- КНОПКИ КАТЕГОРИЙ -->
-<div class="categories-row">
-  <button>Донат</button>
-  <button>Аккаунты</button>
-  <button>Предметы</button>
+<!-- Рекламный баннер -->
+<div class="advertisement">
+  <img src="images/photo_2025-03-13_20-13-30.jpg" alt="Реклама">
 </div>
 
-<!-- ЗЕЛЁНЫЙ БАННЕР -->
-<div class="green-banner">
-  <h2>Комиссия в 2 раза ниже! Стань продавцом</h2>
-</div>
-
-<!-- АВТОРИЗАЦИЯ (если не залогинен) -->
+<!-- Авторизация (если не залогинен) -->
 <div class="auth-container" id="authContainer">
   <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
 </div>
 
-<!-- Раздел «Игры» -->
+<!-- Пример секции категорий "Игры" -->
 <div class="categories-section">
   <h2>Игры</h2>
   <div class="categories-container">
-    <a href="#" class="category-card">
-      <img src="images/cod.jpg" alt="Call of Duty">
-      <div>Call of Duty</div>
+    <a href="" class="category-card small">
+      <img src="images/cal of duty.jpg" alt="Игра 1">
+      <div class="subcategory">Call of Duty</div>
     </a>
-    <a href="#" class="category-card">
-      <img src="images/csgo.jpg" alt="CS:GO">
-      <div>Counter-Strike</div>
+    <a href="csgo.html" class="category-card small">
+      <img src="images/csgo.jpg" alt="Игра 2">
+      <div class="subcategory">Counter-Strike</div>
     </a>
-    <!-- Добавьте остальные карточки... -->
+    <a href="index.html" class="category-card small">
+      <img src="images/dota.jpg" alt="Игра 3">
+      <div class="subcategory">Dota 2</div>
+    </a>
+    <!-- ... и т.д. -->
   </div>
 </div>
 
-<!-- Раздел «Приложения» -->
+
+
+<!-- Пример секции категорий "Приложения" -->
 <div class="categories-section">
   <h2>Приложения</h2>
   <div class="categories-container">
-    <a href="#" class="category-card">
-      <img src="images/discord.jpg" alt="Discord">
-      <div>Discord</div>
+    <a href="games.html" class="category-card small">
+      <img src="images/diccord.jpg" alt="Приложение 1">
+      <div class="subcategory">Discord</div>
     </a>
-    <a href="#" class="category-card">
-      <img src="images/netflix.png" alt="Netflix">
-      <div>Netflix</div>
+    <a href="apps.html" class="category-card small">
+      <img src="images/epgems.jpg" alt="Приложение 2">
+      <div class="subcategory">Epic Gems</div>
     </a>
-    <!-- Добавьте остальные... -->
+    <a href="index.html" class="category-card small">
+      <img src="images/netflix.png" alt="Приложение 3">
+      <div class="subcategory">Netflix</div>
+    </a>
+    <!-- ... и т.д. -->
   </div>
 </div>
 
-<!-- РЕКЛАМНЫЕ БАННЕРЫ -->
-<div class="advertisement">
-  <img src="images/banner1.jpg" alt="Реклама 1">
-</div>
-<div class="advertisement">
-  <img src="images/banner2.jpg" alt="Реклама 2">
+<!-- Модальное окно профиля -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
+    <div class="profile-details">
+      <img id="modalAvatar" src="" alt="Avatar">
+      <h2 id="profileName"></h2>
+      <p id="profileEmail"></p>
+      <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
+      <button class="edit-btn" onclick="window.open('https:t.me/Glovimplaye_bot', '_blank')">
+        Написать в Поддержку
+      </button>
+    </div>
+  </div>
 </div>
 
-<!-- ФУТЕР -->
+<!-- Футер -->
 <footer>
+  <div class="social-links">
+    <a href="https://www.tiktok.com/@glovimplaye" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+    <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+  </div>
   <p>© 2025 GlovimPlaye. Все права защищены.</p>
 </footer>
 
-<!-- НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ) -->
+<!-- Нижняя панель (для мобильных) -->
 <div class="bottom-nav">
   <a href="index.html">
     <i class="fas fa-search"></i>
@@ -317,13 +629,13 @@
     <i class="fas fa-comments"></i>
     <span>Чаты</span>
   </a>
-  <a href="#" onclick="showProfileModal()">
+  <a href="profile.html" onclick="showProfileModal()">
     <i class="fas fa-user"></i>
     <span>Профиль</span>
   </a>
 </div>
 
-<!-- Модальное окно профиля -->
+<!-- Модальное окно профиля (дубликат, если не нужно – удалить) -->
 <div id="profileModal" class="modal">
   <div class="modal-content">
     <span class="modal-close" onclick="closeProfileModal()">&times;</span>
@@ -336,32 +648,156 @@
   </div>
 </div>
 
-<!-- СКРИПТЫ (Firebase, Авторизация и т.д.) -->
 <script>
-  // Здесь подключите ваш Firebase-конфиг и логику
-  // function login() { ... }
-  // function updateProfile(user) { ... }
-  // и т.д.
+/* ---------- Firebase конфиг (пример) ---------- */
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-  function goToHomePage() {
-    window.location.href = \"index.html\";
+  var auth = firebase.auth();
+  var provider = new firebase.auth.GoogleAuthProvider();
+
+  // Проверка сохранённого пользователя при загрузке
+  document.addEventListener("DOMContentLoaded", function(){
+    var savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      updateProfile(JSON.parse(savedUser));
+    }
+  });
+
+  function login() {
+    auth.signInWithPopup(provider)
+      .then(function(result) {
+        var user = result.user;
+        var userData = {
+          uid: user.uid,
+          photoURL: user.photoURL,
+          displayName: user.displayName,
+          email: user.email
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        updateProfile(userData);
+      })
+      .catch(function(error) {
+        console.error("Ошибка входа:", error);
+      });
   }
+
+  function updateProfile(user) {
+    document.getElementById("loginButton").style.display = "none";
+    document.getElementById("authContainer").style.display = "none";
+    document.getElementById("profileSection").style.display = "flex"; 
+    document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
+    document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
+    document.getElementById("profileName").innerText = user.displayName;
+    document.getElementById("profileEmail").innerText = user.email;
+  }
+
   function toggleProfileMenu() {
-    document.getElementById(\"profileMenu\").classList.toggle(\"active\");
+    document.getElementById("profileMenu").classList.toggle("active");
   }
+
+  function logout() {
+    auth.signOut().then(function() {
+      localStorage.removeItem("user");
+      document.getElementById("loginButton").style.display = "block";
+      document.getElementById("authContainer").style.display = "block";
+      document.getElementById("profileSection").style.display = "none";
+    }).catch(function(error) {
+      console.error("Ошибка выхода:", error);
+    });
+  }
+
+  // ---------- Модальное окно профиля ----------
   function showProfileModal() {
-    document.getElementById(\"profileModal\").style.display = \"block\";
-    var menu = document.getElementById(\"profileMenu\");
-    if (menu) menu.classList.remove(\"active\");
+    document.getElementById("profileModal").style.display = "block";
+    var menu = document.getElementById("profileMenu");
+    if (menu) menu.classList.remove("active");
   }
   function closeProfileModal() {
-    document.getElementById(\"profileModal\").style.display = \"none\";
+    document.getElementById("profileModal").style.display = "none";
   }
   function editProfile() {
-    alert(\"Редактирование профиля пока не реализовано.\");
+    alert("Редактирование профиля пока не реализовано.");
   }
-  function logout() {
-    // ...
+  window.onclick = function(event) {
+    var modal = document.getElementById("profileModal");
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  // ---------- Переход на главную ----------
+  function goToHomePage() {
+    window.location.href = "index.html";
+  }
+
+  // ---------- Оверлей поиска ----------
+  function openSearchOverlay() {
+    document.getElementById('searchOverlay').classList.add('active');
+    document.getElementById('searchOverlayInput').focus();
+  }
+  function closeSearchOverlay() {
+    document.getElementById('searchOverlay').classList.remove('active');
+    document.getElementById('searchOverlayInput').value = '';
+    document.getElementById('searchResults').innerHTML = '';
+  }
+  // Закрытие по клику за пределами "search-wrapper"
+  function closeOverlayByClick(event) {
+    const overlay = document.getElementById('searchOverlay');
+    const wrapper = document.querySelector('.search-wrapper');
+    if (event.target === overlay && !wrapper.contains(event.target)) {
+      closeSearchOverlay();
+    }
+  }
+
+  // Моковые данные (пример) — подставь свои товары/категории
+  const mockData = [
+    { icon: 'fa-gamepad', text: 'Аккаунты GTA 5' },
+    { icon: 'fa-shield-alt', text: 'Среднее звание CS:GO Gold' },
+    { icon: 'fa-user-secret', text: 'Аккаунты Fortnite' },
+    { icon: 'fa-hat-wizard', text: 'Warcraft III' },
+    { icon: 'fa-bomb', text: 'Rainbow Six Siege' },
+    { icon: 'fa-scroll', text: 'World of Warcraft' },
+    { icon: 'fa-skull-crossbones', text: 'Call of Duty' },
+    { icon: 'fa-ghost', text: 'Phasmophobia' },
+    { icon: 'fa-dungeon', text: 'Roblox Robux' }
+  ];
+
+  // Поиск в «mockData»
+  function updateSearchResults() {
+    const query = document.getElementById('searchOverlayInput').value.trim().toLowerCase();
+    const resultsContainer = document.getElementById('searchResults');
+    resultsContainer.innerHTML = '';
+
+    if (!query) return; // если пусто, не показываем
+
+    const filtered = mockData.filter(item =>
+      item.text.toLowerCase().includes(query)
+    );
+
+    if (filtered.length === 0) {
+      resultsContainer.innerHTML = '<li><i class="fas fa-exclamation-triangle"></i> Ничего не найдено</li>';
+      return;
+    }
+
+    filtered.forEach(item => {
+      const li = document.createElement('li');
+      li.innerHTML = `<i class="fas ${item.icon}"></i> ${item.text}`;
+      // Пример клика по элементу:
+      li.onclick = () => {
+        alert('Вы выбрали: ' + item.text);
+        closeSearchOverlay();
+      };
+      resultsContainer.appendChild(li);
+    });
   }
 </script>
 </body>
