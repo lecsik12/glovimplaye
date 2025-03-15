@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
   <style>
+
 /* =============================
    БАЗОВЫЕ СТИЛИ И СБРОС
 ============================= */
@@ -491,20 +492,28 @@ footer {
   }
 }
 
+
   
   </style>
 </head>
 <body>
 
 <!-- Хедер (ПК) -->
+<!-- Поиск -->
 <header>
   <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
   <div class="header-center">
     <div class="search-container">
-      <input type="text" class="search-input" placeholder="Поиск товаров...">
-      <button class="search-btn">Поиск</button>
+      <input type="text" class="search-input" placeholder="Поиск товаров..." id="searchInput">
+      <button class="search-btn" onclick="searchProducts()">Поиск</button>
     </div>
   </div>
+</header>
+<!-- Здесь будут показываться результаты поиска -->
+<div class="search-results" id="searchResults" style="display: none;">
+  <h3>Результаты поиска:</h3>
+  <div id="resultsList"></div>
+</div>
 
 
   
@@ -525,7 +534,7 @@ footer {
 
 
 <div class="advertisement">
-  <img src="images/photo_2025-02-21_16-54-23.jpg" alt="Реклама">
+  <img src="images/photo_2025-03-13_20-13-30.jpg" alt="Реклама">
 </div>
 
 <!-- Авторизация (если не залогинен) -->
@@ -641,16 +650,16 @@ footer {
   </div>
 </div>
 
-
 <!-- Футер -->
 <footer>
   <div class="social-links">
-    <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://www.tiktok.com/@glovimplaye" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
     <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
     <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
   </div>
   <p>© 2025 GlovimPlaye. Все права защищены.</p>
 </footer>
+
 
 <!-- ===== НИЖНЯЯ ПАНЕЛЬ (для мобильных) ===== -->
 <div class="bottom-nav">
@@ -837,6 +846,53 @@ addForm.addEventListener('submit', function(e) {
   addForm.reset();
   alert('Товар добавлен!');
 });
+</script>
+
+<script>
+  // Пример массива с продуктами/категориями (для демонстрации)
+  const categories = [
+    { name: 'Call of Duty', image: 'images/cal of duty.jpg' },
+    { name: 'Counter-Strike', image: 'images/csgo.jpg' },
+    { name: 'Dota 2', image: 'images/dota.jpg' },
+    { name: 'Fortnite', image: 'images/fortna.jpg' },
+    { name: 'Minecraft', image: 'images/main.jpg' },
+    { name: 'PUBG Mobile', image: 'images/pabg mobael.jpg' },
+    { name: 'Roblox', image: 'images/roblox.jpg' },
+    // Добавьте другие категории или товары
+  ];
+
+  // Функция для поиска товаров по названию
+  function searchProducts() {
+    const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+
+    // Если поле ввода пустое, скрыть результаты
+    if (searchQuery === '') {
+      document.getElementById('searchResults').style.display = 'none';
+      return;
+    }
+
+    const filteredCategories = categories.filter(category => category.name.toLowerCase().includes(searchQuery));
+
+    const resultsContainer = document.getElementById('resultsList');
+    resultsContainer.innerHTML = '';
+
+    if (filteredCategories.length > 0) {
+      filteredCategories.forEach(category => {
+        const categoryElement = document.createElement('a');
+        categoryElement.href = '#';  // Здесь можно добавить ссылку на соответствующую категорию
+        categoryElement.classList.add('category-card', 'small');
+        categoryElement.innerHTML = `
+          <img src="${category.image}" alt="${category.name}">
+          <div class="subcategory">${category.name}</div>
+        `;
+        resultsContainer.appendChild(categoryElement);
+      });
+      document.getElementById('searchResults').style.display = 'block';
+    } else {
+      resultsContainer.innerHTML = '<p>Ничего не найдено.</p>';
+      document.getElementById('searchResults').style.display = 'block';
+    }
+  }
 </script>
 </body>
 </html>
