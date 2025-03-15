@@ -1,424 +1,587 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>CS:GO – Подкатегории | GlovimPlaye</title>
+  <title>CS:GO — Подкатегории | GlovimPlaye</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <!-- Font Awesome для иконок -->
+
+  <!-- Font Awesome (иконки) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
   <style>
-/* Общие стили */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-body {
-  font-family: Arial, sans-serif;
-  background: #2b2a2a url('background.jpg') no-repeat center center fixed;
-  background-size: cover;
-  background-blend-mode: multiply;
-  color: #fff;
-}
+    /* Сброс стилей */
+    * {
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box;
+    }
 
-/* Адаптивный хедер */
-header {
-  background: rgba(71, 68, 68, 0.85);
-  padding: 10px 15px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-.logo-button {
-  font-size: 22px;
-  padding: 5px;
-}
-.header-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.search-container {
-  display: flex;
-  max-width: 100%;
-  width: 100%;
-}
-.search-input {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-}
-.search-btn {
-  padding: 8px 15px;
-  font-size: 14px;
-}
+    /* Общие стили body (как на главной) */
+    body {
+      font-family: Arial, sans-serif;
+      background: #2b2a2a url('background.jpg') no-repeat center center fixed; /* Можно убрать картинку, если не нужна */
+      background-size: cover;
+      background-blend-mode: multiply;
+      color: #fff;
+      min-height: 100vh;
+      margin: 0;
+      padding-bottom: 60px; /* Отступ под нижнюю панель, если нужна */
+    }
 
-/* Блок профиля */
-.profile {
-  display: flex;
-  align-items: center;
-}
-.avatar {
-  width: 40px;
-  height: 40px;
-}
+    /* Хедер (как на главной) */
+    header {
+      width: 100%;
+      background: #1f1f1f;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      border-radius: 0 0 8px 8px;
+      position: relative;
+      flex-wrap: wrap;
+    }
+    .logo-button {
+      background: none;
+      border: none;
+      color: #ff7f50; /* Оранжевый акцент */
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s, transform 0.3s;
+    }
+    .logo-button:hover {
+      color: #ff4500;
+      transform: scale(1.05);
+    }
 
-/* Подкатегории */
-.subcategories {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 15px;
-  text-align: center;
-}
-.subcategory-card {
-  padding: 15px;
-  font-size: 14px;
-}
+    /* Центр хедера (поиск) */
+    .header-center {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 5px 0;
+    }
+    .search-container {
+      display: flex;
+      max-width: 400px;
+      width: 100%;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 30px;
+      overflow: hidden;
+    }
+    .search-input {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      outline: none;
+    }
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+    .search-btn {
+      padding: 8px 15px;
+      font-size: 14px;
+      background: #ff7f50;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .search-btn:hover {
+      background: #ff4500;
+    }
 
-/* Таблица товаров */
-.product-table {
-  width: 100%;
-  font-size: 14px;
-}
+    /* Профиль (справа) */
+    .profile {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .avatar:hover {
+      transform: scale(1.1);
+    }
+    .profile-menu {
+      display: none;
+      position: absolute;
+      top: 50px; 
+      right: 0;
+      background: #f9f8f8;
+      color: #333;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      overflow: hidden;
+      z-index: 10;
+    }
+    .profile-menu.active {
+      display: block;
+    }
+    .profile-menu a {
+      display: block;
+      padding: 10px 15px;
+      text-decoration: none;
+      color: #333;
+      transition: background 0.3s;
+    }
+    .profile-menu a:hover {
+      background: #f6f4f4;
+    }
+    .logout {
+      color: red;
+      font-weight: bold;
+    }
 
-/* Мобильная адаптация */
-@media (max-width: 768px) {
-  header {
-    flex-direction: column;
-    text-align: center;
-  }
-  .header-center {
-    width: 100%;
-    margin-top: 10px;
-  }
-  .search-input {
-    font-size: 12px;
-    padding: 6px;
-  }
-  .search-btn {
-    font-size: 12px;
-    padding: 6px;
-  }
-  .subcategories {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .product-table th,
-  .product-table td {
-    padding: 8px;
-    font-size: 12px;
-  }
-  .modal-content {
-    width: 90%;
-    padding: 15px;
-  }
-}
+    /* Кнопка авторизации */
+    .auth-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .login-btn {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 12px 30px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .login-btn:hover {
+      background: #ff7f50;
+      color: #fff;
+      transform: translateY(-2px);
+    }
 
-    </style>
-  </head>
-  <body>
-    <!-- Хедер -->
-    <header>
-      <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
-      <div class="header-center">
-        <div class="search-container">
-          <input type="text" class="search-input" placeholder="Поиск товаров...">
-          <button class="search-btn">Поиск</button>
-        </div>
-      </div>
-      <div class="profile" id="profileSection" style="display:none;">
-        <img id="avatar" class="avatar" src="" alt="Avatar" onclick="toggleProfileMenu()">
-        <div class="profile-menu" id="profileMenu">
-          <a href="#" onclick="showProfileModal()">Мой профиль</a>
-          <a href="#">Заказы</a>
-          <a href="settings.html">Настройки</a>
-          <a href="#">Чат</a>
-          <a href="#">Уведомления</a>
-          <a href="#" class="logout" onclick="logout()">Выйти</a>
-        </div>
-      </div>
-    </header>
-    
-    <!-- Контейнер авторизации (если не залогинен) -->
-    <div class="auth-container" id="authContainer">
-      <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
-    </div>
-    
-    <!-- Основной контент страницы – CS:GO и подкатегории -->
-    <main>
-      <div class="csgo-header">
-        <img src="images/csgo.jpg" alt="CS:GO">
-        <h1>CS:GO</h1>
-      </div>
-      <p>Выберите </p>
-      <div class="subcategories">
-        <a href="csgo-accounts.html" class="subcategory-card">Аккаунты</a>
-        <a href="csgo-skins.html" class="subcategory-card">Скины</a>
-        <a href="csgo-donate.html" class="subcategory-card">Донат</a>
-        <a href="csgo-services.html" class="subcategory-card">Услуги</a>
-        <a href="csgo-items.html" class="subcategory-card">Товары</a>
-        <a href="csgo-items.html" class="subcategory-card">Prime Status</a>
-        <a href="csgo-items.html" class="subcategory-card">Другое</a>
-        <a href="csgo-items.html" class="subcategory-card">Буст</a>
-        <a href="csgo-items.html" class="subcategory-card">Аренда</a>
-      </div>
-    </main>
+    /* Основной контейнер (как на главной) */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: rgba(48, 44, 44, 0.85);
+      padding: 20px;
+      border-radius: 8px;
+    }
 
+    /* Шапка CS:GO */
+    .csgo-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    .csgo-header img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 10px;
+    }
+    .csgo-header h1 {
+      font-size: 24px;
+      color: #ff7f50;
+    }
 
-    
-    <head>
-      <meta charset="UTF-8">
-      <title>Товары | Маркетплейс</title>
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      <style>
-        body {
-          background-color: #1e1e1e;
-          color: #fff;
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 20px;
-        }
-        
-        .container {
-          width: 90%;
-          max-width: 1200px;
-          margin: 0 auto;
-        }
-        
-        .product-table {
-          width: 100%;
-          border-collapse: collapse;
-          background: #2a2a2a;
-          border-radius: 10px;
-          overflow: hidden;
-        }
-        
-        .product-table th,
-        .product-table td {
-          padding: 12px;
-          text-align: left;
-          border-bottom: 1px solid #444;
-        }
-        
-        .product-table th {
-          background: #333;
-          font-weight: bold;
-        }
-        
-        .product-table tr:hover {
-          background: #3a3a3a;
-        }
-        
-        .product-name {
-          color: #ff7f50;
-          font-weight: bold;
-          text-decoration: none;
-        }
-        
-        .product-name:hover {
-          text-decoration: underline;
-        }
-        
-        .price {
-          font-weight: bold;
-          color: #ff7f50;
-        }
-        
-        .seller {
-          display: flex;
-          align-items: center;
-        }
-        
-        .seller img {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          margin-right: 10px;
-        }
-        
-      </style>
-    </head>
-    <body>
-    
-    <table class="product-table">
-      <thead>
-        <tr>
-          <th>Название</th>
-          <th>Продавец</th>
-          <th>Наличие</th>
-          <th>Цена</th>
-        </tr>
-      </thead>
-      <tbody id="productList"></tbody>
-    </table>
-    </div>
-      
+    /* Подкатегории (сеткой) */
+    .subcategories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .subcategory-card {
+      background: #1f1f1f;
+      padding: 15px;
+      border-radius: 8px;
+      color: #fff;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+    .subcategory-card:hover {
+      background: #2a2a2a;
+    }
+
+    /* Таблица товаров */
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #2a2a2a;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .product-table th,
+    .product-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+    }
+    .product-table th {
+      background: #333;
+      font-weight: bold;
+    }
+    .product-table tr:hover {
+      background: #3a3a3a;
+    }
+    .product-name {
+      color: #ff7f50;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .product-name:hover {
+      text-decoration: underline;
+    }
+    .price {
+      font-weight: bold;
+      color: #ff7f50;
+    }
+    .seller {
+      display: flex;
+      align-items: center;
+    }
+    .seller img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    /* Футер */
+    footer {
+      background: #1f1f1f;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+      margin-top: 20px;
+    }
+    .social-links a {
+      margin: 0 10px;
+      color: #fafbfb;
+      font-size: 24px;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .social-links a:hover {
+      color: #ff4500;
+    }
+
+    /* Модальное окно профиля */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0; top: 0;
+      width: 100%; 
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      right: 15px; 
+      top: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #333;
+    }
+    .profile-details {
+      text-align: center;
+    }
+    .profile-details img {
+      width: 100px; 
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid #ff7f50;
+    }
+    .profile-details h2 {
+      margin: 10px 0 5px;
+      color: #ff7f50;
+    }
+    .profile-details p {
+      color: #666; 
+      margin: 0;
+    }
+    .edit-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #ff7f50; 
+      color: #fff;
+      border: none; 
+      border-radius: 5px;
+      cursor: pointer; 
+      transition: background 0.3s;
+    }
+    .edit-btn:hover {
+      background: #ff4500;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+      }
+      .header-center {
+        width: 100%;
+        margin-top: 10px;
+      }
+      .search-input {
+        font-size: 12px;
+        padding: 6px;
+      }
+      .search-btn {
+        font-size: 12px;
+        padding: 6px;
+      }
+      .subcategories {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .product-table th,
+      .product-table td {
+        padding: 8px;
+        font-size: 12px;
+      }
+      .modal-content {
+        width: 90%;
+        padding: 15px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ======= Хедер ======= -->
+<header>
+  <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
   
+  <div class="header-center">
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Поиск товаров...">
+      <button class="search-btn">Поиск</button>
+    </div>
+  </div>
 
+  <div class="profile" id="profileSection" style="display:none;">
+    <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
+    <div class="profile-menu" id="profileMenu">
+      <a href="#" onclick="showProfileModal()">Мой профиль</a>
+      <a href="#">Заказы</a>
+      <a href="settings.html">Настройки</a>
+      <a href="#">Чат</a>
+      <a href="#">Уведомления</a>
+      <a href="#" class="logout" onclick="logout()">Выйти</a>
+    </div>
+  </div>
+</header>
 
-      <tbody id="productList"></tbody>
+<!-- Авторизация (если не залогинен) -->
+<div class="auth-container" id="authContainer">
+  <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
+</div>
+
+<!-- ======= Основной контент ======= -->
+<div class="container">
+  
+  <!-- Заголовок "CS:GO" с картинкой -->
+  <div class="csgo-header">
+    <img src="images/csgo.jpg" alt="CS:GO">
+    <h1>CS:GO</h1>
+  </div>
+
+  <p>Выберите подкатегорию:</p>
+  <!-- Сетка подкатегорий -->
+  <div class="subcategories">
+    <a href="csgo-accounts.html" class="subcategory-card">Аккаунты</a>
+    <a href="csgo-skins.html" class="subcategory-card">Скины</a>
+    <a href="csgo-donate.html" class="subcategory-card">Донат</a>
+    <a href="csgo-services.html" class="subcategory-card">Услуги</a>
+    <a href="csgo-items.html" class="subcategory-card">Товары</a>
+    <a href="csgo-items.html" class="subcategory-card">Prime Status</a>
+    <a href="csgo-items.html" class="subcategory-card">Другое</a>
+    <a href="csgo-items.html" class="subcategory-card">Буст</a>
+    <a href="csgo-items.html" class="subcategory-card">Аренда</a>
+  </div>
+
+  <!-- Таблица товаров -->
+  <table class="product-table">
+    <thead>
+      <tr>
+        <th>Название</th>
+        <th>Продавец</th>
+        <th>Наличие</th>
+        <th>Цена</th>
+      </tr>
+    </thead>
+    <tbody id="productList"></tbody>
+  </table>
+</div>
+
+<!-- Футер -->
+<footer>
+  <div class="social-links">
+    <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+    <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+    <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+  </div>
+  <p>© 2025 GlovimPlaye. Все права защищены.</p>
+</footer>
+
+<!-- Модальное окно профиля -->
+<div id="profileModal" class="modal">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
+    <div class="profile-details">
+      <img id="modalAvatar" src="" alt="Avatar">
+      <h2 id="profileName"></h2>
+      <p id="profileEmail"></p>
+      <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
+    </div>
+  </div>
+</div>
 
 <script>
-window.onload = function() {
-  const productList = document.getElementById('productList');
+  /* ---------- Firebase конфиг ---------- */
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-  // Получаем товары из localStorage
-  let products = JSON.parse(localStorage.getItem('products')) || [];
+  var auth = firebase.auth();
+  var provider = new firebase.auth.GoogleAuthProvider();
 
-  if (products.length === 0) {
-    productList.innerHTML = '<tr><td colspan="4">Товаров нет</td></tr>';
-  } else {
-    products.forEach(product => {
-      const row = document.createElement('tr');
+  document.addEventListener("DOMContentLoaded", function() {
+    var savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      updateProfile(JSON.parse(savedUser));
+    }
+  });
 
-      row.innerHTML = `
-        <td>
-          <a href="product-details.html?id=${product.id}" class="product-name">${product.name}</a>
-        </td>
-        <td class="seller">
-          <img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар">
-          ${product.sellerName}
-        </td>
-        <td>${product.stock} шт.</td>
-        <td class="price">${product.price} ₽</td>
-      `;
+  function login() {
+    auth.signInWithPopup(provider)
+      .then(function(result) {
+        var user = result.user;
+        var userData = {
+          uid: user.uid,
+          photoURL: user.photoURL,
+          displayName: user.displayName,
+          email: user.email
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        updateProfile(userData);
+      })
+      .catch(function(error) {
+        console.error("Ошибка входа:", error);
+      });
+  }
 
-      productList.appendChild(row);
+  function updateProfile(user) {
+    document.getElementById("loginButton").style.display = "none";
+    document.getElementById("authContainer").style.display = "none";
+    document.getElementById("profileSection").style.display = "flex";
+    document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
+    document.getElementById("modalAvatar").src = user.photoURL || 'default-avatar.png';
+    document.getElementById("profileName").innerText = user.displayName;
+    document.getElementById("profileEmail").innerText = user.email;
+  }
+
+  function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("active");
+  }
+
+  function logout() {
+    auth.signOut().then(function() {
+      localStorage.removeItem("user");
+      document.getElementById("loginButton").style.display = "block";
+      document.getElementById("authContainer").style.display = "block";
+      document.getElementById("profileSection").style.display = "none";
+    }).catch(function(error) {
+      console.error("Ошибка выхода:", error);
     });
   }
-};
-</script>
 
-    </body>
-    </html>
+  function showProfileModal() {
+    document.getElementById("profileModal").style.display = "block";
+    var menu = document.getElementById("profileMenu");
+    if (menu) menu.classList.remove("active");
+  }
 
+  function closeProfileModal() {
+    document.getElementById("profileModal").style.display = "none";
+  }
 
-    <!-- Футер --><footer>
-    <div class="social-links">
-        <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a><a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-        <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-        <p>© 2025 GlovimPlaye. Все права защищены.</p>
-      </div>
-    </footer>
-    
-    <!-- Модальное окно профиля -->
-    <div id="profileModal" class="modal">
-      <div class="modal-content">
-        <span class="modal-close" onclick="closeProfileModal()">&times;</span>
-        <div class="profile-details">
-          <img id="modalAvatar" src="" alt="Avatar">
-          <h2 id="profileName"></h2>
-          <p id="profileEmail"></p>
-          <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
-        </div>
-      </div>
-    </div>
+  function editProfile() {
+    alert("Функция редактирования профиля пока не реализована.");
+  }
 
-   
-    
-    
-    <script>
-      // Firebase конфиг – замените данные на свои!
-      var firebaseConfig = {
-        apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-        authDomain: "glovimplaye-b1023.firebaseapp.com",
-        databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-        projectId: "glovimplaye-b1023",
-        storageBucket: "glovimplaye-b1023.firebasestorage.app",
-        messagingSenderId: "553440591519",
-        appId: "1:553440591519:web:b7be45a9253689f322acaa"
-      };
-      firebase.initializeApp(firebaseConfig);
-      
-      var auth = firebase.auth();
-      var provider = new firebase.auth.GoogleAuthProvider();
-      
-      document.addEventListener("DOMContentLoaded", function() {
-        var savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          updateProfile(JSON.parse(savedUser));
-        }
+  window.onclick = function(event) {
+    var modal = document.getElementById("profileModal");
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  };
+
+  function goToHomePage() {
+    window.location.href = "index.html"; 
+  }
+
+  /* ===== Загрузка товаров в таблицу ===== */
+  window.onload = function() {
+    const productList = document.getElementById('productList');
+    // Получаем товары из localStorage
+    let products = JSON.parse(localStorage.getItem('products')) || [];
+
+    if (products.length === 0) {
+      productList.innerHTML = '<tr><td colspan="4">Товаров нет</td></tr>';
+    } else {
+      products.forEach(product => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>
+            <a href="product-details.html?id=${product.id}" class="product-name">${product.name}</a>
+          </td>
+          <td class="seller">
+            <img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар">
+            ${product.sellerName}
+          </td>
+          <td>${product.stock} шт.</td>
+          <td class="price">${product.price} ₽</td>
+        `;
+        productList.appendChild(row);
       });
-      
-      function login() {
-        auth.signInWithPopup(provider)
-          .then(function(result) {
-            var user = result.user;
-            var userData = {
-              uid: user.uid,
-              photoURL: user.photoURL,
-              displayName: user.displayName,
-              email: user.email
-            };
-            localStorage.setItem("user", JSON.stringify(userData));
-            updateProfile(userData);
-          })
-          .catch(function(error) {
-            console.error("Ошибка входа:", error);
-          });
-      }
-      
-      function updateProfile(user) {
-        document.getElementById("loginButton").style.display = "none";
-        document.getElementById("authContainer").style.display = "none";
-        document.getElementById("profileSection").style.display = "flex";
-        document.getElementById("avatar").src = user.photoURL;
-        document.getElementById("modalAvatar").src = user.photoURL;
-        document.getElementById("profileName").innerText = user.displayName;
-        document.getElementById("profileEmail").innerText = user.email;
-        // Если есть окно чата – обновляем и его
-        var chatAvatar = document.getElementById("chatAvatar");
-        if(chatAvatar) {
-          chatAvatar.src = user.photoURL;
-          document.getElementById("chatName").innerText = user.displayName;
-        }
-      }
-      
-      function toggleProfileMenu() {
-        document.getElementById("profileMenu").classList.toggle("active");
-      }
-      
-      function logout() {
-        auth.signOut().then(function() {
-          localStorage.removeItem("user");
-          document.getElementById("loginButton").style.display = "block";
-          document.getElementById("authContainer").style.display = "block";
-          document.getElementById("profileSection").style.display = "none";
-        }).catch(function(error) {
-          console.error("Ошибка выхода:", error);
-        });
-      }
-      
-      function showProfileModal() {
-        document.getElementById("profileModal").style.display = "block";
-        document.getElementById("profileMenu").classList.remove("active");
-      }
-      
-      function closeProfileModal() {
-        document.getElementById("profileModal").style.display = "none";
-      }
-      
-      function editProfile() {
-        alert("Функция редактирования профиля пока не реализована.");
-      }
-      
-      window.onclick = function(event) {
-        var modal = document.getElementById("profileModal");if (event.target == modal) {
-            modal.style.display = "none";
-          }
-        };
-
-        function goToHomePage() {
-          window.location.href = "index.html"; // Или укажите нужный URL
-        }
-      </script>
-    </body>
-    </html>
+    }
+  };
+</script>
+</body>
+</html>
 
 
 

@@ -4,49 +4,90 @@
   <meta charset="UTF-8">
   <title>CS:GO — Аккаунты | GlovimPlaye</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Font Awesome (для иконок, если нужно) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
   <style>
-    /* Сброс стилей */
+    /* ======= Сброс и базовые стили ======= */
     * {
-      margin: 0;
-      padding: 0;
+      margin: 0; 
+      padding: 0; 
       box-sizing: border-box;
     }
-    /* Базовые стили страницы */
     body {
-      background-color: #1e1e1e;
-      color: #fff;
       font-family: Arial, sans-serif;
+      background: #2b2a2a; /* Тёмный фон, как на главной */
+      color: #fff;
+      min-height: 100vh;
       margin: 0;
-      padding: 20px;
+      padding-bottom: 60px; /* Если нужна нижняя панель */
     }
-    h1 {
+
+    /* ======= Шапка (header), аналогично главной ======= */
+    header {
+      width: 100%;
+      background: #1f1f1f; /* Тёмная шапка */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+      border-radius: 0 0 8px 8px;
+      position: relative;
+    }
+    .logo-button {
+      background: none;
+      border: none;
+      color: #ff7f50; /* Оранжевый акцент */
+      font-size: 26px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: color 0.3s, transform 0.3s;
+    }
+    .logo-button:hover {
+      color: #ff4500;
+      transform: scale(1.05);
+    }
+
+    /* ======= Контейнер (как на главной) ======= */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: rgba(48, 44, 44, 0.85);
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .container h1 {
       text-align: center;
       margin-bottom: 20px;
+      font-size: 24px;
     }
 
-    /* Контейнер для списка товаров */
+    /* ======= Сетка карточек ======= */
     .product-list {
-      display: grid;             /* Сетка */
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;                 /* Расстояние между карточками */
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
     }
 
-    /* Каждая карточка товара */
+    /* ======= Стиль карточки товара ======= */
     .product-card {
-      background: #2a2a2a;
-      border-radius: 10px;
+      background: #1f1f1f;        /* Тёмный фон */
+      border: 1px solid #333;    /* Тонкая граница */
+      border-radius: 8px;        /* Скруглённые углы */
       padding: 15px;
       display: flex;
       flex-direction: column;
-      transition: background 0.3s;
+      transition: transform 0.2s;
     }
     .product-card:hover {
-      background: #3a3a3a;
+      transform: scale(1.02);
     }
 
     /* Название товара */
     .product-name {
-      color: #ff7f50;
+      color: #ff7f50;            /* Оранжевый акцент */
       font-weight: bold;
       text-decoration: none;
       font-size: 18px;
@@ -61,11 +102,7 @@
       font-size: 14px;
       margin-bottom: 10px;
     }
-    .product-seller {
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: #ccc;
-    }
+    .product-seller,
     .product-stock {
       margin-bottom: 8px;
       font-size: 14px;
@@ -74,7 +111,7 @@
     .product-price {
       font-size: 16px;
       font-weight: bold;
-      color: #ff7f50;
+      color: #ff7f50;           /* Акцент на цене */
       margin-bottom: 10px;
     }
 
@@ -94,43 +131,58 @@
   </style>
 </head>
 <body>
+
+<!-- ===== Шапка, аналогично главной ===== -->
+<header>
+  <button class="logo-button" onclick="goHome()">GlovimPlaye</button>
+</header>
+
+<!-- ===== Основной контейнер ===== -->
+<div class="container">
   <h1>CS:GO — Аккаунты</h1>
-
-  <!-- Контейнер для списка товаров (карточки) -->
+  <!-- Список товаров (карточки) -->
   <div class="product-list" id="productList"></div>
+</div>
 
-  <script>
-    window.addEventListener('DOMContentLoaded', function() {
-      const productListEl = document.getElementById('productList');
-      let products = JSON.parse(localStorage.getItem('products')) || [];
+<script>
+  // Кнопка "логотип" - переход на главную
+  function goHome() {
+    window.location.href = 'index.html';
+  }
 
-      // Фильтруем: категория = "csgo" и подкатегория = "accounts"
-      let filtered = products.filter(p => p.category === 'csgo' && p.subcategory === 'accounts');
+  // При загрузке страницы
+  window.addEventListener('DOMContentLoaded', function() {
+    const productListEl = document.getElementById('productList');
+    // Читаем все товары из localStorage
+    let products = JSON.parse(localStorage.getItem('products')) || [];
 
-      if (filtered.length === 0) {
-        productListEl.innerHTML = '<p>Товаров нет</p>';
-      } else {
-        filtered.forEach(product => {
-          // Создаем карточку
-          const card = document.createElement('div');
-          card.className = 'product-card';
+    // Фильтруем по категории и подкатегории
+    let filtered = products.filter(p => p.category === 'csgo' && p.subcategory === 'accounts');
 
-          // Внутренний HTML карточки
-          card.innerHTML = `
-            <a href="#" class="product-name">${product.name}</a>
-            <div class="product-description">${product.description}</div>
-            <div class="product-seller">Продавец: ${product.sellerName}</div>
-            <div class="product-stock">Наличие: ${product.stock} шт.</div>
-            <div class="product-price">${product.price} ₽</div>
-            <div class="product-details-link">
-              <a href="product-details.html?id=${product.id}">Подробнее</a>
-            </div>
-          `;
+    if (filtered.length === 0) {
+      productListEl.innerHTML = '<p>Товаров нет</p>';
+    } else {
+      filtered.forEach(product => {
+        // Создаём div-карточку
+        const card = document.createElement('div');
+        card.className = 'product-card';
 
-          productListEl.appendChild(card);
-        });
-      }
-    });
-  </script>
+        // Вставляем HTML содержимое
+        card.innerHTML = `
+          <a href="#" class="product-name">${product.name}</a>
+          <div class="product-description">${product.description}</div>
+          <div class="product-seller">Продавец: ${product.sellerName}</div>
+          <div class="product-stock">Наличие: ${product.stock} шт.</div>
+          <div class="product-price">${product.price} ₽</div>
+          <div class="product-details-link">
+            <a href="product-details.html?id=${product.id}">Подробнее</a>
+          </div>
+        `;
+
+        productListEl.appendChild(card);
+      });
+    }
+  });
+</script>
 </body>
 </html>

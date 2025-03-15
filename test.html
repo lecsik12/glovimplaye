@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GlovimPlaye | Главная с оверлеем поиска</title>
+
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+  <!-- Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+  <style>
+    /* Общие стили */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #2b2a2a;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    /* Стили для оверлея поиска */
+    .search-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0,0,0,0.8);
+      display: none;
+      z-index: 9999;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 50px;
+    }
+
+    .search-overlay.active {
+      display: flex;
+    }
+
+    .search-wrapper {
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: #1f1f1f;
+      border: 2px solid #ff7f50;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .search-input-wrapper input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      margin-left: 8px;
+      outline: none;
+    }
+
+    .search-input-wrapper input::placeholder {
+      color: #999;
+    }
+
+    .search-input-wrapper i {
+      color: #ff7f50;
+      margin-left: 8px;
+      font-size: 16px;
+    }
+
+    .close-button {
+      background: none;
+      border: none;
+      color: #999;
+      margin-left: 8px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .close-button:hover {
+      color: #ff7f50;
+    }
+
+    .search-results {
+      list-style: none;
+      background: #1f1f1f;
+      border: 2px solid #333;
+      border-radius: 8px;
+      margin-top: 10px;
+      padding: 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .search-results li {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .search-results li:hover {
+      background: #2b2a2a;
+    }
+
+    .search-results li:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Оверлей поиска -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-wrapper">
+    <!-- Поле ввода -->
+    <div class="search-input-wrapper">
+      <i class="fas fa-search"></i>
+      <input
+        type="text"
+        placeholder="Поиск..."
+        id="searchInput"
+        oninput="searchFunction()"
+      />
+      <button class="close-button" onclick="closeSearch()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Результаты поиска -->
+    <ul class="search-results" id="searchResults">
+      <!-- Результаты будут добавляться сюда -->
+    </ul>
+  </div>
+</div>
+
+<!-- Кнопка для открытия поиска -->
+<button onclick="openSearch()">Открыть поиск</button>
+
+<script>
+  // Функция для открытия оверлея
+  function openSearch() {
+    document.getElementById('searchOverlay').classList.add('active');
+  }
+
+  // Функция для закрытия оверлея
+  function closeSearch() {
+    document.getElementById('searchOverlay').classList.remove('active');
+  }
+
+  // Функция для поиска
+  function searchFunction() {
+    var input = document.getElementById('searchInput').value.toLowerCase();
+    var resultsList = document.getElementById('searchResults');
+
+    // Пример данных для поиска (можно заменить на реальный список)
+    var data = [
+      "Call of Duty",
+      "Counter-Strike",
+      "Dota 2",
+      "Epic Games",
+      "Netflix",
+      "Discord"
+    ];
+
+    // Очистка результатов
+    resultsList.innerHTML = "";
+
+    if (input) {
+      // Поиск по данным
+      var results = data.filter(item => item.toLowerCase().includes(input));
+
+      // Вывод результатов
+      results.forEach(function(result) {
+        var listItem = document.createElement('li');
+        listItem.innerHTML = '<i class="fas fa-gamepad"></i>' + result;
+        resultsList.appendChild(listItem);
+      });
+    }
+  }
+</script>
+
+</body>
+</html>
