@@ -8,13 +8,14 @@
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
   <style>
     /* =============================
-       БАЗОВЫЕ СТИЛИ и СБРОС
+       БАЗОВЫЕ СТИЛИ И СБРОС
     ============================= */
     * {
       margin: 0;
@@ -23,19 +24,20 @@
     }
     body {
       font-family: Arial, sans-serif;
+      /* Подставьте корректный путь к файлу background.jpg */
       background: url('background.jpg') no-repeat center center fixed;
       background-size: cover;
       background-blend-mode: multiply;
       background-color: #2b2a2a;
       color: #fff;
       padding: 20px;
-      padding-bottom: 80px; /* Увеличен отступ для нижней панели на мобил */
+      padding-bottom: 80px; /* Отступ для нижней панели (мобильная) */
     }
-    
-    /* Классы для адаптивного показа */
+
+    /* Классы для адаптивности */
     .desktop-only { display: block; }
     .mobile-only { display: none; }
-    
+
     /* =============================
        ХЕДЕР
     ============================= */
@@ -65,19 +67,7 @@
       color: #ff4500;
       transform: scale(1.05);
     }
-    /* Кнопка-гамбургер для мобил */
-    .hamburger-btn {
-      background: none;
-      border: none;
-      color: #ff7f50;
-      font-size: 24px;
-      cursor: pointer;
-      transition: color 0.3s;
-    }
-    .hamburger-btn:hover {
-      color: #ff4500;
-    }
-    /* Desktop-меню (если нужно) */
+    /* Меню для ПК */
     .nav-menu {
       display: flex;
       gap: 15px;
@@ -91,7 +81,21 @@
     .nav-menu a:hover {
       color: #fff;
     }
-    /* Профиль (для десктопа) */
+    /* Кнопка-гамбургер (мобилка) */
+    .hamburger-btn {
+      background: none;
+      border: none;
+      color: #ff7f50;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.3s;
+      display: none; /* по умолчанию скрыта */
+    }
+    .hamburger-btn:hover {
+      color: #ff4500;
+    }
+
+    /* Профиль (ПК) */
     .profile {
       display: flex;
       align-items: center;
@@ -99,6 +103,7 @@
       cursor: pointer;
     }
     .avatar {
+      /* Подставьте корректный путь к default-avatar.png */
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -120,7 +125,9 @@
       overflow: hidden;
       z-index: 10;
     }
-    .profile-menu.active { display: block; }
+    .profile-menu.active {
+      display: block;
+    }
     .profile-menu a {
       display: block;
       padding: 10px 15px;
@@ -128,11 +135,16 @@
       color: #333;
       transition: background 0.3s;
     }
-    .profile-menu a:hover { background: #f6f4f4; }
-    .logout { color: red; font-weight: bold; }
-    
+    .profile-menu a:hover {
+      background: #f6f4f4;
+    }
+    .logout {
+      color: red;
+      font-weight: bold;
+    }
+
     /* =============================
-       Мобильное меню (раскрывается по гамбургеру)
+       Мобильное меню (гамбургер)
     ============================= */
     .mobile-menu {
       display: none;
@@ -156,10 +168,12 @@
     .mobile-menu a:hover {
       background: #2b2b2b;
     }
-    .mobile-menu.active { display: flex; }
-    
+    .mobile-menu.active {
+      display: flex;
+    }
+
     /* =============================
-       КОНТЕЙНЕР и контент страницы
+       Контент (контейнер)
     ============================= */
     .container {
       max-width: 700px;
@@ -190,7 +204,9 @@
       font-weight: bold;
       transition: color 0.3s;
     }
-    .back-link:hover { color: #ff4500; }
+    .back-link:hover {
+      color: #ff4500;
+    }
     button {
       background: #ff7f50;
       color: #fff;
@@ -202,7 +218,9 @@
       margin-bottom: 10px;
       transition: background 0.3s;
     }
-    button:hover { background: #ff4500; }
+    button:hover {
+      background: #ff4500;
+    }
     .seller-info {
       display: flex;
       align-items: center;
@@ -214,16 +232,28 @@
       height: 50px;
       border-radius: 50%;
     }
-    .reviews-section { margin-top: 30px; }
+
+    /* Отзывы */
+    .reviews-section {
+      margin-top: 30px;
+    }
     .review-item {
       background: rgba(255,255,255,0.1);
       padding: 10px;
       border-radius: 5px;
       margin-bottom: 10px;
     }
-    .review-author { font-weight: bold; color: #ff7f50; }
-    .review-text { margin: 5px 0; }
-    .review-rating { color: gold; font-weight: bold; }
+    .review-author {
+      font-weight: bold;
+      color: #ff7f50;
+    }
+    .review-text {
+      margin: 5px 0;
+    }
+    .review-rating {
+      color: gold;
+      font-weight: bold;
+    }
     #addReviewForm {
       display: none;
       flex-direction: column;
@@ -248,8 +278,42 @@
       font-size: 16px;
       transition: background 0.3s;
     }
-    #addReviewForm button:hover { background: #218838; }
-    
+    #addReviewForm button:hover {
+      background: #218838;
+    }
+
+    /* =============================
+       НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ)
+    ============================= */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #1e1e1e;
+      align-items: center;
+      justify-content: space-around;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+    .bottom-nav a {
+      text-decoration: none;
+      color: #ccc;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a i {
+      font-size: 20px;
+      margin-bottom: 2px;
+    }
+    .bottom-nav a:hover {
+      color: #fff;
+    }
+
     /* =============================
        ФУТЕР
     ============================= */
@@ -267,8 +331,10 @@
       text-decoration: none;
       transition: color 0.3s;
     }
-    .social-links a:hover { color: #ff4500; }
-    
+    .social-links a:hover {
+      color: #ff4500;
+    }
+
     /* =============================
        МОДАЛЬНОЕ ОКНО ПрофИЛЯ
     ============================= */
@@ -309,6 +375,7 @@
       text-align: center;
     }
     .profile-details img {
+      /* default-avatar.png (скорректируйте путь) */
       width: 100px;
       height: 100px;
       border-radius: 50%;
@@ -332,10 +399,12 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-    .edit-btn:hover { background: #ff4500; }
-    
+    .edit-btn:hover {
+      background: #ff4500;
+    }
+
     /* =============================
-       ОВЕРЛЕЙ ПОИСКА
+       ОВЕРЛЕЙ ПОИСКА (необязательно)
     ============================= */
     .search-overlay {
       position: fixed;
@@ -401,8 +470,12 @@
       margin-right: 10px;
       color: #ff7f50;
     }
-    .search-results li:hover { background: #2b2a2a; }
-    .search-results li:last-child { border-bottom: none; }
+    .search-results li:hover {
+      background: #2b2a2a;
+    }
+    .search-results li:last-child {
+      border-bottom: none;
+    }
     .close-overlay-btn {
       position: absolute;
       top: 15px;
@@ -413,28 +486,21 @@
       color: #ff7f50;
       cursor: pointer;
     }
-    .close-overlay-btn:hover { color: #ff4500; }
-    
+    .close-overlay-btn:hover {
+      color: #ff4500;
+    }
+
     /* =============================
-       АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ
+       МЕДИА-ЗАПРОС ДЛЯ МОБИЛЬНЫХ
     ============================= */
     @media (max-width: 768px) {
-      /* Показываем элементы с классом mobile-only, прячем desktop-only */
-      .mobile-only { display: inline-block !important; }
       .desktop-only { display: none !important; }
-      
-      /* В шапке: показываем гамбургер */
-      .hamburger-btn { display: inline-block; }
-      
-      /* Скрываем профиль в хедере на мобил */
-      header .profile { display: none; }
-      
-      /* Нижняя панель навигации (только для мобильных) */
+      .mobile-only { display: block !important; }
+      .hamburger-btn { display: block; }
+      header .profile { display: none; } /* Скрываем ПК-профиль */
       .bottom-nav { display: flex; }
     }
-    
     @media (max-width: 480px) {
-      body { padding-bottom: 80px; }
       .logo-button { font-size: 22px; }
       .container h2 { font-size: 20px; }
       button { font-size: 14px; padding: 8px 16px; }
@@ -445,21 +511,22 @@
 
 <!-- Хедер -->
 <header>
+  <!-- Логотип -->
   <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
   
-  <!-- Desktop меню (если нужно) -->
+  <!-- Меню для ПК -->
   <nav class="nav-menu desktop-only">
     <a href="valuta.html">Валюта</a>
     <a href="predmeti.html">Предмети</a>
     <a href="akunti.html">Акаунты</a>
   </nav>
   
-  <!-- Кнопка гамбургер (только на мобильных) -->
+  <!-- Гамбургер (мобильные) -->
   <button class="hamburger-btn mobile-only" onclick="toggleMobileMenu()">
     <i class="fas fa-bars"></i>
   </button>
   
-  <!-- Профиль (для десктопа) -->
+  <!-- Профиль (ПК) -->
   <div class="profile desktop-only" id="profileSection" style="display:none;">
     <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
     <div class="profile-menu" id="profileMenu">
@@ -473,14 +540,14 @@
   </div>
 </header>
 
-<!-- Мобильное меню (раскрывается по нажатию на гамбургер) -->
+<!-- Мобильное меню (гамбургер) -->
 <nav class="mobile-menu mobile-only" id="mobileMenu">
   <a href="valuta.html">Валюта</a>
   <a href="predmeti.html">Предмети</a>
   <a href="akunti.html">Акаунты</a>
 </nav>
 
-<!-- Контейнер авторизации (если не залогинен) -->
+<!-- Кнопка входа (если не залогинен) -->
 <div class="auth-container" id="authContainer">
   <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
 </div>
@@ -499,7 +566,7 @@
       <h3>Отзывы</h3>
       <div id="reviewsContainer"></div>
       
-      <!-- Форма добавления отзыва -->
+      <!-- Форма добавления отзыва (появляется только если user купил товар) -->
       <form id="addReviewForm">
         <label>Оценка (1-5)</label>
         <select id="reviewRating" required>
@@ -520,7 +587,7 @@
   </div>
 </main>
 
-<!-- Нижняя панель навигации (только для мобильных) -->
+<!-- Нижняя панель навигации (мобильная) -->
 <div class="bottom-nav mobile-only">
   <a href="valuta.html">
     <i class="fas fa-dollar-sign"></i>
@@ -528,7 +595,7 @@
   </a>
   <a href="predmeti.html">
     <i class="fas fa-box"></i>
-    <span>Предмети</span>
+    <span>Предметы</span>
   </a>
   <a href="akunti.html">
     <i class="fas fa-user"></i>
@@ -563,23 +630,27 @@
 </div>
 
 <script>
-  /* ---------- Firebase конфиг ---------- */
+  /* =============================
+     1) ИНИЦИАЛИЗАЦИЯ FIREBASE
+  ============================= */
   var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-    authDomain: "glovimplaye-b1023.firebaseapp.com",
-    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-    projectId: "glovimplaye-b1023",
-    storageBucket: "glovimplaye-b1023.firebasestorage.app",
-    messagingSenderId: "553440591519",
-    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN.firebaseapp.com",
+    databaseURL: "https://YOUR_DB_NAME.firebaseio.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
   };
   firebase.initializeApp(firebaseConfig);
-  
+
   var auth = firebase.auth();
   var provider = new firebase.auth.GoogleAuthProvider();
+  var db = firebase.database(); // Для работы с Realtime Database
+
   let currentUser = null;
   let currentProduct = null;
-  
+
   document.addEventListener("DOMContentLoaded", function() {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
@@ -587,8 +658,10 @@
     }
     showProductDetails();
   });
-  
-  /* ---------- Аутентификация ---------- */
+
+  /* =============================
+     2) АУТЕНТИФИКАЦИЯ
+  ============================= */
   function login() {
     auth.signInWithPopup(provider)
       .then(function(result) {
@@ -606,23 +679,22 @@
         console.error("Ошибка входа:", error);
       });
   }
-  
+
   function updateProfile(user) {
     currentUser = user;
     document.getElementById("loginButton").style.display = "none";
     document.getElementById("authContainer").style.display = "none";
-    // Показываем профиль только на десктопе (на мобильных профиль перемещён в нижнюю панель)
-    document.getElementById("profileSection").style.display = "flex";
+    document.getElementById("profileSection").style.display = "flex"; // Показываем профиль (только на ПК)
     document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
     document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
     document.getElementById("profileName").innerText = user.displayName;
     document.getElementById("profileEmail").innerText = user.email;
   }
-  
+
   function toggleProfileMenu() {
     document.getElementById("profileMenu").classList.toggle("active");
   }
-  
+
   function logout() {
     auth.signOut().then(function() {
       localStorage.removeItem("user");
@@ -634,52 +706,54 @@
       console.error("Ошибка выхода:", error);
     });
   }
-  
+
   function showProfileModal() {
     document.getElementById("profileModal").style.display = "block";
-    // Если открываем модальное окно, скрываем мобильное меню (если открыто)
+    // Закрыть мобильное меню, если оно открыто
     document.getElementById("mobileMenu").classList.remove("active");
   }
-  
   function closeProfileModal() {
     document.getElementById("profileModal").style.display = "none";
   }
-  
   function editProfile() {
     alert("Функция редактирования профиля пока не реализована.");
   }
-  
+
   window.onclick = function(event) {
     var modal = document.getElementById("profileModal");
     if (event.target == modal) {
       modal.style.display = "none";
     }
   };
-  
+
   function goToHomePage() {
     window.location.href = "index.html";
   }
-  
-  /* ---------- Логика товара, транзакций и отзывов ---------- */
+
+  /* =============================
+     3) ЛОГИКА ТОВАРА и ТРАНЗАКЦИЙ
+  ============================= */
   function showProductDetails() {
     const productDetails = document.getElementById('productDetails');
     const buyBtn = document.getElementById('buyBtn');
     const payBtn = document.getElementById('payBtn');
-  
+
     const params = new URLSearchParams(window.location.search);
     const productId = params.get('id');
     if (!productId) {
       productDetails.innerHTML = '<p>Не указан ID товара.</p>';
       return;
     }
-  
+
+    // Читаем товары из localStorage
     let products = JSON.parse(localStorage.getItem('products')) || [];
     currentProduct = products.find(p => p.id.toString() === productId);
     if (!currentProduct) {
       productDetails.innerHTML = '<p>Товар не найден.</p>';
       return;
     }
-  
+
+    // Отрисовываем инфу о товаре
     productDetails.innerHTML = `
       <p><span>Название:</span> ${currentProduct.name}</p>
       <p><span>Описание:</span> ${currentProduct.description || '—'}</p>
@@ -694,35 +768,40 @@
         </div>
       </div>
     `;
-  
+
+    // Проверяем, есть ли у пользователя незавершённая сделка (pending)
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    const userTx = (currentUser)
+    const userTx = currentUser
       ? transactions.find(tx => tx.productId == currentProduct.id && tx.buyerUid == currentUser.uid && tx.status != 'completed')
       : null;
-  
+
+    // Если товар в наличии и нет незавершённой сделки – показываем «Купить»
     if (parseInt(currentProduct.stock) > 0 && !userTx) {
       buyBtn.style.display = 'inline-block';
     } else {
       buyBtn.style.display = 'none';
     }
-  
+    // Если есть незавершённая сделка (pending) – показываем «Оплатить»
     if (userTx && userTx.status === 'pending') {
       payBtn.style.display = 'inline-block';
     } else {
       payBtn.style.display = 'none';
     }
-  
+
+    // Если товар закончился
     if (parseInt(currentProduct.stock) === 0) {
       productDetails.innerHTML += `<p style="color:red;font-weight:bold;">Товар недоступен</p>`;
     }
-  
+
     buyBtn.onclick = () => createTransaction(currentProduct.id);
     payBtn.onclick = () => confirmPayment(userTx?.id);
-  
-    renderReviews();
+
+    // Отрисовываем отзывы из Firebase
+    renderReviewsFromFirebase();
+    // Проверяем, может ли пользователь оставить отзыв
     checkReviewFormAccess();
   }
-  
+
   function createTransaction(productId) {
     if (!currentUser) {
       alert("Войдите, чтобы купить товар.");
@@ -732,14 +811,14 @@
       alert("Товар недоступен.");
       return;
     }
-  
+
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
     let existTx = transactions.find(tx => tx.productId == productId && tx.buyerUid == currentUser.uid && tx.status === 'pending');
     if (existTx) {
       alert("У вас уже есть незавершенная сделка по этому товару.");
       return;
     }
-  
+
     let newTx = {
       id: Date.now(),
       productId,
@@ -751,7 +830,7 @@
     alert("Сделка создана! Теперь оплатите её.");
     showProductDetails();
   }
-  
+
   function confirmPayment(txId) {
     if (!currentUser) {
       alert("Войдите, чтобы оплатить.");
@@ -765,7 +844,8 @@
     }
     transactions[txIndex].status = 'completed';
     localStorage.setItem('transactions', JSON.stringify(transactions));
-  
+
+    // Уменьшаем stock
     let products = JSON.parse(localStorage.getItem('products')) || [];
     let productIndex = products.findIndex(p => p.id.toString() === currentProduct.id.toString());
     if (productIndex !== -1) {
@@ -783,7 +863,10 @@
     alert("Оплата подтверждена! Сделка завершена.");
     showProductDetails();
   }
-  
+
+  /* =============================
+     4) РАБОТА С ОТЗЫВАМИ (Firebase)
+  ============================= */
   function checkReviewFormAccess() {
     const addReviewForm = document.getElementById('addReviewForm');
     if (!currentUser || !currentProduct) {
@@ -791,36 +874,48 @@
       return;
     }
     let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-    let hasCompletedTx = transactions.some(tx => 
-      tx.productId == currentProduct.id && 
-      tx.buyerUid == currentUser.uid && 
+    let hasCompletedTx = transactions.some(tx =>
+      tx.productId == currentProduct.id &&
+      tx.buyerUid == currentUser.uid &&
       tx.status === 'completed'
     );
+    // Если у пользователя есть завершённая сделка – показываем форму
     addReviewForm.style.display = hasCompletedTx ? 'flex' : 'none';
   }
-  
-  function renderReviews() {
+
+  // Считываем отзывы из Firebase Realtime DB
+  function renderReviewsFromFirebase() {
     const reviewsContainer = document.getElementById('reviewsContainer');
     reviewsContainer.innerHTML = '';
-  
-    if (!currentProduct.reviews) currentProduct.reviews = [];
-    if (currentProduct.reviews.length === 0) {
-      reviewsContainer.innerHTML = '<p>Пока нет отзывов.</p>';
+
+    if (!currentProduct) {
+      reviewsContainer.innerHTML = '<p>Товар не найден.</p>';
       return;
     }
-  
-    currentProduct.reviews.forEach(review => {
-      const div = document.createElement('div');
-      div.className = 'review-item';
-      div.innerHTML = `
-        <p class="review-author">${review.authorName} <span class="review-rating">(${review.rating} ★)</span></p>
-        <p class="review-text">${review.text}</p>
-        <small style="opacity:0.7;">${new Date(review.createdAt).toLocaleString()}</small>
-      `;
-      reviewsContainer.appendChild(div);
+    const productId = currentProduct.id;
+
+    // Подписываемся на изменения в узле products/<productId>/reviews
+    db.ref('products/' + productId + '/reviews').on('value', (snapshot) => {
+      reviewsContainer.innerHTML = '';
+      if (!snapshot.exists()) {
+        reviewsContainer.innerHTML = '<p>Пока нет отзывов.</p>';
+        return;
+      }
+      snapshot.forEach((childSnap) => {
+        const review = childSnap.val();
+        const div = document.createElement('div');
+        div.className = 'review-item';
+        div.innerHTML = `
+          <p class="review-author">${review.authorName} <span class="review-rating">(${review.rating} ★)</span></p>
+          <p class="review-text">${review.text}</p>
+          <small style="opacity:0.7;">${new Date(review.createdAt).toLocaleString()}</small>
+        `;
+        reviewsContainer.appendChild(div);
+      });
     });
   }
-  
+
+  // Сохранение нового отзыва в Firebase
   const addReviewForm = document.getElementById('addReviewForm');
   addReviewForm.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -828,39 +923,40 @@
       alert("Невозможно оставить отзыв.");
       return;
     }
-  
+
     const rating = document.getElementById('reviewRating').value;
     const text = document.getElementById('reviewText').value.trim();
     if (!rating || !text) {
       alert("Заполните все поля отзыва.");
       return;
     }
-  
-    if (!currentProduct.reviews) currentProduct.reviews = [];
-    currentProduct.reviews.push({
+
+    const productId = currentProduct.id;
+    const newReviewRef = db.ref('products/' + productId + '/reviews').push();
+
+    // Записываем отзыв в Firebase
+    newReviewRef.set({
       userId: currentUser.uid,
       authorName: currentUser.displayName || 'Аноним',
       rating,
       text,
       createdAt: Date.now()
+    }, (error) => {
+      if (error) {
+        alert("Ошибка при сохранении отзыва: " + error);
+      } else {
+        addReviewForm.reset();
+        alert("Спасибо за отзыв!");
+      }
     });
-  
-    let products = JSON.parse(localStorage.getItem('products')) || [];
-    let idx = products.findIndex(p => p.id.toString() === currentProduct.id.toString());
-    if (idx !== -1) {
-      products[idx] = currentProduct;
-      localStorage.setItem('products', JSON.stringify(products));
-    }
-  
-    addReviewForm.reset();
-    renderReviews();
-    alert("Спасибо за отзыв!");
   });
-  
-  /* ---------- Функция для мобильного меню ---------- */
+
+  /* =============================
+     5) ФУНКЦИИ ДЛЯ МОБИЛЬНОГО МЕНЮ
+  ============================= */
   function toggleMobileMenu() {
-    var mobileMenu = document.getElementById("mobileMenu");
-    mobileMenu.classList.toggle("active");
+    const menu = document.getElementById("mobileMenu");
+    menu.classList.toggle("active");
   }
 </script>
 </body>
