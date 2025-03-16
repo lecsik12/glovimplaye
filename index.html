@@ -151,6 +151,78 @@ header.top-bar {
 }
 
 /* Правая часть – иконка поиска, профиль (только на ПК) */
+/* Правая часть: поиск + профиль (только для ПК) */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.icon-btn {
+  background: none;
+  border: none;
+  color: #ff7f50;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.icon-btn:hover {
+  color: #ff4500;
+}
+.profile {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  object-fit: cover;
+}
+.profile-menu {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background: #f9f8f8;
+  color: #333;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  overflow: hidden;
+  z-index: 10;
+}
+.profile-menu.active {
+  display: block;
+}
+.profile-menu a {
+  display: block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: #333;
+  transition: background 0.3s;
+}
+.profile-menu a:hover {
+  background: #f6f4f4;
+}
+
+/* desktop-only, mobile-only */
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  .mobile-only {
+    display: inline-block !important;
+  }
+  .hamburger-btn {
+    display: inline-block; /* Показываем на мобилке */
+  }
+}
+
 .navbar-right {
   display: flex;
   align-items: center;
@@ -874,20 +946,43 @@ footer {
 </div>
 
 <!-- Футер -->
-<footer>
-  <div class="social-links">
-    <a href="https://www.tiktok.com/@glovimplaye" target="_blank" title="TikTok">
-      <i class="fab fa-tiktok"></i>
-    </a>
-    <a href="https://www.youtube.com/" target="_blank" title="YouTube">
-      <i class="fab fa-youtube"></i>
-    </a>
-    <a href="https://t.me/" target="_blank" title="Telegram">
-      <i class="fab fa-telegram-plane"></i>
-    </a>
+<footer style="background-color: #1f1f1f; color: #bdbdbd; padding: 20px 0; font-family: Arial, sans-serif;">
+  <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; max-width: 1200px; margin: 0 auto;">
+    <div style="text-align: center;">
+      <h3 style="color: #4caf50;"> GlovimPlaye</h3>
+      <p>GlovimPlaye - безопасная торговая площадка с низкими ценами</p>
+      <p>support@glovimplaye.com</p>
+    </div>
+
+    <div style="text-align: center;">
+      <h4>Способы оплаты</h4>
+      <p>💳 💸 🪙 🎮</p>
+    </div>
+
+    <div style="text-align: center;">
+      <h4>Информация</h4>
+      <p><a href="#" style="color: #bdbdbd; text-decoration: none;">О компании</a></p>
+      <p><a href="#" style="color: #bdbdbd; text-decoration: none;">Правила и гарантии</a></p>
+      <p><a href="#" style="color: #bdbdbd; text-decoration: none;">Курсы валют</a></p>
+      <p><a href="#" style="color: #bdbdbd; text-decoration: none;">Советы и гайды</a></p>
+    </div>
+
+    <div style="text-align: center;">
+      <h4>Наши соц.сети</h4>
+      <a href="https://t.me/" target="_blank" style="color: #bdbdbd; text-decoration: none;">Telegram канал</a><br>
+      <a href="https://vk.com/" target="_blank" style="color: #bdbdbd; text-decoration: none;">Группа ВКонтакте</a><br>
+      <a href="https://www.youtube.com/" target="_blank" style="color: #bdbdbd; text-decoration: none;">YouTube канал</a><br>
+      <a href="https://discord.com/" target="_blank" style="color: #bdbdbd; text-decoration: none;">Discord сервер</a>
+    </div>
   </div>
-  <p>© 2025 GlovimPlaye. Все права защищены.</p>
+
+  <div style="text-align: center; margin-top: 10px;">
+    <button style="background-color: #4caf50; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px;">Написать в техподдержку</button>
+  </div>
+
+  <p style="text-align: center; margin-top: 20px;">© 2025 GlovimPlaye. Все права защищены.</p>
 </footer>
+
 
 
 
