@@ -13,13 +13,14 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
   <style>
-    /* Сброс стилей */
+    /* =============================
+       БАЗОВЫЕ СТИЛИ и СБРОС
+    ============================= */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    /* Общий фон и шрифты, как на главной */
     body {
       font-family: Arial, sans-serif;
       background: url('background.jpg') no-repeat center center fixed;
@@ -28,9 +29,16 @@
       background-color: #2b2a2a;
       color: #fff;
       padding: 20px;
-      padding-bottom: 60px; /* Отступ для нижней панели, если понадобится */
+      padding-bottom: 80px; /* Увеличен отступ для нижней панели на мобил */
     }
-    /* Хедер (тот же стиль, что и на главной) */
+    
+    /* Классы для адаптивного показа */
+    .desktop-only { display: block; }
+    .mobile-only { display: none; }
+    
+    /* =============================
+       ХЕДЕР
+    ============================= */
     header {
       width: 100%;
       background: #1f1f1f;
@@ -40,9 +48,9 @@
       padding: 15px 20px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.5);
       border-radius: 0 0 8px 8px;
-      position: relative;
       flex-wrap: wrap;
       margin-bottom: 20px;
+      position: relative;
     }
     .logo-button {
       background: none;
@@ -57,24 +65,44 @@
       color: #ff4500;
       transform: scale(1.05);
     }
-    .header-center {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    /* Кнопка-гамбургер для мобил */
+    .hamburger-btn {
+      background: none;
+      border: none;
+      color: #ff7f50;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.3s;
     }
-    /* (Поисковую строку можно добавить, если нужно) */
+    .hamburger-btn:hover {
+      color: #ff4500;
+    }
+    /* Desktop-меню (если нужно) */
+    .nav-menu {
+      display: flex;
+      gap: 15px;
+    }
+    .nav-menu a {
+      color: #ccc;
+      text-decoration: none;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    .nav-menu a:hover {
+      color: #fff;
+    }
+    /* Профиль (для десктопа) */
     .profile {
       display: flex;
       align-items: center;
       position: relative;
+      cursor: pointer;
     }
     .avatar {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       border: 2px solid #fff;
-      cursor: pointer;
       transition: transform 0.3s;
     }
     .avatar:hover {
@@ -92,9 +120,7 @@
       overflow: hidden;
       z-index: 10;
     }
-    .profile-menu.active {
-      display: block;
-    }
+    .profile-menu.active { display: block; }
     .profile-menu a {
       display: block;
       padding: 10px 15px;
@@ -102,18 +128,43 @@
       color: #333;
       transition: background 0.3s;
     }
-    .profile-menu a:hover {
-      background: #f6f4f4;
+    .profile-menu a:hover { background: #f6f4f4; }
+    .logout { color: red; font-weight: bold; }
+    
+    /* =============================
+       Мобильное меню (раскрывается по гамбургеру)
+    ============================= */
+    .mobile-menu {
+      display: none;
+      position: absolute;
+      top: 60px;
+      left: 0;
+      right: 0;
+      background: #1f1f1f;
+      flex-direction: column;
+      align-items: center;
+      z-index: 999;
     }
-    .logout {
-      color: red;
-      font-weight: bold;
+    .mobile-menu a {
+      color: #fff;
+      padding: 10px;
+      text-decoration: none;
+      width: 100%;
+      text-align: center;
+      border-bottom: 1px solid #333;
     }
-    /* Контейнер, как на главной */
+    .mobile-menu a:hover {
+      background: #2b2b2b;
+    }
+    .mobile-menu.active { display: flex; }
+    
+    /* =============================
+       КОНТЕЙНЕР и контент страницы
+    ============================= */
     .container {
       max-width: 700px;
       margin: 20px auto;
-      background: rgba(48, 44, 44, 0.85);
+      background: rgba(48,44,44,0.85);
       padding: 20px;
       border-radius: 8px;
     }
@@ -139,10 +190,7 @@
       font-weight: bold;
       transition: color 0.3s;
     }
-    .back-link:hover {
-      color: #ff4500;
-    }
-    /* Кнопки (Купить, Оплатить) */
+    .back-link:hover { color: #ff4500; }
     button {
       background: #ff7f50;
       color: #fff;
@@ -154,10 +202,7 @@
       margin-bottom: 10px;
       transition: background 0.3s;
     }
-    button:hover {
-      background: #ff4500;
-    }
-    /* Информация о продавце */
+    button:hover { background: #ff4500; }
     .seller-info {
       display: flex;
       align-items: center;
@@ -169,27 +214,16 @@
       height: 50px;
       border-radius: 50%;
     }
-    /* Отзывы */
-    .reviews-section {
-      margin-top: 30px;
-    }
+    .reviews-section { margin-top: 30px; }
     .review-item {
       background: rgba(255,255,255,0.1);
       padding: 10px;
       border-radius: 5px;
       margin-bottom: 10px;
     }
-    .review-author {
-      font-weight: bold;
-      color: #ff7f50;
-    }
-    .review-text {
-      margin: 5px 0;
-    }
-    .review-rating {
-      color: gold;
-      font-weight: bold;
-    }
+    .review-author { font-weight: bold; color: #ff7f50; }
+    .review-text { margin: 5px 0; }
+    .review-rating { color: gold; font-weight: bold; }
     #addReviewForm {
       display: none;
       flex-direction: column;
@@ -214,10 +248,11 @@
       font-size: 16px;
       transition: background 0.3s;
     }
-    #addReviewForm button:hover {
-      background: #218838;
-    }
-    /* Футер */
+    #addReviewForm button:hover { background: #218838; }
+    
+    /* =============================
+       ФУТЕР
+    ============================= */
     footer {
       background: #1f1f1f;
       padding: 20px;
@@ -232,10 +267,11 @@
       text-decoration: none;
       transition: color 0.3s;
     }
-    .social-links a:hover {
-      color: #ff4500;
-    }
-    /* Модальное окно профиля */
+    .social-links a:hover { color: #ff4500; }
+    
+    /* =============================
+       МОДАЛЬНОЕ ОКНО ПрофИЛЯ
+    ============================= */
     .modal {
       display: none;
       position: fixed;
@@ -296,8 +332,112 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-    .edit-btn:hover {
-      background: #ff4500;
+    .edit-btn:hover { background: #ff4500; }
+    
+    /* =============================
+       ОВЕРЛЕЙ ПОИСКА
+    ============================= */
+    .search-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 50px;
+      z-index: 9999;
+    }
+    .search-overlay.active { display: flex; }
+    .search-wrapper {
+      width: 90%;
+      max-width: 600px;
+      color: #fff;
+    }
+    .search-input-wrapper {
+      position: relative;
+      margin-bottom: 10px;
+    }
+    .search-input-overlay {
+      width: 100%;
+      background: #1f1f1f;
+      border: 2px solid #ff7f50;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #fff;
+      padding: 10px 45px 10px 15px;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .search-input-wrapper i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #ff7f50;
+      cursor: pointer;
+    }
+    .search-results {
+      list-style: none;
+      background: #1f1f1f;
+      border: 1px solid #333;
+      border-radius: 8px;
+      margin: 0;
+      padding: 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .search-results li {
+      padding: 10px 15px;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .search-results li i {
+      margin-right: 10px;
+      color: #ff7f50;
+    }
+    .search-results li:hover { background: #2b2a2a; }
+    .search-results li:last-child { border-bottom: none; }
+    .close-overlay-btn {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 26px;
+      color: #ff7f50;
+      cursor: pointer;
+    }
+    .close-overlay-btn:hover { color: #ff4500; }
+    
+    /* =============================
+       АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ
+    ============================= */
+    @media (max-width: 768px) {
+      /* Показываем элементы с классом mobile-only, прячем desktop-only */
+      .mobile-only { display: inline-block !important; }
+      .desktop-only { display: none !important; }
+      
+      /* В шапке: показываем гамбургер */
+      .hamburger-btn { display: inline-block; }
+      
+      /* Скрываем профиль в хедере на мобил */
+      header .profile { display: none; }
+      
+      /* Нижняя панель навигации (только для мобильных) */
+      .bottom-nav { display: flex; }
+    }
+    
+    @media (max-width: 480px) {
+      body { padding-bottom: 80px; }
+      .logo-button { font-size: 22px; }
+      .container h2 { font-size: 20px; }
+      button { font-size: 14px; padding: 8px 16px; }
     }
   </style>
 </head>
@@ -306,10 +446,21 @@
 <!-- Хедер -->
 <header>
   <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
-  <div class="header-center">
-    <!-- Здесь можно добавить поисковую строку, если потребуется -->
-  </div>
-  <div class="profile" id="profileSection" style="display:none;">
+  
+  <!-- Desktop меню (если нужно) -->
+  <nav class="nav-menu desktop-only">
+    <a href="valuta.html">Валюта</a>
+    <a href="predmeti.html">Предмети</a>
+    <a href="akunti.html">Акаунты</a>
+  </nav>
+  
+  <!-- Кнопка гамбургер (только на мобильных) -->
+  <button class="hamburger-btn mobile-only" onclick="toggleMobileMenu()">
+    <i class="fas fa-bars"></i>
+  </button>
+  
+  <!-- Профиль (для десктопа) -->
+  <div class="profile desktop-only" id="profileSection" style="display:none;">
     <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
     <div class="profile-menu" id="profileMenu">
       <a href="#" onclick="showProfileModal()">Мой профиль</a>
@@ -321,6 +472,13 @@
     </div>
   </div>
 </header>
+
+<!-- Мобильное меню (раскрывается по нажатию на гамбургер) -->
+<nav class="mobile-menu mobile-only" id="mobileMenu">
+  <a href="valuta.html">Валюта</a>
+  <a href="predmeti.html">Предмети</a>
+  <a href="akunti.html">Акаунты</a>
+</nav>
 
 <!-- Контейнер авторизации (если не залогинен) -->
 <div class="auth-container" id="authContainer">
@@ -361,6 +519,26 @@
     <a href="index.html" class="back-link" id="backLink">Вернуться на главную</a>
   </div>
 </main>
+
+<!-- Нижняя панель навигации (только для мобильных) -->
+<div class="bottom-nav mobile-only">
+  <a href="valuta.html">
+    <i class="fas fa-dollar-sign"></i>
+    <span>Валюта</span>
+  </a>
+  <a href="predmeti.html">
+    <i class="fas fa-box"></i>
+    <span>Предмети</span>
+  </a>
+  <a href="akunti.html">
+    <i class="fas fa-user"></i>
+    <span>Акаунты</span>
+  </a>
+  <a href="#" onclick="showProfileModal()">
+    <i class="fas fa-user-circle"></i>
+    <span>Профиль</span>
+  </a>
+</div>
 
 <footer>
   <div class="social-links">
@@ -433,6 +611,7 @@
     currentUser = user;
     document.getElementById("loginButton").style.display = "none";
     document.getElementById("authContainer").style.display = "none";
+    // Показываем профиль только на десктопе (на мобильных профиль перемещён в нижнюю панель)
     document.getElementById("profileSection").style.display = "flex";
     document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
     document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
@@ -458,7 +637,8 @@
   
   function showProfileModal() {
     document.getElementById("profileModal").style.display = "block";
-    document.getElementById("profileMenu").classList.remove("active");
+    // Если открываем модальное окно, скрываем мобильное меню (если открыто)
+    document.getElementById("mobileMenu").classList.remove("active");
   }
   
   function closeProfileModal() {
@@ -676,6 +856,12 @@
     renderReviews();
     alert("Спасибо за отзыв!");
   });
+  
+  /* ---------- Функция для мобильного меню ---------- */
+  function toggleMobileMenu() {
+    var mobileMenu = document.getElementById("mobileMenu");
+    mobileMenu.classList.toggle("active");
+  }
 </script>
 </body>
 </html>
