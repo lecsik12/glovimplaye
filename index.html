@@ -48,18 +48,121 @@ body {
   display: block;
 }
 
-/* =============================
-   ШАПКА (HEADER)
-============================= */
+
+/* Шапка */
 header.top-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* распределяет logo слева, nav справа */
   background: #1f1f1f;
   padding: 15px 20px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.5);
   border-radius: 0 0 8px 8px;
+  margin: 0;
 }
+
+
+.search-overlay {
+  position: fixed; /* Фиксируем поверх всего */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Поднимаем выше всего остального */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Активный оверлей */
+.search-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Стили для поиска */
+.search-wrapper {
+  width: 100%;
+  max-width: 500px;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10000; /* Снова чуть выше всего */
+}
+
+/* Кнопка закрытия */
+.close-overlay-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+/* Стили иконки при наведении */
+.search-form button:hover i {
+  color: #ff0000;
+}
+
+/* Навигация справа */
+.top-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.top-nav li {
+  margin-left: 20px;
+}
+
+.top-nav a {
+  color: #ece7e7;
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.top-nav a:hover {
+  color: #ff0000;
+}
+
+.top-nav i {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+
+
+
 
 /* Левая часть: логотип + меню (для ПК) + гамбургер (для мобил) */
 .navbar-left {
@@ -95,9 +198,10 @@ header.top-bar {
 .nav-menu a:hover {
   color: #fff;
 }
-
-/* Кнопка-гамбургер (только на мобильных) */
 .hamburger-btn {
+  position: absolute; /* Изменено с 'static' на 'absolute' для позиционирования */
+  top: 10px; /* Расстояние от верхнего края */
+  right: 10px; /* Расстояние от правого края */
   background: none;
   border: none;
   color: #ff7f50;
@@ -108,6 +212,7 @@ header.top-bar {
 .hamburger-btn:hover {
   color: #ff4500;
 }
+
 
 /* Центральная часть – поиск (если нужно) */
 .navbar-center {
@@ -375,10 +480,10 @@ header.top-bar {
 }
 .card {
   background: #fef1c7;
-  padding: 20px;
-  border-radius: 15px;
+  padding: 70px;
+  border-radius: 25px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  width: 300px;
+  width: 500px;
   text-align: center;
 }
 .card:nth-child(2) {
@@ -399,13 +504,13 @@ button {
 
 /* Реклама (пример) */
 .advertisement {
-  margin: 300px auto;
-  max-width: 500px;
+  margin: 30px auto;
+  max-width: 50px;
   text-align: center;
 }
 .advertisement img {
-  width: 100%;
-  max-height: 200px; 
+  width: 10%;
+  max-height: 20px; 
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.3);
@@ -535,34 +640,42 @@ footer {
   background: #ff4500;
 }
 
-/* =============================
-   ОВЕРЛЕЙ ПОИСКА (как Eldorado)
+
+/* =============================  
+   ОВЕРЛЕЙ ПОИСКА (как Eldorado) - по центру хедера
 ============================= */
 .search-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.9);
   display: none;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  padding-top: 50px;
   z-index: 9999;
 }
+
+/* Активный оверлей */
 .search-overlay.active {
   display: flex;
 }
+
+/* Обертка с поиском */
 .search-wrapper {
   width: 90%;
   max-width: 600px;
   color: #fff;
+  text-align: center;
 }
+
+/* Инпут */
 .search-input-wrapper {
   position: relative;
   margin-bottom: 10px;
 }
+
 .search-input-overlay {
   width: 100%;
   background: #1f1f1f;
@@ -574,6 +687,8 @@ footer {
   outline: none;
   box-sizing: border-box;
 }
+
+/* Иконка лупы */
 .search-input-wrapper i {
   position: absolute;
   right: 15px;
@@ -582,6 +697,8 @@ footer {
   color: #ff7f50;
   cursor: pointer;
 }
+
+/* Результаты поиска */
 .search-results {
   list-style: none;
   background: #1f1f1f;
@@ -592,6 +709,8 @@ footer {
   max-height: 300px;
   overflow-y: auto;
 }
+
+/* Элементы результатов */
 .search-results li {
   padding: 10px 15px;
   border-bottom: 1px solid #333;
@@ -600,29 +719,39 @@ footer {
   cursor: pointer;
   transition: background 0.2s;
 }
+
+/* Иконка внутри результатов */
 .search-results li i {
   margin-right: 10px;
   color: #ff7f50;
 }
+
+/* Наведение на элемент */
 .search-results li:hover {
   background: #2b2a2a;
 }
+
+/* Убираем границу у последнего элемента */
 .search-results li:last-child {
   border-bottom: none;
 }
+
+/* Кнопка закрытия */
 .close-overlay-btn {
   position: absolute;
-  top: 15px;
-  left: 20px;
+  top: 20px;
+  right: 20px;
   background: none;
   border: none;
   font-size: 26px;
   color: #ff7f50;
   cursor: pointer;
 }
+
 .close-overlay-btn:hover {
   color: #ff4500;
 }
+
 
 /* =============================
    АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (до 768px)
@@ -700,8 +829,8 @@ footer {
     font-size: 14px;
   }
   .close-overlay-btn {
-    font-size: 22px;
-    top: 10px;
+    font-size: 220px;
+    top: 100px;
     left: 15px;
   }
   .category-card {
@@ -715,19 +844,69 @@ footer {
     font-size: 10px;
   }
 }
-
-    </style>
-    
-
+ </style>
 </head>
 <body>
 
-<!-- Ваша шапка -->
-<header class="top-bar">
-  <div class="navbar-left">
-    <!-- Логотип -->
-    <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
+  <header class="top-bar">
     
+    <header>
+      <nav>
+        <button onclick="openSearchOverlay()">🔍 Поиск</button>
+      </nav>
+    </header>
+    
+    <div class="search-overlay" id="searchOverlay" onclick="closeOverlayByClick(event)">
+      <button class="close-overlay-btn" onclick="closeSearchOverlay()">✖</button>
+      <div class="search-wrapper">
+        <div class="search-input-wrapper">
+          <input
+            type="text"
+            class="search-input-overlay"
+            placeholder="Введите запрос"
+            id="searchOverlayInput"
+            oninput="updateSearchResults()"
+          />
+          <i class="fas fa-search"></i>
+        </div>
+        <ul class="search-results" id="searchResults"></ul>
+      </div>
+    </div>
+    
+    
+    
+      
+    
+        
+        </button>
+      </form>
+    </div>
+  
+    <nav class="top-nav">
+      <ul>
+        <li>
+          <a href="add.html">
+            <i class="fas fa-plus"></i>
+            <span>Продать</span>
+          </a>
+        </li>
+        <li>
+          <a href="#">
+            <i class="fas fa-comments"></i>
+            <span>Чаты</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="showProfileModal()">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+  
+  
     <!-- Обычное меню (видно только на ПК) -->
     <nav class="nav-menu desktop-only">
       <a href="valuta.html">Валюта</a>
@@ -740,6 +919,9 @@ footer {
       <i class="fas fa-bars"></i>
     </button>
   </div>
+
+
+  
 
   
 </header>
@@ -796,25 +978,7 @@ footer {
   </div>
 </header>
 
-<!-- ========== ОВЕРЛЕЙ ПОИСКА ========== -->
-<div class="search-overlay" id="searchOverlay" onclick="closeOverlayByClick(event)">
-  <button class="close-overlay-btn" onclick="closeSearchOverlay()">
-    <i class="fas fa-times"></i>
-  </button>
-  <div class="search-wrapper">
-    <div class="search-input-wrapper">
-      <input
-        type="text"
-        class="search-input-overlay"
-        placeholder="Поиск "
-        id="searchOverlayInput"
-        oninput="updateSearchResults()"
-      />
-      <i class="fas fa-search"></i>
-    </div>
-    <ul class="search-results" id="searchResults"></ul>
-  </div>
-</div>
+
 
 
 
@@ -822,6 +986,7 @@ footer {
 <div class="auth-container" id="authContainer">
   <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
 </div>
+
 
 <!-- Пример секции категорий (Игры) -->
 <div class="categories-section">
@@ -937,9 +1102,9 @@ footer {
       <img id="modalAvatar" src="default-avatar.png" alt="Avatar" />
       <h2 id="profileName"></h2>
       <p id="profileEmail"></p>
-      <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
+      <button class="edit-btn" onclick="editProfile(profile.html)">Редактировать профиль</button>
       <button class="edit-btn" onclick="window.open('https:t.me/Glovimplaye_bot', '_blank')">
-        Написать в Поддержку
+        Написать в поддержку
       </button>
     </div>
   </div>
@@ -1075,6 +1240,7 @@ footer {
     document.getElementById("profileModal").style.display = "none";
   }
   function editProfile() {
+    
     alert("Редактирование профиля пока не реализовано.");
   }
   window.onclick = function(event) {
@@ -1153,6 +1319,33 @@ footer {
     menu.classList.toggle('active');
   }
   </script>
+
+  <script>
+    function searchCategories() {
+      // Получаем введённый пользователем текст
+      const input = document.getElementById('searchInput');
+      const filter = input.value.toLowerCase().trim();
+  
+      // Получаем все карточки
+      const categoryCards = document.querySelectorAll('.category-card');
+  
+      // Перебираем каждую карточку
+      categoryCards.forEach(card => {
+        // Находим текст субкатегории
+        const subcategoryText = card.querySelector('.subcategory').textContent.toLowerCase();
+  
+        // Проверяем, содержит ли текст субкатегории введённую строку
+        if (subcategoryText.includes(filter)) {
+          // Если да — показываем карточку
+          card.classList.remove('hidden');
+        } else {
+          // Иначе скрываем карточку
+          card.classList.add('hidden');
+        }
+      });
+    }
+  </script>
+  
   
 </body>
 </html>
