@@ -26,7 +26,7 @@ body {
   font-family: Arial, sans-serif;
   background: 
     linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%),
-    url('images/logo.png') no-repeat center top;
+    url('images/photo_2025-02-22_08-29-19.jpg') no-repeat center top;
   background-size: cover;
   color: #fff;
   min-height: 100vh;
@@ -47,7 +47,6 @@ body {
 .desktop-only {
   display: block;
 }
-
 
 /* Шапка */
 header.top-bar {
@@ -110,23 +109,11 @@ header.top-bar {
   cursor: pointer;
 }
 
-
-
-
-
-
-
-  
-
-
-
-
-
-
 /* Стили иконки при наведении */ 
 .search-form button:hover i {
   color: #ff0000;
 }
+
 
 /* Навигация справа  /* Только на пк */
 .top-nav ul {
@@ -173,7 +160,7 @@ header.top-bar {
 .logo-button {
   background: none;
   border: none;
-  color: #ff7f50;
+  color: #f8f1ee;
   font-size: 26px;
   font-weight: bold;
   cursor: pointer;
@@ -214,104 +201,6 @@ header.top-bar {
 }
 
 
-/* Центральная часть – поиск (если нужно) */
-.navbar-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-.search-desktop {
-  display: flex;
-  align-items: center;
-  background: #1f1f1f;
-  border: 2px solid #ff7f50;
-  border-radius: 8px;
-  padding: 4px 10px;
-  max-width: 400px;
-  width: 100%;
-}
-.search-desktop input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: #fff;
-  outline: none;
-  font-size: 14px;
-  margin-right: 10px;
-}
-.search-desktop input::placeholder {
-  color: #ccc;
-}
-.search-desktop button {
-  background: #ff7f50;
-  border: none;
-  color: #fff;
-  padding: 6px 12px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.search-desktop button:hover {
-  background: #ff4500;
-}
-
-/* Правая часть – иконка поиска, профиль (только на ПК) */
-/* Правая часть: поиск + профиль (только для ПК) */
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-.icon-btn {
-  background: none;
-  border: none;
-  color: #ff7f50;
-  font-size: 18px;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-.icon-btn:hover {
-  color: #ff4500;
-}
-.profile {
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  object-fit: cover;
-}
-.profile-menu {
-  display: none;
-  position: absolute;
-  top: 50px;
-  right: 0;
-  background: #f9f8f8;
-  color: #333;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  overflow: hidden;
-  z-index: 10;
-}
-.profile-menu.active {
-  display: block;
-}
-.profile-menu a {
-  display: block;
-  padding: 10px 15px;
-  text-decoration: none;
-  color: #333;
-  transition: background 0.3s;
-}
-.profile-menu a:hover {
-  background: #f6f4f4;
-}
-
 /* desktop-only, mobile-only */
 .desktop-only { display: block; }
 .mobile-only { display: none; }
@@ -336,7 +225,7 @@ header.top-bar {
 .icon-btn {
   background: none;
   border: none;
-  color: #ff7f50;
+  color: #f1ebe9;
   font-size: 18px;
   cursor: pointer;
   transition: color 0.3s;
@@ -487,14 +376,14 @@ header.top-bar {
   text-align: center;
 }
 .card:nth-child(2) {
-  background: #d4ff99;
+  background: #eef0eb;
 }
 .card-icon {
   width: 80px;
   margin-bottom: 10px;
 }
 button {
-  background: #ffbf47;
+  background: #f8f6f3;
   padding: 10px 15px;
   border: none;
   border-radius: 5px;
@@ -852,6 +741,7 @@ footer {
     
     <header>
       <nav>
+        
         <button onclick="openSearchOverlay()">🔍 Поиск</button>
       </nav>
     </header>
@@ -919,13 +809,7 @@ footer {
       <i class="fas fa-bars"></i>
     </button>
   </div>
-
-
-  
-
-  
 </header>
-
 <!-- Меню, которое раскрывается по нажатию на «гамбургер» (только на телефоне) -->
 <nav class="mobile-menu" id="mobileMenu">
   <a href="valuta.html">Валюта</a>
@@ -958,7 +842,7 @@ footer {
 
 
  
-  <!-- Правая часть: иконка поиска и профиль -->
+  <!-- Левая часть: иконка поиска и профиль -->
   <div class="navbar-right">
     <button class="icon-btn search-icon-button" onclick="openSearchOverlay()">
       <i class="fas fa-search"></i>
@@ -977,10 +861,6 @@ footer {
     </div>
   </div>
 </header>
-
-
-
-
 
 <!-- Авторизация (если не залогинен) -->
 <div class="auth-container" id="authContainer">
