@@ -12,7 +12,7 @@
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <style>
-   /* =============================
+  /* =============================
    БАЗОВЫЕ СТИЛИ И СБРОС
 ============================= */
 * {
@@ -23,8 +23,9 @@
 
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%),
-              url('images/photo_2025-02-22_08-29-19.jpg') no-repeat center top;
+  background: 
+    linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%),
+    url('images/photo_2025-02-22_08-29-19.jpg') no-repeat center top;
   background-size: cover;
   color: #fff;
   min-height: 100vh;
@@ -42,9 +43,9 @@ body {
 /* Основная навигационная панель */
 .navbar {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 60px;
+  justify-content: center; /* Центрирование содержимого по горизонтали */
+  align-items: center;     /* Центрирование содержимого по вертикали */
+  height: 60px;            /* Высота навигационной панели */
   background-color: #333;
 }
 
@@ -57,7 +58,7 @@ body {
 .logo-button {
   background: none;
   border: none;
-  color: #ff7f50;
+  color: #ff7f50; /* Оранжевый акцент */
   font-size: 22px;
   font-weight: bold;
   cursor: pointer;
@@ -216,7 +217,7 @@ body {
   color: #ff4500;
 }
 
-/* Блок профиля */
+/* Блок профиля (верхний правый угол для десктопа) */
 .navbar-right {
   position: absolute;
   top: 10px;
@@ -342,6 +343,7 @@ body {
 .bottom-nav a:hover {
   color: #fff;
 }
+/* Кнопка профиля в нижней панели */
 .bottom-nav-profile {
   position: relative;
   display: flex;
@@ -358,7 +360,8 @@ body {
   border: 2px solid #fff;
   object-fit: cover;
   margin-bottom: 2px;
-  display: none; /* до логина скрыт */
+  /* По умолчанию скрываем аватар до логина, если нужно */
+  display: none;
 }
 
 /* =============================
@@ -566,6 +569,14 @@ footer {
    АДАПТАЦИЯ (до 768px)
 ============================= */
 @media (max-width: 768px) {
+  /* Скрываем профиль в верхнем правом углу */
+  .navbar-right {
+    display: none;
+  }
+  /* Показываем нижнюю панель */
+  .bottom-nav {
+    display: flex;
+  }
   .mobile-only { display: inline-block !important; }
   .desktop-only { display: none !important; }
   .logo-button,
@@ -583,7 +594,6 @@ footer {
     width: 35px;
     height: 35px;
   }
-  .bottom-nav { display: flex; }
 }
 
 /* =============================
@@ -623,6 +633,7 @@ footer {
   }
   .category-card .subcategory { font-size: 10px; }
 }
+
 
  </style>
 </head>
@@ -678,6 +689,29 @@ footer {
     <span>Профиль</span>
   </a>
 </div>
+
+
+<!-- Нижняя панель (только для мобильных) -->
+<div class="bottom-nav">
+  <a href="index.html">
+    <i class="fas fa-home"></i>
+    <span>Главная</span>
+  </a>
+  <a href="search.html">
+    <i class="fas fa-search"></i>
+    <span>Поиск</span>
+  </a>
+  <!-- Кнопка профиля -->
+  <a href="profile.html" class="bottom-nav-profile">
+    <img src="default-avatar.png" alt="Avatar" class="avatar" />
+    <span>Профиль</span>
+  </a>
+  <a href="settings.html">
+    <i class="fas fa-cog"></i>
+    <span>Настройки</span>
+  </a>
+</div>
+
   <!-- Другой контент в header, если необходимо -->
 
   <!-- Правая часть: иконка поиска и профиль -->
