@@ -21,47 +21,33 @@
   box-sizing: border-box;
 }
 
-/* Фон с картинкой и плавным переходом в чёрный снизу */
 body {
   font-family: Arial, sans-serif;
-  background: 
-    linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%),
-    url('images/photo_2025-02-22_08-29-19.jpg') no-repeat center top;
+  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%),
+              url('images/photo_2025-02-22_08-29-19.jpg') no-repeat center top;
   background-size: cover;
   color: #fff;
   min-height: 100vh;
-  margin: 0;
   padding-bottom: 60px; /* Отступ под нижнюю панель (на мобильных) */
 }
 
+/* Технические классы */
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
 /* =============================
-   ТЕХНИЧЕСКИЕ КЛАССЫ:
-   .desktop-only и .mobile-only
+   НАВИГАЦИЯ И ШАПКА
 ============================= */
 
-/* Изначально скрываем элементы для мобильных */
-.mobile-only {
-  display: none;
-}
-/* Изначально показываем элементы для ПК */
-.desktop-only {
-  display: block;
-}
-
-/* Шапка */
-
-
-
-/* Стили для навигационной панели */
+/* Основная навигационная панель */
 .navbar {
   display: flex;
-  justify-content: center; /* Центрирование содержимого по горизонтали */
-  align-items: center;    /* Центрирование содержимого по вертикали */
-  height: 60px;           /* Высота навигационной панели */
-  background-color: #333; /* Фоновый цвет панели */
+  justify-content: center;
+  align-items: center;
+  height: 60px;
+  background-color: #333;
 }
 
-/* Левая часть: логотип + меню (для ПК) + гамбургер (для мобил) */
 .navbar-left {
   display: flex;
   align-items: center;
@@ -71,7 +57,7 @@ body {
 .logo-button {
   background: none;
   border: none;
-  color: #ff7f50; /* Оранжевый акцент */
+  color: #ff7f50;
   font-size: 22px;
   font-weight: bold;
   cursor: pointer;
@@ -82,11 +68,14 @@ body {
   transform: scale(1.05);
 }
 
+/* Header с поиском */
+.header {
+  position: relative;
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #333;
+}
 
-
-
-
-/* Центр хедера (поиск) */
 .header-center {
   flex: 1;
   display: flex;
@@ -94,6 +83,7 @@ body {
   align-items: center;
   margin: 5px 0;
 }
+
 .search-container {
   display: flex;
   max-width: 400px;
@@ -128,7 +118,7 @@ body {
   background: #ff4500;
 }
 
-/* Список результатов */
+/* Список результатов поиска */
 .search-results {
   position: absolute;
   background-color: #333;
@@ -138,13 +128,12 @@ body {
   margin-top: 5px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  display: none; /* По умолчанию скрыто */
-  z-index: 9999; /* Чтобы выплывало поверх всего */
+  display: none;
+  z-index: 9999;
 }
-
 .search-result-item {
-  display: flex;             /* чтобы картинка и текст шли в одной строке */
-  align-items: center;       /* выравнивание по вертикали */
+  display: flex;
+  align-items: center;
   padding: 8px 12px;
   border-bottom: 1px solid #444;
   color: #fff;
@@ -153,18 +142,16 @@ body {
 .search-result-item:hover {
   background-color: #444;
 }
-
 .search-result-item img {
-  width: 40px;               /* миниатюра */
+  width: 40px;
   height: 40px;
-  object-fit: cover;         /* обрезать по краям, если картинка больше */
+  object-fit: cover;
   border-radius: 4px;
-  margin-right: 10px;        /* отступ между картинкой и текстом */
+  margin-right: 10px;
 }
-
 .result-text {
   display: flex;
-  flex-direction: column;    /* чтобы название и категория были друг под другом */
+  flex-direction: column;
 }
 .result-name {
   font-weight: bold;
@@ -174,18 +161,15 @@ body {
   color: #aaa;
 }
 
+/* Верхнее меню (иконки, ссылки) */
 .top-nav ul {
   list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   align-items: center;
 }
-
 .top-nav li {
   margin-left: 20px;
 }
-
 .top-nav a {
   color: #ece7e7;
   text-decoration: none;
@@ -195,17 +179,13 @@ body {
   align-items: center;
   transition: color 0.3s;
 }
-
 .top-nav a:hover {
   color: #ff0000;
 }
-
 .top-nav i {
   font-size: 20px;
   margin-bottom: 5px;
 }
-
-
 
 .nav-menu {
   display: flex;
@@ -220,10 +200,11 @@ body {
 .nav-menu a:hover {
   color: #fff;
 }
+
 .hamburger-btn {
-  position: absolute; /* Изменено с 'static' на 'absolute' для позиционирования */
-  top: 10px; /* Расстояние от верхнего края */
-  right: 10px; /* Расстояние от правого края */
+  position: absolute;
+  top: 10px;
+  right: 10px;
   background: none;
   border: none;
   color: #ff7f50;
@@ -235,83 +216,12 @@ body {
   color: #ff4500;
 }
 
-
-
-.header {
-  position: relative;  /* Для абсолютного позиционирования внутренних элементов */
-  width: 100%;
-  padding: 10px 20px;
-  background-color: #333;
-}
-
-/* Размещаем блок профиля в правом верхнем углу */
+/* Блок профиля */
 .navbar-right {
   position: absolute;
-  top: 10px;    /* Отступ сверху */
-  right: 20px;  /* Отступ справа */
+  top: 10px;
+  right: 20px;
 }
-
-/* Стили для профиля */
-.profile {
-  position: relative; /* Для позиционирования выпадающего меню относительно аватара */
-}
-
-/* Стили для аватара */
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-}
-
-/* Выпадающее меню профиля */
-.profile-menu {
-  position: absolute;
-  top: 100%;  /* Меню появится ниже аватара */
-  right: 0;   /* Выравниваем по правому краю */
-  background-color: #444;
-  border-radius: 4px;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  display: none;  /* Показываем меню по событию (например, клику) */
-}
-
-/* Пример показа меню при клике или hover */
-/* Можно включать через JS (toggleProfileMenu) или так: */
-.profile:hover .profile-menu {
-  display: block;
-}
-
-
-/* desktop-only, mobile-only */
-.desktop-only { display: block; }
-.mobile-only { display: none; }
-
-@media (max-width: 768px) {
-  .desktop-only {
-    display: none !important;
-  }
-  .mobile-only {
-    display: inline-block !important;
-  }
-  .hamburger-btn {
-    display: inline-block; /* Показываем на мобилке */
-  }
-}
-
-.icon-btn {
-  background: none;
-  border: none;
-  color: #f1ebe9;
-  font-size: 18px;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-.icon-btn:hover {
-  color: #ff4500;
-}
-
-/* Профиль (для ПК) */
 .profile {
   position: relative;
   display: flex;
@@ -324,6 +234,10 @@ body {
   border-radius: 50%;
   border: 2px solid #fff;
   object-fit: cover;
+  transition: transform 0.3s;
+}
+.avatar:hover {
+  transform: scale(1.1);
 }
 .profile-menu {
   display: none;
@@ -336,8 +250,10 @@ body {
   box-shadow: 0 4px 8px rgba(0,0,0,0.3);
   overflow: hidden;
   z-index: 10;
+  padding: 10px;
 }
-.profile-menu.active {
+.profile-menu.active,
+.profile:hover .profile-menu {
   display: block;
 }
 .profile-menu a {
@@ -355,13 +271,26 @@ body {
   font-weight: bold;
 }
 
+/* Дополнительные иконки */
+.icon-btn {
+  background: none;
+  border: none;
+  color: #f1ebe9;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.icon-btn:hover {
+  color: #ff4500;
+}
+
 /* =============================
    Мобильное меню (гамбургер)
 ============================= */
 .mobile-menu {
-  display: none;            /* по умолчанию скрыто */
+  display: none;
   position: absolute;
-  top: 60px;                /* чтобы выплывало под шапкой */
+  top: 60px;
   left: 0;
   right: 0;
   background: #1f1f1f;
@@ -381,14 +310,12 @@ body {
   background: #2b2b2b;
 }
 .mobile-menu.active {
-  display: flex; /* Появляется при клике на гамбургер */
+  display: flex;
 }
 
-/* =============================
-   НИЖНЯЯ ПАНЕЛЬ (МОБИЛЬНАЯ)
-============================= */
+/* Нижняя панель (только для мобильных) */
 .bottom-nav {
-  display: none; /* На ПК не показываем */
+  display: none;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -435,10 +362,8 @@ body {
 }
 
 /* =============================
-   ОСТАЛЬНЫЕ СЕКЦИИ (баннер, карточки, футер, модальное окно)
+   КАРТОЧКИ, РЕКЛАМА, КАТЕГОРИИ
 ============================= */
-
-/* Примерные стили карточек */
 .cards-container {
   display: flex;
   justify-content: center;
@@ -448,7 +373,7 @@ body {
   background: #fef1c7;
   padding: 70px;
   border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   width: 500px;
   text-align: center;
 }
@@ -468,7 +393,7 @@ button {
   font-weight: bold;
 }
 
-/* Реклама (пример) */
+/* Реклама */
 .advertisement {
   margin: 30px auto;
   max-width: 50px;
@@ -476,13 +401,13 @@ button {
 }
 .advertisement img {
   width: 10%;
-  max-height: 20px; 
+  max-height: 20px;
   object-fit: cover;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-/* Компактная секция категорий с чёрным фоном и округлёнными рамками */
+/* Категории */
 .categories-section {
   padding: 10px;
   max-width: 1000px;
@@ -490,7 +415,6 @@ button {
   background-color: #2e2d2d;
   border-radius: 8px;
 }
-
 .categories-section h2 {
   font-size: 20px;
   font-weight: 700;
@@ -498,8 +422,6 @@ button {
   text-align: left;
   color: #fff;
 }
-
-/* Контейнер карточек — используем CSS Grid */
 .categories-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
@@ -507,8 +429,6 @@ button {
   margin-bottom: 10px;
   justify-items: start;
 }
-
-/* Карточка категории */
 .category-card {
   width: 80px;
   text-align: center;
@@ -516,11 +436,9 @@ button {
   color: #fff;
   transition: transform 0.2s ease;
 }
-
 .category-card:hover {
   transform: translateY(-2px);
 }
-
 .category-card img {
   width: 60px;
   height: 60px;
@@ -528,18 +446,14 @@ button {
   object-fit: cover;
   margin-bottom: 5px;
 }
-
 .category-card .subcategory {
   font-size: 10px;
   font-weight: 600;
   color: #ccc;
 }
-
-/* Ссылка-стрелка с текстом "Показать все игры" */
 .show-all-link {
   text-align: left;
 }
-
 .show-all-link a {
   display: inline-flex;
   align-items: center;
@@ -552,19 +466,17 @@ button {
   border-radius: 6px;
   transition: background 0.3s, color 0.3s;
 }
-
 .show-all-link a i {
   margin-right: 5px;
 }
-
 .show-all-link a:hover {
   background: #ff7f50;
   color: #000;
 }
 
-
-
-/* Футер */
+/* =============================
+   ФУТЕР
+============================= */
 footer {
   background: #1f1f1f;
   padding: 20px;
@@ -583,7 +495,9 @@ footer {
   color: #ff4500;
 }
 
-/* Модальное окно (пример профиля) */
+/* =============================
+   МОДАЛЬНОЕ ОКНО
+============================= */
 .modal {
   display: none;
   position: fixed;
@@ -648,60 +562,35 @@ footer {
   background: #ff4500;
 }
 
-
-
-
-
-
 /* =============================
-   АДАПТАЦИЯ ДЛЯ МОБИЛЬНЫХ (до 768px)
+   АДАПТАЦИЯ (до 768px)
 ============================= */
 @media (max-width: 768px) {
-  /* Показываем .mobile-only, прячем .desktop-only */
-  .mobile-only {
-    display: inline-block !important;
-  }
-  .desktop-only {
-    display: none !important;
-  }
-  /* Немного уменьшаем элементы в шапке, если нужно */
-  .logo-button {
-    font-size: 22px;
-  }
-  .hamburger-btn {
-    font-size: 22px;
-  }
-  /* Поиск, если он нужен отдельно для мобильных */
+  .mobile-only { display: inline-block !important; }
+  .desktop-only { display: none !important; }
+  .logo-button,
+  .hamburger-btn { font-size: 22px; }
   .search-desktop {
     max-width: 250px;
     padding: 4px 8px;
   }
-  .search-desktop input {
-    font-size: 12px;
-  }
+  .search-desktop input { font-size: 12px; }
   .search-desktop button {
     font-size: 12px;
     padding: 4px 8px;
   }
-  /* Профиль в верхней шапке скрыт, т.к. desktop-only */
   .avatar {
     width: 35px;
     height: 35px;
   }
-
-  /* Нижняя панель показываем (уже есть display:flex в общем блоке) */
-  .bottom-nav {
-    display: flex;
-  }
+  .bottom-nav { display: flex; }
 }
 
 /* =============================
-   АДАПТАЦИЯ ДЛЯ ОЧЕНЬ МАЛЕНЬКИХ (до 480px)
+   АДАПТАЦИЯ (до 480px)
 ============================= */
 @media (max-width: 480px) {
-  body {
-    padding-bottom: 70px;
-  }
+  body { padding-bottom: 70px; }
   .modal-content {
     margin: 20% auto;
     padding: 15px;
@@ -710,16 +599,10 @@ footer {
     width: 80px;
     height: 80px;
   }
-  .profile-details h2 {
-    font-size: 18px;
-  }
+  .profile-details h2 { font-size: 18px; }
   .profile-details p,
-  .edit-btn {
-    font-size: 14px;
-  }
-  .edit-btn {
-    padding: 8px 15px;
-  }
+  .edit-btn { font-size: 14px; }
+  .edit-btn { padding: 8px 15px; }
   .search-input-overlay {
     font-size: 14px;
     padding: 8px 35px 8px 10px;
@@ -733,17 +616,14 @@ footer {
     top: 100px;
     left: 15px;
   }
-  .category-card {
-    width: 70px; /* Ещё чуть меньше, если нужно */
-  }
+  .category-card { width: 70px; }
   .category-card img {
     width: 50px;
     height: 50px;
   }
-  .category-card .subcategory {
-    font-size: 10px;
-  }
+  .category-card .subcategory { font-size: 10px; }
 }
+
  </style>
 </head>
 <body>
