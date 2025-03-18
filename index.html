@@ -49,34 +49,8 @@ body {
 }
 
 /* Шапка */
-header.top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* распределяет logo слева, nav справа */
-  background: #1f1f1f;
-  padding: 15px 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-  border-radius: 0 0 8px 8px;
-  margin: 0;
-}
 
 
-
-.search-overlay {
-  position: fixed; /* Фиксируем поверх всего */
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999; /* Поднимаем выше всего остального */
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
 
 /* Стили для навигационной панели */
 .navbar {
@@ -86,19 +60,6 @@ header.top-bar {
   height: 60px;           /* Высота навигационной панели */
   background-color: #333; /* Фоновый цвет панели */
 }
-
-
-
-
-/* Активный оверлей */
-.search-overlay.active {
-  opacity: 1;
-  visibility: visible;
-}
-
-
-
-
 
 /* Левая часть: логотип + меню (для ПК) + гамбургер (для мобил) */
 .navbar-left {
@@ -120,6 +81,10 @@ header.top-bar {
   color: #ff4500;
   transform: scale(1.05);
 }
+
+
+
+
 
 /* Центр хедера (поиск) */
 .header-center {
@@ -271,6 +236,53 @@ header.top-bar {
 }
 
 
+
+.header {
+  position: relative;  /* Для абсолютного позиционирования внутренних элементов */
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #333;
+}
+
+/* Размещаем блок профиля в правом верхнем углу */
+.navbar-right {
+  position: absolute;
+  top: 10px;    /* Отступ сверху */
+  right: 20px;  /* Отступ справа */
+}
+
+/* Стили для профиля */
+.profile {
+  position: relative; /* Для позиционирования выпадающего меню относительно аватара */
+}
+
+/* Стили для аватара */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Выпадающее меню профиля */
+.profile-menu {
+  position: absolute;
+  top: 100%;  /* Меню появится ниже аватара */
+  right: 0;   /* Выравниваем по правому краю */
+  background-color: #444;
+  border-radius: 4px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  display: none;  /* Показываем меню по событию (например, клику) */
+}
+
+/* Пример показа меню при клике или hover */
+/* Можно включать через JS (toggleProfileMenu) или так: */
+.profile:hover .profile-menu {
+  display: block;
+}
+
+
 /* desktop-only, mobile-only */
 .desktop-only { display: block; }
 .mobile-only { display: none; }
@@ -287,11 +299,6 @@ header.top-bar {
   }
 }
 
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
 .icon-btn {
   background: none;
   border: none;
@@ -480,7 +487,7 @@ button {
   padding: 10px;
   max-width: 1000px;
   margin: 10px auto;
-  background-color: #000;
+  background-color: #2e2d2d;
   border-radius: 8px;
 }
 
@@ -642,138 +649,8 @@ footer {
 }
 
 
-/* Оверлей поиска – центрирование по всему экрану */
-/* Стили для навигационной панели */
-.navbar {
-  display: flex;
-  justify-content: center; /* Центрирование содержимого по горизонтали */
-  align-items: center;    /* Центрирование содержимого по вертикали */
-  height: 60px;           /* Высота навигационной панели */
-  background-color: #333; /* Фоновый цвет панели */
-}
-
-/* Стили для кнопки поиска */
-.search-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  color: #fff;
-  background-color: #ff7f50;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-.search-button:hover {
-  background-color: #ff4500;
-}
 
 
-
-.search-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-}
-.search-overlay.active {
-  display: flex;
-}
-
-/* Обёртка для формы поиска */
-.search-wrapper {
-  width: 90%;
-  max-width: 500px;
-  padding: 20px;
-  background: #1f1f1f;
-  border-radius: 10px;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-  text-align: center;
-}
-
-/* Область ввода с кнопкой */
-.search-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Стиль для поля ввода */
-.search-input {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-  outline: none;
-  border-radius: 8px;
-}
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-/* Стиль для кнопки поиска */
-.search-btn {
-  padding: 8px 15px;
-  font-size: 14px;
-  background: #ff7f50;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.3s;
-}
-.search-btn:hover {
-  background: #ff4500;
-}
-
-/* Стили для списка результатов (если нужно) */
-.search-results {
-  list-style: none;
-  margin: 10px 0 0;
-  padding: 0;
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #333;
-  border-radius: 8px;
-  background: #1a1a1a;
-}
-
-/* Стили для кнопки закрытия */
-.close-overlay-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #ff7f50;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-.close-overlay-btn:hover {
-  color: #ff4500;
-}
-
-/* Кнопка открытия поиска в шапке */
-.search-open-btn {
-  background: none;
-  border: none;
-  color: #ff7f50;
-  font-size: 18px;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-.search-open-btn:hover {
-  color: #ff4500;
-}
 
 
 /* =============================
@@ -886,14 +763,6 @@ footer {
     <button class="search-btn">Поиск</button>
   </div>
 </div>
-
-
-    
-  
-  
-  
-   
-
     <!-- Блок, куда будет выводиться список результатов -->
 <div class="search-results" id="search-results"></div>
 
@@ -902,15 +771,12 @@ footer {
       <i class="fas fa-bars"></i>
     </button>
   </div>
-</header>
 <!-- Меню, которое раскрывается по нажатию на «гамбургер» (только на телефоне) -->
 <nav class="mobile-menu" id="mobileMenu">
   <a href="valuta.html">Валюта</a>
   <a href="predmeti.html">Предмети</a>
   <a href="akunti.html">Акаунти</a>
 </nav>
-
-
 
 <!-- Нижняя панель (на телефоне) с «Профиль» -->
 <div class="bottom-nav">
@@ -932,15 +798,11 @@ footer {
     <span>Профиль</span>
   </a>
 </div>
+  <!-- Другой контент в header, если необходимо -->
 
-
- 
-  <!-- Левая часть: иконка поиска и профиль -->
+  <!-- Правая часть: иконка поиска и профиль -->
   <div class="navbar-right">
-    <button class="icon-btn search-icon-button" onclick="openSearchOverlay()">
-      <i class="fas fa-search"></i>
-    </button>
-    <div class="profile" id="profileSection" style="display:none;">
+    <div class="profile" id="profileSection">
       <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()" />
       <div class="profile-menu" id="profileMenu">
         <a href="#" onclick="showProfileModal()">Мой профиль</a>
@@ -953,7 +815,8 @@ footer {
       </div>
     </div>
   </div>
-</header>
+</>
+
 
 <!-- Авторизация (если не залогинен) -->
 <div class="auth-container" id="authContainer">
@@ -1064,20 +927,7 @@ footer {
 
 
 
-      <div class="cards-container">
-        <div class="card">
-            <img src="images/garantiya_2-1.png" alt="Гарантия" class="card-icon">
-            <h3>Гарантия возврата денег</h3>
-            <p>Получите ваш заказ или возврат. Чувствуйте себя в безопасности с полной защитой торговли!</p>
-            <button>Узнать больше</button>
-        </div>
-        <div class="card">
-            <img src="images/download" alt="Поддержка" class="card-icon">
-            <h3>Поддержка в режиме реального времени</h3>
-            <p>Поддержка Эльдорадо работает круглосуточно. Обращайтесь в любое время!</p>
-            <button>Начать чат сейчас</button>
-        </div>
-    </div>
+    
     
 
 <!-- Модальное окно профиля -->
@@ -1527,4 +1377,3 @@ footer {
   
 </body>
 </html>
-
