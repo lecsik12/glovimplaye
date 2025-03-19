@@ -8,6 +8,8 @@
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
@@ -506,44 +508,18 @@
   </div>
 </div>
 
-<!-- JS для поиска (пример) -->
+<!-- JS -->
 <script>
-  function filterCategories() {
-    let input = document.getElementById('searchInput').value.toLowerCase();
-    let sections = document.querySelectorAll('.categories-section'); // Все секции (Игры, Приложения)
-  
-    sections.forEach(section => {
-      let cards = section.querySelectorAll('.category-card');
-      let hasVisible = false; // Флаг, есть ли видимые элементы в секции
-  
-      cards.forEach(card => {
-        let titleElement = card.querySelector('.subcategory');
-        if (!titleElement) return;
-        let title = titleElement.textContent.toLowerCase();
-        if (title.includes(input)) {
-          card.style.display = 'block';
-          hasVisible = true;
-        } else {
-          card.style.display = 'none';
-        }
-      });
-  
-      section.style.display = hasVisible ? 'block' : 'none';
-    });
-  }
-</script>
-
-<script>
-/* ---------- Firebase конфиг ---------- */
+  /* ---------- Firebase конфиг ---------- */
   // Замените данные на свои!
   var firebaseConfig = {
-    apiKey: "Ваш-API-ключ",
-    authDomain: "ваш-проект.firebaseapp.com",
-    databaseURL: "https://ваш-проект.firebaseio.com",
-    projectId: "ваш-проект",
-    storageBucket: "ваш-проект.appspot.com",
-    messagingSenderId: "номер",
-    appId: "appId"
+    apiKey: "AIzaSy...",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
   };
   // Инициализация Firebase
   firebase.initializeApp(firebaseConfig);
@@ -559,94 +535,121 @@
     }
   });
 
-/* ---------- Авторизация ---------- */
-function login() {
-  auth.signInWithPopup(provider)
-    .then(function(result) {
-      var user = result.user;
-      var userData = {
-        uid: user.uid,
-        photoURL: user.photoURL,
-        displayName: user.displayName,
-        email: user.email
-      };
-      localStorage.setItem("user", JSON.stringify(userData));
-      updateProfile(userData);
-    })
-    .catch(function(error) {
-      console.error("Ошибка входа:", error);
-    });
-}
-
-function updateProfile(user) {
-  document.getElementById("loginButton").style.display = "none";
-  document.getElementById("authContainer").style.display = "none";
-  document.getElementById("profileSection").style.display = "flex"; 
-  document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
-  document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
-  document.getElementById("profileName").innerText = user.displayName;
-  document.getElementById("profileEmail").innerText = user.email;
-}
-
-function toggleProfileMenu() {
-  document.getElementById("profileMenu").classList.toggle("active");
-}
-
-function logout() {
-  auth.signOut().then(function() {
-    localStorage.removeItem("user");
-    document.getElementById("loginButton").style.display = "block";
-    document.getElementById("authContainer").style.display = "block";
-    document.getElementById("profileSection").style.display = "none";
-  }).catch(function(error) {
-    console.error("Ошибка выхода:", error);
-  });
-}
-
-/* ---------- Модальное окно профиля ---------- */
-function showProfileModal() {
-  document.getElementById("profileModal").style.display = "block";
-  var menu = document.getElementById("profileMenu");
-  if (menu) menu.classList.remove("active");
-}
-function closeProfileModal() {
-  document.getElementById("profileModal").style.display = "none";
-}
-function editProfile() {
-  alert("Редактирование профиля пока не реализовано.");
-}
-window.onclick = function(event) {
-  var modal = document.getElementById("profileModal");
-  if (event.target == modal) {
-    modal.style.display = "none";
+  /* ---------- Авторизация ---------- */
+  function login() {
+    auth.signInWithPopup(provider)
+      .then(function(result) {
+        var user = result.user;
+        var userData = {
+          uid: user.uid,
+          photoURL: user.photoURL,
+          displayName: user.displayName,
+          email: user.email
+        };
+        localStorage.setItem("user", JSON.stringify(userData));
+        updateProfile(userData);
+      })
+      .catch(function(error) {
+        console.error("Ошибка входа:", error);
+      });
   }
-};
 
-/* ---------- Переход на главную ---------- */
-function goToHomePage() {
-  window.location.href = "index.html";
-}
+  function updateProfile(user) {
+    document.getElementById("loginButton").style.display = "none";
+    document.getElementById("authContainer").style.display = "none";
+    document.getElementById("profileSection").style.display = "flex"; 
+    document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
+    document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
+    document.getElementById("profileName").innerText = user.displayName;
+    document.getElementById("profileEmail").innerText = user.email;
+  }
 
-/* ---------- Добавление товара в localStorage ---------- */
-const addForm = document.getElementById('addProductForm');
-addForm.addEventListener('submit', function(e) {
-  e.preventDefault();
-  let products = JSON.parse(localStorage.getItem('products')) || [];
-  const newProduct = {
-    id: Date.now(),
-    category: document.getElementById('category').value,
-    subcategory: document.getElementById('subcategory').value,
-    name: document.getElementById('productName').value,
-    description: document.getElementById('description').value,
-    sellerName: document.getElementById('sellerName').value,
-    price: document.getElementById('price').value,
-    stock: document.getElementById('stock').value
+  function toggleProfileMenu() {
+    document.getElementById("profileMenu").classList.toggle("active");
+  }
+
+  function logout() {
+    auth.signOut().then(function() {
+      localStorage.removeItem("user");
+      document.getElementById("loginButton").style.display = "block";
+      document.getElementById("authContainer").style.display = "block";
+      document.getElementById("profileSection").style.display = "none";
+    }).catch(function(error) {
+      console.error("Ошибка выхода:", error);
+    });
+  }
+
+  /* ---------- Модальное окно профиля ---------- */
+  function showProfileModal() {
+    document.getElementById("profileModal").style.display = "block";
+    var menu = document.getElementById("profileMenu");
+    if (menu) menu.classList.remove("active");
+  }
+  function closeProfileModal() {
+    document.getElementById("profileModal").style.display = "none";
+  }
+  function editProfile() {
+    alert("Редактирование профиля пока не реализовано.");
+  }
+  window.onclick = function(event) {
+    var modal = document.getElementById("profileModal");
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
   };
-  products.push(newProduct);
-  localStorage.setItem('products', JSON.stringify(products));
-  addForm.reset();
-  alert('Товар добавлен!');
-});
+
+  /* ---------- Переход на главную ---------- */
+  function goToHomePage() {
+    window.location.href = "index.html";
+  }
+
+  /* ---------- Добавление товара в Firebase Realtime Database ---------- */
+  const addForm = document.getElementById('addProductForm');
+  addForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const newProduct = {
+      category: document.getElementById('category').value,
+      subcategory: document.getElementById('subcategory').value,
+      name: document.getElementById('productName').value,
+      description: document.getElementById('description').value,
+      sellerName: document.getElementById('sellerName').value,
+      price: parseFloat(document.getElementById('price').value),
+      stock: parseInt(document.getElementById('stock').value),
+      createdAt: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    firebase.database().ref('products').push(newProduct, function(error) {
+      if (error) {
+        alert('Ошибка добавления товара: ' + error.message);
+      } else {
+        alert('Товар успешно добавлен!');
+        addForm.reset();
+      }
+    });
+  });
 </script>
 </body>
 </html>
+
+
+<div id="products-list"></div>
+
+<script>
+    const db = firebase.database();
+    db.ref('products').on('value', snapshot => {
+        const productsList = document.getElementById('products-list');
+        productsList.innerHTML = ""; // Очищаем перед обновлением
+
+        snapshot.forEach(childSnapshot => {
+            const product = childSnapshot.val();
+            const productElement = document.createElement('div');
+            productElement.innerHTML = `
+                <h3>${product.name}</h3>
+                <p>Цена: ${product.price}₽</p>
+                <img src="${product.image}" width="100">
+            `;
+            productsList.appendChild(productElement);
+        });
+    });
+</script>
