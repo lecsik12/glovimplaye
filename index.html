@@ -69,6 +69,49 @@ body {
   transform: scale(1.05);
 }
 
+/* По умолчанию скрываем нижнюю панель */
+.bottom-nav desktop-only {
+  display: none;
+}
+
+/* Отображение только на ПК (ширина экрана 769px и более) */
+@media (min-width: 769px) {
+  .bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    padding: 10px 0;
+    border-top: 1px solid #ccc;
+  }
+  
+  .bottom-nav a {
+    color: #000;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .bottom-nav a .avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-bottom: 5px;
+  }
+  
+  .bottom-nav i {
+    font-size: 18px;
+  }
+}
+
+
+
 /* Header с поиском */
 .header {
   position: relative;
@@ -669,19 +712,23 @@ footer {
   <a href="akunti.html">Акаунти</a>
 </nav>
 
-<!-- Нижняя панель (на телефоне) с «Профиль» -->
-<div class="bottom-nav">
-  <a href="index.html" onclick="openSearchOverlay()">
-    <i class="fas fa-search"></i>
-    <span>Поиск</span>
+<!-- Нижняя панель (только для ПК) -->
+<div class="bottom-nav desktop-only">
+  <a href="index.html">
+    <i class="fas fa-home"></i>
+    <span>Главная</span>
   </a>
-  
-  <a href="#">
+  <a href="search.html">
+    <i class="fas fa-plus"></i>
+    <span>Продать</span>
+  </a>
+  <a href="settings.html">
     <i class="fas fa-comments"></i>
-    <span>Чаты</span>
+    <span>Чат</span>
   </a>
-  <!-- Профиль уходит сюда, чтобы на телефоне был снизу -->
-  <a href="#" onclick="showProfileModal()">
+  <!-- Кнопка профиля -->
+  <a href="profile.html" class="bottom-nav-profile">
+    <img src="default-avatar.png" alt="Avatar" class="avatar" />
     <i class="fas fa-user"></i>
     <span>Профиль</span>
   </a>
@@ -694,7 +741,7 @@ footer {
     <i class="fas fa-home"></i>
     <span>Главная</span>
   </a>
-  <a href="search.html">
+  <a href="add.html">
     <i class="fas fa-plus"></i>
     <span>Продать</span>
   </a>
@@ -838,6 +885,103 @@ footer {
 </div>
 
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Section</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0d0d0d;
+            color: #fff;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            background-color: #ccebff;
+            padding: 40px;
+        }
+        .text-content {
+            max-width: 500px;
+            padding: 20px;
+        }
+        .text-content h2 {
+            color: #000;
+            font-size: 28px;
+        }
+        .text-content p {
+            color: #333;
+            font-size: 16px;
+        }
+        .card {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            margin: 20px;
+        }
+        .card h3 {
+            color: #fff;
+        }
+        .categories {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .category {
+            display: flex;
+            align-items: center;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 8px;
+            color: #fff;
+        }
+        .category img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <h3>CHOOSE FROM</h3>
+            <div class="categories">
+                <div class="category">
+                    <img src="currency.png" alt="Currency"> Currency
+                </div>
+                <div class="category">
+                    <img src="images/photo_2025-02-22_08-29-19.jpg" alt="Accounts"> Accounts
+                </div>
+                <div class="category">
+                    <img src="boosting.png" alt="Boosting"> Boosting
+                </div>
+                <div class="category">
+                    <img src="items.png" alt="Items"> Items
+                </div>
+            </div>
+        </div>
+
+        <div class="text-content">
+            <h2>Safe and Easy Trading</h2>
+            <p>Trade without fear - we guarantee all trades are legit and keep you safe from scammers.</p>
+            <p>Find the best products for your favorite game, make a payment, receive your order, and get back to playing.</p>
+            <p>Join us today to level up your gaming experience!</p>
+        </div>
+    </div>
+
+</body>
+</html>
 
 
     
