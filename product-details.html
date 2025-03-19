@@ -146,7 +146,9 @@
       }
     }
   </style>
+
   <style>
+    /* Второй блок стилей (из вашего кода) */
     * { box-sizing: border-box; }
     body {
       font-family: 'Arial', sans-serif;
@@ -196,6 +198,57 @@
     .rating-percent {
       font-size: 18px;
       margin-top: 10px;
+    }
+
+    /* --- Добавлено/Изменено: стили для блока способа оплаты и количества --- */
+    .payment-section {
+      margin-top: 15px;
+    }
+    .payment-section label {
+      display: block;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .payment-section select {
+      width: 100%;
+      max-width: 300px;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    .payment-section .price-from {
+      display: inline-block;
+      margin-top: 5px;
+      color: #666;
+      font-size: 14px;
+    }
+    .quantity-section {
+      margin-top: 15px;
+    }
+    .quantity-section a {
+      color: #007bff;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .quantity-section a:hover {
+      text-decoration: underline;
+    }
+    .quantity-wrapper {
+      display: none;
+      margin-top: 10px;
+    }
+    .quantity-wrapper label {
+      font-weight: bold;
+    }
+    .quantity-wrapper input[type="number"] {
+      width: 80px;
+      padding: 5px;
+      margin-left: 5px;
+    }
+    .payment-note {
+      font-size: 14px;
+      color: #666;
+      margin-top: 15px;
+      line-height: 1.4;
     }
   </style>
 </head>
@@ -249,24 +302,56 @@
     <form id="checkoutForm" class="checkout-form">
       <label for="address">Адрес доставки:</label>
       <textarea id="address" rows="3" required placeholder="Введите адрес доставки"></textarea>
-      <button type="submit" class="checkout-btn">Купить</button>
+      
+      <!-- Добавлено/Изменено: Способ оплаты + цена «от ...» -->
+      <div class="payment-section">
+        <label for="paymentMethod">Способ оплаты:</label>
+        <select id="paymentMethod" name="paymentMethod">
+          <option value="">Не выбран</option>
+          <option value="bankCard">Банковская карта</option>
+          <option value="qiwi">Qiwi</option>
+          <option value="yoomoney">ЮMoney</option>
+        </select>
+        <span class="price-from">от <span id="priceFrom">350</span> ₽</span>
+      </div>
+
+      <!-- Добавлено/Изменено: Купить несколько штук -->
+      <div class="quantity-section">
+        <a href="#" id="buyMultipleLink">Купить несколько штук</a>
+        <div class="quantity-wrapper" id="quantityWrapper">
+          <label for="quantity">Количество:</label>
+          <input type="number" id="quantity" min="1" value="1">
+        </div>
+      </div>
+
+      <!-- Заменяем старую кнопку на новую -->
+      <button type="submit" class="checkout-btn" id="buyBtn">Купить</button>
+
+      <!-- Примечание -->
+      <p class="payment-note">
+        Продавец не сможет получить оплату до тех пор, пока вы не подтвердите выполнение им всех обязательств.
+      </p>
     </form>
     
-  </head>
-  <body>
-  
-  <div class="container">
-    <h2>Оформление заказа</h2>
-  
-    <!-- Блок отзывов продавца -->
-    <div class="reviews-section">
+    <!-- Блок отзывов продавца (рейтинг) -->
+    <div class="reviews-section" id="reviewSection" style="display:none;">
       <h3>Рейтинг продавца: <span id="ratingPercent">0%</span></h3>
       <div class="rating-buttons">
         <button id="likeBtn">👍 Лайк</button>
         <button id="dislikeBtn">👎 Дизлайк</button>
       </div>
+
+      <!-- Форма отзыва -->
+      <div class="review-form">
+        <form id="reviewForm">
+          <label for="reviewText">Оставьте отзыв:</label>
+          <textarea id="reviewText" rows="3" placeholder="Напишите ваш отзыв..."></textarea>
+          <button type="submit" class="review-btn">Отправить отзыв</button>
+        </form>
+      </div>
     </div>
   </div>
+</div>
 
 <script>
   // Firebase конфигурация
@@ -336,15 +421,17 @@
 
   // Функция отправки сообщения в Telegram-бот (Cryptobot)
   function sendOrderToTelegram(orderData) {
-    const botToken = "357860:AA6gJoYFl6zytOUA0BXmGlptYvk1DxegoiQ";
+    const botToken = "357860:AA6gJoYF..."; // Сократил для примера
     const chatId = "YOUR_CHAT_ID"; // Замените на актуальный ID чата
     const message = `Новый заказ:
 Товар: ${orderData.productName}
 Цена: ${orderData.productPrice} ₽
 Продавец: ${orderData.sellerName}
 Покупатель: ${orderData.buyer.displayName}
-Адрес доставки: ${orderData.address}`;
-    
+Адрес доставки: ${orderData.address}
+Способ оплаты: ${orderData.paymentMethod}
+Количество: ${orderData.quantity}`;
+
     const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
     
     fetch(telegramUrl)
@@ -357,7 +444,19 @@
       });
   }
 
-  // Обработка оформления заказа
+  // Клик по ссылке «Купить несколько штук»
+  const buyMultipleLink = document.getElementById('buyMultipleLink');
+  const quantityWrapper = document.getElementById('quantityWrapper');
+  buyMultipleLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (quantityWrapper.style.display === 'none' || quantityWrapper.style.display === '') {
+      quantityWrapper.style.display = 'block';
+    } else {
+      quantityWrapper.style.display = 'none';
+    }
+  });
+
+  // Обработка оформления заказа (submit формы)
   const checkoutForm = document.getElementById("checkoutForm");
   checkoutForm.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -365,6 +464,20 @@
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (!currentUser) {
       alert("Пожалуйста, войдите в систему для оформления заказа.");
+      return;
+    }
+
+    // Добавлено/Изменено: получаем способ оплаты и количество
+    const paymentMethod = document.getElementById("paymentMethod").value;
+    const quantityValue = document.getElementById("quantity").value || "1";
+    const quantity = parseInt(quantityValue);
+
+    if (!paymentMethod) {
+      alert("Пожалуйста, выберите способ оплаты.");
+      return;
+    }
+    if (quantity < 1) {
+      alert("Количество не может быть меньше 1.");
       return;
     }
     
@@ -375,6 +488,8 @@
       sellerName: document.getElementById("sellerName").innerText,
       buyer: currentUser,
       address: document.getElementById("address").value,
+      paymentMethod: paymentMethod,  // добавили способ оплаты
+      quantity: quantity,            // добавили количество
       createdAt: firebase.database.ServerValue.TIMESTAMP
     };
 
@@ -448,9 +563,10 @@
 </script>
 
 <script>
-  // Firebase конфигурация
+  // Повторная инициализация Firebase внизу (из вашего кода).
+  // Можно удалить, если уже инициализировано выше.
   var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    apiKey: "AIzaSyAhn2H2BExF...",
     authDomain: "glovimplaye-b1023.firebaseapp.com",
     databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
     projectId: "glovimplaye-b1023",
@@ -458,7 +574,7 @@
     messagingSenderId: "553440591519",
     appId: "1:553440591519:web:b7be45a9253689f322acaa"
   };
-  firebase.initializeApp(firebaseConfig);
+  // firebase.initializeApp(firebaseConfig); // Уже инициализировано выше
 
   let sellerName = "Продавец123"; // Получите из данных товара
   let currentUser = "Покупатель123"; // Получите из авторизации

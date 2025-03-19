@@ -2,173 +2,163 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye | Добавить товар</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Font Awesome для иконок -->
+  <title>Купить | GlovimPlaye</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Firebase (v8) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <!-- Font Awesome для иконок (опционально) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
   <style>
-    /* Базовые стили */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* Сбрасываем отступы */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #2b2a2a;
-      color: #fff;
-      padding: 20px;
+      background: #f7f7f7;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
-    header { text-align: center; margin-bottom: 20px; }
+
+    header {
+      background: #333;
+      color: #fff;
+      padding: 15px;
+      text-align: center;
+    }
+
+    /* Контейнер для содержимого */
     .container {
-      background: #444;
+      flex: 1; /* чтобы занять доступное пространство по высоте */
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 20px;
+    }
+
+    .buy-box {
+      background: #fff;
       border-radius: 8px;
-      max-width: 700px;
-      margin: 0 auto 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 30px;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
     }
-    h2 { margin-bottom: 15px; text-align: center; }
-    form { display: flex; flex-direction: column; gap: 10px; }
-    form input, form select, form textarea {
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
+
+    .buy-box h2 {
+      color: #ff7f50;
+      margin-bottom: 20px;
     }
-    form button {
-      padding: 10px 20px;
+
+    .buy-btn {
+      display: inline-block;
       background: #ff7f50;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
       color: #fff;
+      border: none;
+      padding: 14px 25px;
+      border-radius: 4px;
+      cursor: pointer;
       font-size: 16px;
       transition: background 0.3s;
+      margin-top: 15px;
     }
-    form button:hover { background: #ff4500; }
-    .product-item { margin-bottom: 15px; }
-    hr { border: 0; border-top: 1px solid #666; margin: 10px 0; }
+
+    .buy-btn:hover {
+      background: #ff4500;
+    }
+
+    .info-text {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    /* Адаптация под мобильные устройства */
+    @media (max-width: 480px) {
+      .buy-box {
+        margin: 0 10px;
+      }
+      .info-text {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <h1>GlovimPlaye</h1>
+  <h1>Купить</h1>
 </header>
 
-<main>
-  <div class="container">
-    <h2>Добавить товар</h2>
-    <form id="addProductForm">
-      <label for="category">Категория</label>
-      <select id="category" required>
-        <option value="">-- Выберите категорию --</option>
-        <option value="csgo">CS:GO</option>
-        <option value="dota">Dota</option>
-        <option value="other">Другое</option>
-      </select>
-
-      <label for="subcategory">Подкатегория</label>
-      <select id="subcategory" required>
-        <option value="">-- Выберите подкатегорию --</option>
-        <option value="accounts">Аккаунты</option>
-        <option value="skins">Скины</option>
-        <option value="stars">Звезды</option>
-        <option value="donate">Донат</option>
-        <option value="services">Услуги</option>
-        <option value="items">Товары</option>
-      </select>
-
-      <label for="productName">Название</label>
-      <input type="text" id="productName" required />
-
-      <label for="description">Описание</label>
-      <textarea id="description"></textarea>
-
-      <label for="sellerName">Продавец</label>
-      <input type="text" id="sellerName" required />
-
-      <label for="price">Цена</label>
-      <input type="number" id="price" required />
-
-      <label for="stock">Наличие (шт.)</label>
-      <input type="number" id="stock" required />
-      <button type="submit">Добавить</button>
-    </form>
+<div class="container">
+  <div class="buy-box">
+    <h2>Оформить покупку</h2>
+    <p class="info-text">
+      Нажмите на кнопку, чтобы перейти к оформлению заказа.  
+      <!-- Либо сразу оформить заказ, если вы хотите -->
+    </p>
+    <button class="buy-btn" id="buyNowBtn">Купить</button>
   </div>
-
-  <div id="productContainer" class="container">
-    <h2>Все товары</h2>
-  </div>
-</main>
+</div>
 
 <script>
-  // Функция для загрузки товаров с сервера
-  async function loadProducts() {
-    try {
-      const response = await fetch('/api/products');
-      if (response.ok) {
-        const products = await response.json();
-        const productContainer = document.getElementById("productContainer");
-        productContainer.innerHTML = "<h2>Все товары</h2>"; // очищаем контейнер
-        products.forEach(product => {
-          const productElement = document.createElement("div");
-          productElement.classList.add("product-item");
-          productElement.innerHTML = `
-            <h3>${product.name}</h3>
-            <p><strong>Категория:</strong> ${product.category} / ${product.subcategory}</p>
-            <p><strong>Описание:</strong> ${product.description}</p>
-            <p><strong>Продавец:</strong> ${product.sellerName} (${product.sellerEmail})</p>
-            <p><strong>Цена:</strong> ${product.price} ₽</p>
-            <p><strong>В наличии:</strong> ${product.stock} шт.</p>
-            <hr>
-          `;
-          productContainer.appendChild(productElement);
-        });
-      } else {
-        console.error("Ошибка при загрузке товаров");}
-      } catch (err) {
-        console.error("Ошибка при загрузке товаров", err);
-      }
+  // Конфигурация Firebase
+  var firebaseConfig = {
+    apiKey: "AIzaSyA...",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.appspot.com",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  // Инициализируем Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  // Логика при клике на кнопку
+  document.getElementById('buyNowBtn').addEventListener('click', function() {
+    // 1) Вариант: Просто переходим на страницу оформления
+    window.location.href = "checkout.html?id=123"; // Пример: checkout.html?id=ID_товара
+
+    // 2) Вариант: Сразу оформляем заказ через Firebase, если у вас есть данные
+    // Примерно так:
+    /*
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    if (!currentUser) {
+      alert("Пожалуйста, войдите в систему для оформления заказа.");
+      return;
     }
-  
-    // Обработчик формы добавления товара
-    const addForm = document.getElementById('addProductForm');
-    addForm.addEventListener('submit', async function(e) {
-      e.preventDefault();
-  
-      // Здесь можно реализовать аутентификацию, но для простоты данные продавца берутся напрямую из формы
-      var newProduct = {
-        category: document.getElementById('category').value,
-        subcategory: document.getElementById('subcategory').value,
-        name: document.getElementById('productName').value,
-        description: document.getElementById('description').value,
-        sellerName: document.getElementById('sellerName').value,
-        price: parseFloat(document.getElementById('price').value),
-        stock: parseInt(document.getElementById('stock').value),
-        sellerId: "anonymous",
-        sellerEmail: "none@example.com",
-        timestamp: new Date().toISOString()
-      };
-  
-      try {
-        const response = await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newProduct)
-        });
-        if (response.ok) {
-          alert("Товар успешно добавлен!");
-          addForm.reset();
-          loadProducts();
-        } else {
-          alert("Ошибка при добавлении товара");
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Ошибка при добавлении товара");
+
+    const orderData = {
+      productId: "123",
+      productName: "Товар",
+      productPrice: "500",
+      sellerName: "Продавец",
+      buyer: currentUser.displayName,
+      address: "Адрес",
+      createdAt: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    firebase.database().ref('orders').push(orderData, function(error) {
+      if (error) {
+        alert("Ошибка оформления заказа: " + error.message);
+      } else {
+        alert("Заказ успешно оформлен!");
       }
     });
-  
-    // Загружаем товары после загрузки страницы
-    document.addEventListener("DOMContentLoaded", loadProducts);
-  </script>
-  
-  </body>
-  </html>
+    */
+  });
+</script>
+
+</body>
+</html>
