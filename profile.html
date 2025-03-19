@@ -9,6 +9,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
@@ -21,6 +22,7 @@
       --accent-hover: #ff4500;
       --text-color: #fff;
       --ban-bg: #8b0000;
+      --review-bg: #3a3a3a;
     }
     
     * {
@@ -64,6 +66,8 @@
       flex-direction: column;
       align-items: center;
       padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
     }
 
     .profile-container img {
@@ -106,6 +110,13 @@
       color: var(--text-color);
       cursor: pointer;
       transition: background 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .profile-container .btn i {
+      margin-right: 8px;
     }
 
     .profile-container .btn:hover {
@@ -138,6 +149,36 @@
       display: none;
     }
 
+    /* Блок отзывов */
+    .reviews-container {
+      width: 100%;
+      max-width: 700px;
+      background: var(--review-bg);
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .reviews-container h2 {
+      margin-bottom: 10px;
+    }
+    .review-item {
+      border-bottom: 1px solid #555;
+      padding: 10px 0;
+    }
+    .review-item:last-child {
+      border-bottom: none;
+    }
+    .review-item p {
+      margin-bottom: 4px;
+    }
+    .review-author {
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+    .review-rating {
+      color: gold;
+    }
+
     /* Footer */
     footer {
       background: var(--header-bg);
@@ -158,12 +199,12 @@
     <h1 id="profileNickname">Загрузка...</h1>
     <p id="profileEmail">Загрузка...</p>
     <p class="balance">Баланс: <span id="balanceAmount">0</span> ₽</p>
+    <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
 
     <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-<button class="btn" onclick="document.getElementById('avatarInput').click()">
-  <i class="fas fa-camera"></i> Сменить аватар
-</button>
-
+    <button class="btn" onclick="document.getElementById('avatarInput').click()">
+      <i class="fas fa-camera"></i> Сменить аватар
+    </button>
 
     <button class="btn" onclick="editProfile()">
       <i class="fas fa-edit"></i> Редактировать профиль
@@ -174,6 +215,14 @@
     <button class="btn" onclick="logout()">
       <i class="fas fa-sign-out-alt"></i> Выйти
     </button>
+
+    <!-- Блок отзывов -->
+    <div class="reviews-container" id="reviewsContainer">
+      <h2>Отзывы</h2>
+      <div id="reviewsList">
+        <!-- Сюда будем выводить отзывы из Firebase -->
+      </div>
+    </div>
   </main>
   
   <footer>
@@ -181,7 +230,7 @@
   </footer>
 
   <script>
-    // Firebase конфигурация
+    // ИНИЦИАЛИЗАЦИЯ FIREBASE (замените на свои данные!)
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -193,42 +242,108 @@
     };
     firebase.initializeApp(firebaseConfig);
 
+    // Отслеживаем авторизацию
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        let userId = user.uid;
-
-        // Получаем данные пользователя
-        firebase.database().ref('users/' + userId).once('value').then(snapshot => {
-          let userData = snapshot.val();
-
-          if (userData.banned) {
-            // Если пользователь забанен, изменяем стиль страницы
-            let profile = document.getElementById('profileContainer');
-            profile.innerHTML = `
-              <div class="banned">
-                <img id="profileAvatar" src="${user.photoURL || 'default-avatar.png'}" alt="Avatar">
-                <p>Ваш аккаунт заблокирован</p>
-                <button class="btn" disabled><i class="fas fa-ban"></i> Доступ ограничен</button>
-              </div>
-            `;
-          } else {
-            // Отображаем нормальный профиль
-            document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
-            document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
-            document.getElementById('profileEmail').innerText = user.email || "user@example.com";
-            document.getElementById('profileAvatar').src = user.photoURL || "default-avatar.png";
-          }
-        });
-
+        loadUserProfile(user);
       } else {
         window.location.href = "login.html"; // Если не авторизован, отправляем на вход
       }
     });
 
-    function editProfile() {
-      alert("Редактирование профиля пока не реализовано.");
+    // Функция загрузки данных профиля
+    function loadUserProfile(user) {
+      let userId = user.uid;
+      firebase.database().ref('users/' + userId).once('value').then(snapshot => {
+        let userData = snapshot.val();
+        if (!userData) {
+          console.error("Нет данных для пользователя", userId);
+          return;
+        }
+
+        // Если аккаунт забанен, показываем другое оформление
+        if (userData.banned) {
+          showBannedProfile(user);
+        } else {
+          showNormalProfile(user, userData);
+        }
+      });
     }
 
+    // Показываем профиль забаненного пользователя
+    function showBannedProfile(user) {
+      let profile = document.getElementById('profileContainer');
+      profile.innerHTML = `
+        <div class="banned">
+          <img src="${user.photoURL || 'default-avatar.png'}" alt="Avatar">
+          <p>Ваш аккаунт заблокирован</p>
+          <button class="btn" disabled><i class="fas fa-ban"></i> Доступ ограничен</button>
+        </div>
+      `;
+    }
+
+    // Показываем нормальный профиль
+    function showNormalProfile(user, userData) {
+      document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
+      document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+      document.getElementById('profileEmail').innerText = user.email || "user@example.com";
+      
+      // Дата регистрации (если она сохранена в базе)
+      if (userData.createdAt) {
+        let date = new Date(userData.createdAt);
+        document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
+      } else {
+        document.getElementById('profileCreatedDate').innerText = "Неизвестно";
+      }
+
+      // Аватар
+      let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
+      document.getElementById('profileAvatar').src = avatarUrl;
+
+      // Загрузка отзывов
+      loadReviews(user.uid);
+    }
+
+    // Загрузка отзывов из Firebase
+    function loadReviews(userId) {
+      firebase.database().ref('users/' + userId + '/reviews').on('value', (snapshot) => {
+        let reviews = snapshot.val() || {};
+        let reviewsListHTML = '';
+        let reviewsArray = Object.entries(reviews); 
+        // Превращаем объект {reviewId: {...}, reviewId2: {...}} в массив [[reviewId, {...}], ...]
+
+        if (reviewsArray.length === 0) {
+          reviewsListHTML = '<p>Отзывов пока нет.</p>';
+        } else {
+          // Генерируем HTML для каждого отзыва
+          reviewsArray.forEach(([reviewId, reviewData]) => {
+            let authorName = reviewData.authorName || "Аноним";
+            let rating = reviewData.rating !== undefined ? reviewData.rating : "N/A";
+            let comment = reviewData.comment || "";
+            let createdAt = reviewData.createdAt ? new Date(reviewData.createdAt).toLocaleDateString('ru-RU') : "";
+            
+            reviewsListHTML += `
+              <div class="review-item">
+                <p><span class="review-author">${authorName}</span> — <span class="review-rating">★${rating}</span></p>
+                <p>${comment}</p>
+                <p style="font-size: 12px; color: #aaa;">${createdAt}</p>
+              </div>
+            `;
+          });
+        }
+
+        document.getElementById('reviewsList').innerHTML = reviewsListHTML;
+      });
+    }
+
+    // Редактирование профиля
+    function editProfile() {
+      alert("Редактирование профиля пока не реализовано.");
+      // Здесь можно сделать всплывающее окно или отдельную страницу,
+      // где пользователь сможет менять nickname, email и т.д.
+    }
+
+    // Выход из аккаунта
     function logout() {
       firebase.auth().signOut().then(() => {
         window.location.href = "login.html";
@@ -237,16 +352,18 @@
       });
     }
 
-
-
+    // Обработчик изменения аватара
     document.getElementById('avatarInput').addEventListener('change', function(event) {
-      let file = event.target.files[0]; // Получаем файл
+      let file = event.target.files[0]; 
       if (!file) return;
-  
-      let userId = firebase.auth().currentUser.uid;
-      let storageRef = firebase.storage().ref('avatars/' + userId); // Путь хранения
+      
+      let user = firebase.auth().currentUser;
+      if (!user) return;
+
+      let userId = user.uid;
+      let storageRef = firebase.storage().ref('avatars/' + userId); 
       let uploadTask = storageRef.put(file);
-  
+      
       uploadTask.on('state_changed', 
         (snapshot) => {
           let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -259,23 +376,12 @@
           uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
             // Сохраняем URL в базе данных
             firebase.database().ref('users/' + userId).update({ avatar: downloadURL });
-  
             // Обновляем аватар в профиле
             document.getElementById('profileAvatar').src = downloadURL;
           });
         }
       );
-  });
-  firebase.database().ref('users/' + userId).once('value').then(snapshot => {
-    let userData = snapshot.val();
-    document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
-    document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
-    
-    // Загружаем аватар
-    let avatarUrl = userData.avatar || "default-avatar.png"; // Если нет, ставим стандартный
-    document.getElementById('profileAvatar').src = avatarUrl;
-  });
-  
+    });
   </script>
 
 </body>

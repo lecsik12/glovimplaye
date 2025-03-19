@@ -1,59 +1,47 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const path = require('path');
 
 const app = express();
-app.use(cors());
+const port = 3000;
+
+// Подключаем JSON-парсер и CORS
 app.use(express.json());
+app.use(cors());
 
-// Обслуживание статических файлов из папки "public"
-app.use(express.static(path.join(__dirname, 'public')));
+// Подключение к MongoDB Atlas — замените строку подключения на свою
+const uri = 'mongodb+srv://glovimplaye:ICjQNVFoG8brXIcN@cluster0.lsyvy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Подключение к MongoDB Atlas успешно установлено'))
+  .catch(err => console.error('Ошибка подключения к MongoDB Atlas:', err));
 
-// Подключение к MongoDB (замените строку подключения на вашу)
-mongoose.connect('mongodb://localhost:27017/mydatabase', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('MongoDB подключена'))
-  .catch(err => console.error('Ошибка подключения MongoDB:', err));
-
-// Схема и модель товара
+// Определение схемы и модели товара
 const productSchema = new mongoose.Schema({
-  category: String,
-  subcategory: String,
-  name: String,
+  category: { type: String, required: true },
+  subcategory: { type: String, required: true },
+  name: { type: String, required: true },
   description: String,
-  sellerName: String,
-  price: Number,
-  stock: Number,
-  sellerId: String,
-  sellerEmail: String,
-  timestamp: { type: Date, default: Date.now }
+  sellerName: { type: String, required: true },
+  price: { type: Number, required: true },
+  stock: { type: Number, required: true },
+  createdAt: { type: Date, default: Date.now }
 });
+
 const Product = mongoose.model('Product', productSchema);
 
-// Эндпоинт для добавления товара
+// API endpoint для добавления товара
 app.post('/api/products', async (req, res) => {
+  console.log('Полученные данные:', req.body);
   try {
-    const newProduct = new Product(req.body);
-    await newProduct.save();
-    res.status(201).json(newProduct);
+    const product = new Product(req.body);
+    await product.save();
+    res.status(201).json({ message: 'Товар успешно добавлен', product });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Ошибка при добавлении товара' });
+    console.error('Ошибка при добавлении товара:', err);
+    res.status(400).json({ message: 'Ошибка при добавлении товара', error: err.message });
   }
 });
 
-// Эндпоинт для получения всех товаров
-app.get('/api/products', async (req, res) => {
-  try {
-    const products = await Product.find().sort({ timestamp: -1 });
-    res.json(products);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Ошибка при получении товаров' });
-  }
+app.listen(port, () => {
+  console.log(`Сервер запущен на порту ${port}`);
 });
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Сервер запущен на порту ${PORT}`));

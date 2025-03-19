@@ -2,197 +2,139 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <title>Оформление заказа | GlovimPlaye</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GlovimPlaye | Главная с оверлеем поиска</title>
-
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-  <!-- Font Awesome для иконок -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  
   <style>
-    /* Общие стили */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
-      background: #2b2a2a;
-      color: #fff;
-      min-height: 100vh;
+      font-family: 'Arial', sans-serif;
+      background: #f7f7f7;
+      margin: 0;
+      padding: 20px;
+      color: #333;
     }
-
-    /* Стили для оверлея поиска */
-    .search-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0,0,0,0.8);
-      display: none;
-      z-index: 9999;
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    h2 { color: #ff7f50; text-align: center; }
+    .reviews-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .reviews-section h3 {
+      margin-bottom: 10px;
+    }
+    .rating-buttons {
+      display: flex;
       justify-content: center;
-      align-items: flex-start;
-      padding-top: 50px;
+      gap: 20px;
     }
-
-    .search-overlay.active {
-      display: flex;
-    }
-
-    .search-wrapper {
-      width: 90%;
-      max-width: 600px;
-    }
-
-    .search-input-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-      background: #1f1f1f;
-      border: 2px solid #ff7f50;
-      border-radius: 8px;
-      padding: 8px;
-    }
-
-    .search-input-wrapper input {
-      flex: 1;
-      background: transparent;
+    .rating-buttons button {
+      background: #ff7f50;
       border: none;
-      color: #fff;
+      color: white;
       font-size: 16px;
-      margin-left: 8px;
-      outline: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-
-    .search-input-wrapper input::placeholder {
-      color: #999;
+    .rating-buttons button:hover {
+      background: #ff4500;
     }
-
-    .search-input-wrapper i {
-      color: #ff7f50;
-      margin-left: 8px;
-      font-size: 16px;
+    .rating-buttons button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
     }
-
-    .close-button {
-      background: none;
-      border: none;
-      color: #999;
-      margin-left: 8px;
+    .rating-percent {
       font-size: 18px;
-      cursor: pointer;
-    }
-
-    .close-button:hover {
-      color: #ff7f50;
-    }
-
-    .search-results {
-      list-style: none;
-      background: #1f1f1f;
-      border: 2px solid #333;
-      border-radius: 8px;
       margin-top: 10px;
-      padding: 0;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-
-    .search-results li {
-      padding: 10px;
-      border-bottom: 1px solid #333;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .search-results li:hover {
-      background: #2b2a2a;
-    }
-
-    .search-results li:last-child {
-      border-bottom: none;
     }
   </style>
 </head>
 <body>
 
-<!-- Оверлей поиска -->
-<div class="search-overlay" id="searchOverlay">
-  <div class="search-wrapper">
-    <!-- Поле ввода -->
-    <div class="search-input-wrapper">
-      <i class="fas fa-search"></i>
-      <input
-        type="text"
-        placeholder="Поиск..."
-        id="searchInput"
-        oninput="searchFunction()"
-      />
-      <button class="close-button" onclick="closeSearch()">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
+<div class="container">
+  <h2>Оформление заказа</h2>
 
-    <!-- Результаты поиска -->
-    <ul class="search-results" id="searchResults">
-      <!-- Результаты будут добавляться сюда -->
-    </ul>
+  <!-- Блок отзывов продавца -->
+  <div class="reviews-section">
+    <h3>Рейтинг продавца: <span id="ratingPercent">0%</span></h3>
+    <div class="rating-buttons">
+      <button id="likeBtn">👍 Лайк</button>
+      <button id="dislikeBtn">👎 Дизлайк</button>
+    </div>
   </div>
 </div>
 
-<!-- Кнопка для открытия поиска -->
-<button onclick="openSearch()">Открыть поиск</button>
-
 <script>
-  // Функция для открытия оверлея
-  function openSearch() {
-    document.getElementById('searchOverlay').classList.add('active');
+  // Firebase конфигурация
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  let sellerName = "Продавец123"; // Получите из данных товара
+  let currentUser = "Покупатель123"; // Получите из авторизации
+
+  // Функция загрузки рейтинга продавца
+  function loadRating() {
+    firebase.database().ref('reviews/' + sellerName).once('value').then(snapshot => {
+      let data = snapshot.val();
+      let likes = data?.likes || 0;
+      let dislikes = data?.dislikes || 0;
+      let total = likes + dislikes;
+      let ratingPercent = total > 0 ? Math.round((likes / total) * 100) : 0;
+      
+      document.getElementById("ratingPercent").innerText = ratingPercent + "%";
+    });
   }
 
-  // Функция для закрытия оверлея
-  function closeSearch() {
-    document.getElementById('searchOverlay').classList.remove('active');
-  }
+  // Функция отправки лайка/дизлайка
+  function sendReview(type) {
+    firebase.database().ref('reviews/' + sellerName).once('value').then(snapshot => {
+      let data = snapshot.val() || { likes: 0, dislikes: 0 };
+      
+      if (type === "like") {
+        data.likes += 1;
+      } else {
+        data.dislikes += 1;
+      }
 
-  // Функция для поиска
-  function searchFunction() {
-    var input = document.getElementById('searchInput').value.toLowerCase();
-    var resultsList = document.getElementById('searchResults');
-
-    // Пример данных для поиска (можно заменить на реальный список)
-    var data = [
-      "Call of Duty",
-      "Counter-Strike",
-      "Dota 2",
-      "Epic Games",
-      "Netflix",
-      "Discord"
-    ];
-
-    // Очистка результатов
-    resultsList.innerHTML = "";
-
-    if (input) {
-      // Поиск по данным
-      var results = data.filter(item => item.toLowerCase().includes(input));
-
-      // Вывод результатов
-      results.forEach(function(result) {
-        var listItem = document.createElement('li');
-        listItem.innerHTML = '<i class="fas fa-gamepad"></i>' + result;
-        resultsList.appendChild(listItem);
+      firebase.database().ref('reviews/' + sellerName).set(data, error => {
+        if (!error) {
+          alert("Спасибо за вашу оценку!");
+          document.getElementById("likeBtn").disabled = true;
+          document.getElementById("dislikeBtn").disabled = true;
+          loadRating();
+        }
       });
-    }
+    });
   }
+
+  // Назначаем события на кнопки
+  document.getElementById("likeBtn").addEventListener("click", () => sendReview("like"));
+  document.getElementById("dislikeBtn").addEventListener("click", () => sendReview("dislike"));
+
+  // Загружаем рейтинг при загрузке страницы
+  loadRating();
 </script>
 
 </body>

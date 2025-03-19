@@ -387,31 +387,13 @@
 </head>
 <body>
 
-<!-- Хедер (ПК) -->
+<!-- Хедер -->
 <header>
   <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
-  <div class="header-center">
-    <div class="search-container">
-      <input type="text" class="search-input" placeholder="Поиск товаров...">
-      <button class="search-btn">Поиск</button>
-    </div>
-  </div>
-  <!-- Профиль (только на ПК) -->
-  <div class="profile" id="profileSection" style="display:none;">
-    <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
-    <div class="profile-menu" id="profileMenu">
-      <a href="#" onclick="showProfileModal()">Мой профиль</a>
-      <a href="#">Заказы</a>
-      <a href="settings.html">Настройки</a>
-      <a href="#">Чат</a>
-      <a href="#">Уведомления</a>
-      <a href="#" class="logout" onclick="logout()">Выйти</a>
-    </div>
-  </div>
 </header>
 
 <!-- Рекламный баннер -->
-<div class="ad-banner">
+<div class="ad-banner" style="background:#eee; padding:20px; text-align:center; margin-top:10px;">
   <h2>Специальная акция!</h2>
   <p>Купите прямо сейчас и получите бонусы!</p>
 </div>
@@ -451,9 +433,6 @@
       <label for="description">Описание</label>
       <textarea id="description"></textarea>
 
-      <label for="sellerName">Продавец</label>
-      <input type="text" id="sellerName" required />
-
       <label for="price">Цена</label>
       <input type="number" id="price" required />
 
@@ -475,28 +454,8 @@
   <p>© 2025 GlovimPlaye. Все права защищены.</p>
 </footer>
 
-<!-- НИЖНЯЯ ПАНЕЛЬ (для мобильных) -->
-<div class="bottom-nav">
-  <a href="index.html">
-    <i class="fas fa-search"></i>
-    <span>Поиск</span>
-  </a>
-  <a href="add.html">
-    <i class="fas fa-plus"></i>
-    <span>Продать</span>
-  </a>
-  <a href="#">
-    <i class="fas fa-comments"></i>
-    <span>Чаты</span>
-  </a>
-  <a href="#" onclick="showProfileModal()">
-    <i class="fas fa-user"></i>
-    <span>Профиль</span>
-  </a>
-</div>
-
-<!-- Модальное окно профиля -->
-<div id="profileModal" class="modal">
+<!-- Модальное окно профиля (при необходимости) -->
+<div id="profileModal" class="modal" style="display:none;">
   <div class="modal-content">
     <span class="modal-close" onclick="closeProfileModal()">&times;</span>
     <div class="profile-details">
@@ -508,12 +467,10 @@
   </div>
 </div>
 
-<!-- JS -->
 <script>
-  /* ---------- Firebase конфиг ---------- */
-  // Замените данные на свои!
+  // Firebase конфигурация
   var firebaseConfig = {
-    apiKey: "AIzaSy...",
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
     authDomain: "glovimplaye-b1023.firebaseapp.com",
     databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
     projectId: "glovimplaye-b1023",
@@ -521,7 +478,6 @@
     messagingSenderId: "553440591519",
     appId: "1:553440591519:web:b7be45a9253689f322acaa"
   };
-  // Инициализация Firebase
   firebase.initializeApp(firebaseConfig);
 
   var auth = firebase.auth();
@@ -535,7 +491,7 @@
     }
   });
 
-  /* ---------- Авторизация ---------- */
+  // Авторизация через Google
   function login() {
     auth.signInWithPopup(provider)
       .then(function(result) {
@@ -557,29 +513,10 @@
   function updateProfile(user) {
     document.getElementById("loginButton").style.display = "none";
     document.getElementById("authContainer").style.display = "none";
-    document.getElementById("profileSection").style.display = "flex"; 
-    document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
-    document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
-    document.getElementById("profileName").innerText = user.displayName;
-    document.getElementById("profileEmail").innerText = user.email;
+    // Дополнительно можно обновлять аватар и имя в хедере
   }
 
-  function toggleProfileMenu() {
-    document.getElementById("profileMenu").classList.toggle("active");
-  }
-
-  function logout() {
-    auth.signOut().then(function() {
-      localStorage.removeItem("user");
-      document.getElementById("loginButton").style.display = "block";
-      document.getElementById("authContainer").style.display = "block";
-      document.getElementById("profileSection").style.display = "none";
-    }).catch(function(error) {
-      console.error("Ошибка выхода:", error);
-    });
-  }
-
-  /* ---------- Модальное окно профиля ---------- */
+  // Функции модального окна профиля
   function showProfileModal() {
     document.getElementById("profileModal").style.display = "block";
     var menu = document.getElementById("profileMenu");
@@ -598,7 +535,6 @@
     }
   };
 
-  /* ---------- Переход на главную ---------- */
   function goToHomePage() {
     window.location.href = "index.html";
   }
@@ -608,12 +544,21 @@
   addForm.addEventListener('submit', function(e) {
     e.preventDefault();
 
+    // Получаем данные авторизованного пользователя
+    const currentUser = JSON.parse(localStorage.getItem("user"));
+    if (!currentUser) {
+      alert("Для добавления товара необходимо войти в систему.");
+      return;
+    }
+
     const newProduct = {
       category: document.getElementById('category').value,
       subcategory: document.getElementById('subcategory').value,
       name: document.getElementById('productName').value,
       description: document.getElementById('description').value,
-      sellerName: document.getElementById('sellerName').value,
+      // Продавец подставляется автоматически из данных авторизации
+      sellerName: currentUser.displayName,
+      sellerAvatar: currentUser.photoURL || "default-avatar.png",
       price: parseFloat(document.getElementById('price').value),
       stock: parseInt(document.getElementById('stock').value),
       createdAt: firebase.database.ServerValue.TIMESTAMP
@@ -629,27 +574,6 @@
     });
   });
 </script>
+
 </body>
 </html>
-
-
-<div id="products-list"></div>
-
-<script>
-    const db = firebase.database();
-    db.ref('products').on('value', snapshot => {
-        const productsList = document.getElementById('products-list');
-        productsList.innerHTML = ""; // Очищаем перед обновлением
-
-        snapshot.forEach(childSnapshot => {
-            const product = childSnapshot.val();
-            const productElement = document.createElement('div');
-            productElement.innerHTML = `
-                <h3>${product.name}</h3>
-                <p>Цена: ${product.price}₽</p>
-                <img src="${product.image}" width="100">
-            `;
-            productsList.appendChild(productElement);
-        });
-    });
-</script>
