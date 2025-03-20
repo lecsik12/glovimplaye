@@ -5,24 +5,23 @@
   <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Firebase -->
+  <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
-  <!-- Font Awesome -->
+  <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
     :root {
-      --bg-color: #2b2a2a;
+      --bg-color: #181818;
       --header-bg: #1f1f1f;
       --accent-color: #ff7f50;
       --accent-hover: #ff4500;
       --text-color: #fff;
-      --ban-bg: #8b0000;
-      --review-bg: #3a3a3a;
+      --card-bg: #252525;
     }
     
     * {
@@ -34,157 +33,213 @@
     body {
       background: var(--bg-color);
       color: var(--text-color);
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      overflow-x: hidden;
     }
-
-    a { text-decoration: none; color: inherit; }
-
+    
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
     /* Header */
     header {
       background: var(--header-bg);
-      padding: 16px 20px;
+      padding: 20px 40px;
       text-align: center;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
     }
-
+    
     header .logo {
-      font-size: 28px;
+      font-size: 32px;
       font-weight: bold;
-      color: var(--text-color);
+      color: var(--accent-color);
       cursor: pointer;
+      transition: transform 0.3s;
     }
-
+    
+    header .logo:hover {
+      transform: scale(1.05);
+    }
+    
     /* Профиль */
     .profile-container {
-      flex: 1;
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .profile-info {
+      background: var(--card-bg);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
-      max-width: 800px;
-      margin: 0 auto;
+      text-align: center;
     }
-
-    .profile-container img {
-      width: 120px;
-      height: 120px;
+    
+    .profile-info img {
+      width: 140px;
+      height: 140px;
       border-radius: 50%;
-      border: 4px solid var(--accent-color);
+      border: 5px solid var(--accent-color);
       object-fit: cover;
       margin-bottom: 20px;
-      transition: filter 0.3s ease;
     }
-
-    .profile-container h1 {
-      font-size: 24px;
+    
+    .profile-info h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .admin-badge {
+      background: red;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    
+    .profile-info p {
+      font-size: 16px;
       margin-bottom: 8px;
     }
-
-    .profile-container p {
-      font-size: 16px;
-      color: #ccc;
-      margin-bottom: 10px;
-    }
-
+    
     .balance {
-      font-size: 20px;
+      font-size: 22px;
       font-weight: bold;
-      margin-bottom: 24px;
+      margin: 15px 0;
       color: var(--accent-color);
     }
-
-    .profile-container .btn {
-      width: 80%;
-      max-width: 300px;
-      margin: 12px auto;
+    
+    .profile-actions {
+      margin-top: 20px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .profile-actions button {
+      width: 100%;
       padding: 12px;
-      background: var(--accent-color);
       border: none;
       border-radius: 6px;
       font-size: 16px;
-      color: var(--text-color);
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background 0.3s, transform 0.3s;
+      background: var(--accent-color);
+      color: var(--text-color);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
-    .profile-container .btn i {
-      margin-right: 8px;
-    }
-
-    .profile-container .btn:hover {
+    
+    .profile-actions button:hover {
       background: var(--accent-hover);
+      transform: translateY(-3px);
     }
-
-    /* Стиль для забаненного аккаунта */
-    .banned {
-      background: var(--ban-bg);
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      margin-bottom: 20px;
-      color: white;
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .banned img {
-      filter: grayscale(100%);
-      border-color: gray;
-    }
-
-    .banned .btn {
-      background: gray;
-      cursor: not-allowed;
-    }
-
-    .banned .balance, .banned h1, .banned p {
-      display: none;
-    }
-
-    /* Блок отзывов */
-    .reviews-container {
+    
+    /* Таблица товаров */
+    .product-table {
       width: 100%;
-      max-width: 700px;
-      background: var(--review-bg);
-      margin-top: 30px;
-      padding: 20px;
-      border-radius: 8px;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      animation: fadeInUp 0.6s ease-out;
     }
-    .reviews-container h2 {
-      margin-bottom: 10px;
+    
+    .product-table th,
+    .product-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #444;
     }
-    .review-item {
-      border-bottom: 1px solid #555;
-      padding: 10px 0;
-    }
-    .review-item:last-child {
-      border-bottom: none;
-    }
-    .review-item p {
-      margin-bottom: 4px;
-    }
-    .review-author {
+    
+    .product-table th {
+      background: #333;
       font-weight: bold;
+    }
+    
+    .product-table tr:hover {
+      background: #3a3a3a;
+    }
+    
+    .product-name {
       color: var(--accent-color);
+      font-weight: bold;
     }
-    .review-rating {
-      color: gold;
+    
+    /* Анимация появления */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-
-    /* Footer */
+    
+    /* Нижняя панель (мобильная навигация) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: var(--header-bg);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
+      z-index: 20;
+    }
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      text-align: center;
+      flex-grow: 1;
+      font-size: 14px;
+    }
+    .bottom-nav a i {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+    .bottom-nav-profile img.avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-bottom: 2px;
+    }
+    @media (min-width: 768px) {
+      .bottom-nav {
+        display: none;
+      }
+    }
+    
+    /* Футер */
     footer {
       background: var(--header-bg);
       text-align: center;
-      padding: 12px;
+      padding: 15px;
       font-size: 14px;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -195,42 +250,74 @@
   </header>
   
   <main class="profile-container" id="profileContainer">
-    <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
-    <h1 id="profileNickname">Загрузка...</h1>
-    <p id="profileEmail">Загрузка...</p>
-    <p class="balance">Баланс: <span id="balanceAmount">0</span> ₽</p>
-    <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
-
-    <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-    <button class="btn" onclick="document.getElementById('avatarInput').click()">
-      <i class="fas fa-camera"></i> Сменить аватар
-    </button>
-
-    <button class="btn" onclick="editProfile()">
-      <i class="fas fa-edit"></i> Редактировать профиль
-    </button>
-    <button class="btn" onclick="window.open('https://t.me/Glovimplaye_bot', '_blank')">
-      <i class="fab fa-telegram-plane"></i> Написать в поддержку
-    </button>
-    <button class="btn" onclick="logout()">
-      <i class="fas fa-sign-out-alt"></i> Выйти
-    </button>
-
-    <!-- Блок отзывов -->
-    <div class="reviews-container" id="reviewsContainer">
-      <h2>Отзывы</h2>
-      <div id="reviewsList">
-        <!-- Сюда будем выводить отзывы из Firebase -->
+    <!-- Информация о профиле -->
+    <div class="profile-info">
+      <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
+      <h1 id="profileNickname">Загрузка...</h1>
+      <p id="profileEmail">Загрузка...</p>
+      <p class="balance">Баланс: <span id="balanceAmount">0</span> ₽</p>
+      <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
+      <div class="profile-actions">
+        <button onclick="editProfile()">
+          <i class="fas fa-edit"></i> Редактировать профиль
+        </button>
+        <button onclick="topUpBalance()">
+          <i class="fas fa-plus-circle"></i> Пополнить баланс
+        </button>
+        <button onclick="window.open('https://t.me/Glovimplaye_bot', '_blank')">
+          <i class="fab fa-telegram-plane"></i> Написать в поддержку
+        </button>
+        <button onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> Выйти
+        </button>
       </div>
     </div>
+    
+    <!-- Таблица с товарами пользователя -->
+    <div class="profile-products">
+      <h2 style="margin-bottom:15px;">Мои товары</h2>
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Наличие</th>
+            <th>Цена</th>
+          </tr>
+        </thead>
+        <tbody id="userProductsList">
+          <!-- Товары будут динамически добавляться сюда -->
+        </tbody>
+      </table>
+    </div>
   </main>
+  
+  <!-- Нижняя панель (только для мобильных) -->
+  <div class="bottom-nav">
+    <a href="index.html">
+      <i class="fas fa-home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="add.html">
+      <i class="fas fa-plus"></i>
+      <span>Продать</span>
+    </a>
+    <a href="settings.html">
+      <i class="fas fa-comments"></i>
+      <span>Чат</span>
+    </a>
+    <a href="profile.html" class="bottom-nav-profile">
+      <img src="default-avatar.png" alt="Avatar" class="avatar" />
+      <i class="fas fa-user"></i>
+      <span>Профиль</span>
+    </a>
+  </div>
   
   <footer>
     © 2025 GlovimPlaye. Все права защищены.
   </footer>
-
+  
   <script>
-    // ИНИЦИАЛИЗАЦИЯ FIREBASE (замените на свои данные!)
+    // Firebase конфигурация (замените на свои данные)
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -241,109 +328,103 @@
       appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
     firebase.initializeApp(firebaseConfig);
-
-    // Отслеживаем авторизацию
+    
+    // Проверка авторизации
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         loadUserProfile(user);
+        loadUserProducts(user.uid);
       } else {
-        window.location.href = "login.html"; // Если не авторизован, отправляем на вход
+        window.location.href = "login.html";
       }
     });
-
-    // Функция загрузки данных профиля
+    
+    // Функция загрузки профиля
     function loadUserProfile(user) {
-      let userId = user.uid;
+      const userId = user.uid;
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
         let userData = snapshot.val();
         if (!userData) {
           console.error("Нет данных для пользователя", userId);
           return;
         }
-
-        // Если аккаунт забанен, показываем другое оформление
-        if (userData.banned) {
-          showBannedProfile(user);
-        } else {
-          showNormalProfile(user, userData);
+        let nicknameText = userData.nickname || "Без ника";
+        if (userData.role === "admin") {
+          nicknameText += ' <span class="admin-badge">АДМИН</span>';
+        } else if (userData.support === true || userData.role === "support") {
+          nicknameText += ' <span class="admin-badge" style="background: #3498db;">Поддержка</span>';
         }
+        document.getElementById('profileNickname').innerHTML = nicknameText;
+        document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+        document.getElementById('profileEmail').innerText = user.email || "user@example.com";
+        
+        if (userData.createdAt) {
+          let date = new Date(userData.createdAt);
+          document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
+        } else {
+          document.getElementById('profileCreatedDate').innerText = "Неизвестно";
+        }
+        let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
+        document.getElementById('profileAvatar').src = avatarUrl;
       });
     }
-
-    // Показываем профиль забаненного пользователя
-    function showBannedProfile(user) {
-      let profile = document.getElementById('profileContainer');
-      profile.innerHTML = `
-        <div class="banned">
-          <img src="${user.photoURL || 'default-avatar.png'}" alt="Avatar">
-          <p>Ваш аккаунт заблокирован</p>
-          <button class="btn" disabled><i class="fas fa-ban"></i> Доступ ограничен</button>
-        </div>
-      `;
+    
+    // Функция загрузки товаров пользователя
+    function loadUserProducts(userId) {
+      const productsRef = firebase.database().ref('products');
+      productsRef.orderByChild('sellerId').equalTo(userId).on('value', snapshot => {
+        const userProductsList = document.getElementById('userProductsList');
+        userProductsList.innerHTML = ""; // очищаем перед загрузкой
+        if (!snapshot.exists()) {
+          userProductsList.innerHTML = '<tr><td colspan="3">Товаров нет</td></tr>';
+          return;
+        }
+        snapshot.forEach(childSnapshot => {
+          const product = childSnapshot.val();
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a></td>
+            <td>${product.stock} шт.</td>
+            <td class="price">${product.price} ₽</td>
+          `;
+          userProductsList.appendChild(row);
+        });
+      });
     }
-
-    // Показываем нормальный профиль
-    function showNormalProfile(user, userData) {
-      document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
-      document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
-      document.getElementById('profileEmail').innerText = user.email || "user@example.com";
-      
-      // Дата регистрации (если она сохранена в базе)
-      if (userData.createdAt) {
-        let date = new Date(userData.createdAt);
-        document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
-      } else {
-        document.getElementById('profileCreatedDate').innerText = "Неизвестно";
+    
+    // Функция пополнения баланса
+    function topUpBalance() {
+      const amount = prompt("Введите сумму для пополнения (₽):");
+      const numericAmount = parseFloat(amount);
+      if (isNaN(numericAmount) || numericAmount <= 0) {
+        alert("Пожалуйста, введите корректную сумму.");
+        return;
       }
-
-      // Аватар
-      let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
-      document.getElementById('profileAvatar').src = avatarUrl;
-
-      // Загрузка отзывов
-      loadReviews(user.uid);
-    }
-
-    // Загрузка отзывов из Firebase
-    function loadReviews(userId) {
-      firebase.database().ref('users/' + userId + '/reviews').on('value', (snapshot) => {
-        let reviews = snapshot.val() || {};
-        let reviewsListHTML = '';
-        let reviewsArray = Object.entries(reviews); 
-        // Превращаем объект {reviewId: {...}, reviewId2: {...}} в массив [[reviewId, {...}], ...]
-
-        if (reviewsArray.length === 0) {
-          reviewsListHTML = '<p>Отзывов пока нет.</p>';
-        } else {
-          // Генерируем HTML для каждого отзыва
-          reviewsArray.forEach(([reviewId, reviewData]) => {
-            let authorName = reviewData.authorName || "Аноним";
-            let rating = reviewData.rating !== undefined ? reviewData.rating : "N/A";
-            let comment = reviewData.comment || "";
-            let createdAt = reviewData.createdAt ? new Date(reviewData.createdAt).toLocaleDateString('ru-RU') : "";
-            
-            reviewsListHTML += `
-              <div class="review-item">
-                <p><span class="review-author">${authorName}</span> — <span class="review-rating">★${rating}</span></p>
-                <p>${comment}</p>
-                <p style="font-size: 12px; color: #aaa;">${createdAt}</p>
-              </div>
-            `;
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        alert("Вы не авторизованы.");
+        return;
+      }
+      const userRef = firebase.database().ref('users/' + user.uid);
+      userRef.once('value').then(snapshot => {
+        let userData = snapshot.val();
+        let currentBalance = parseFloat(userData.balance) || 0;
+        let newBalance = currentBalance + numericAmount;
+        userRef.update({ balance: newBalance })
+          .then(() => {
+            alert("Баланс успешно пополнен!");
+            document.getElementById('balanceAmount').innerText = newBalance;
+          })
+          .catch(error => {
+            alert("Ошибка при пополнении баланса: " + error.message);
           });
-        }
-
-        document.getElementById('reviewsList').innerHTML = reviewsListHTML;
       });
     }
-
-    // Редактирование профиля
+    
+    // Функции редактирования и выхода
     function editProfile() {
       alert("Редактирование профиля пока не реализовано.");
-      // Здесь можно сделать всплывающее окно или отдельную страницу,
-      // где пользователь сможет менять nickname, email и т.д.
     }
-
-    // Выход из аккаунта
     function logout() {
       firebase.auth().signOut().then(() => {
         window.location.href = "login.html";
@@ -351,38 +432,7 @@
         console.error("Ошибка выхода:", error);
       });
     }
-
-    // Обработчик изменения аватара
-    document.getElementById('avatarInput').addEventListener('change', function(event) {
-      let file = event.target.files[0]; 
-      if (!file) return;
-      
-      let user = firebase.auth().currentUser;
-      if (!user) return;
-
-      let userId = user.uid;
-      let storageRef = firebase.storage().ref('avatars/' + userId); 
-      let uploadTask = storageRef.put(file);
-      
-      uploadTask.on('state_changed', 
-        (snapshot) => {
-          let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-          console.log("Загрузка: " + progress + "%");
-        }, 
-        (error) => {
-          console.error("Ошибка загрузки:", error);
-        }, 
-        () => {
-          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            // Сохраняем URL в базе данных
-            firebase.database().ref('users/' + userId).update({ avatar: downloadURL });
-            // Обновляем аватар в профиле
-            document.getElementById('profileAvatar').src = downloadURL;
-          });
-        }
-      );
-    });
   </script>
-
+  
 </body>
 </html>

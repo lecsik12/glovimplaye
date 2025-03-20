@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Админ панель | GlovimPlaye</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    form {
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background: #ff7f50;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #ff4500;
+    }
+    .message {
+      padding: 10px;
+      background: #e7f3fe;
+      border: 1px solid #b3d4fc;
+      border-radius: 4px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Админ панель</h1>
+  <div id="adminMessage"></div>
+  
+  <!-- Форма для начисления денег -->
+  <form id="creditForm">
+    <label for="creditUserId">ID пользователя</label>
+    <input type="text" id="creditUserId" placeholder="Введите UID пользователя" required>
+    
+    <label for="creditAmount">Сумма для начисления (₽)</label>
+    <input type="number" id="creditAmount" placeholder="Введите сумму" required>
+    
+    <button type="submit">Начислить деньги</button>
+  </form>
+  
+  <!-- Форма для бана пользователя -->
+  <form id="banForm">
+    <label for="banUserId">ID пользователя</label>
+    <input type="text" id="banUserId" placeholder="Введите UID пользователя" required>
+    
+    <button type="submit">Забанить пользователя</button>
+  </form>
+  
+  <button onclick="logout()">Выйти</button>
+</div>
+
+<script>
+  // Firebase конфигурация (замените на свои данные)
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  firebase.initializeApp(firebaseConfig);
+  
+  // Проверяем, что пользователь авторизован и имеет права администратора (например, role === "admin")
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      firebase.database().ref('users/' + user.uid).once('value').then(snapshot => {
+        let userData = snapshot.val();
+        if (!userData || userData.role !== "admin") {
+          alert("У вас нет прав для доступа к админ-панели.");
+          window.location.href = "index.html";
+        }
+      });
+    } else {
+      window.location.href = "login.html";
+    }
+  });
+  
+  // Форма начисления денег
+  document.getElementById('creditForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let targetUid = document.getElementById('creditUserId').value.trim();
+    let amount = parseFloat(document.getElementById('creditAmount').value);
+    
+    if (!targetUid || isNaN(amount) || amount <= 0) {
+      showMessage("Пожалуйста, заполните поля корректно.");
+      return;
+    }
+    
+    // Получаем текущий баланс пользователя и прибавляем сумму
+    let userRef = firebase.database().ref('users/' + targetUid);
+    userRef.once('value').then(snapshot => {
+      let userData = snapshot.val();
+      if (!userData) {
+        showMessage("Пользователь не найден.");
+        return;
+      }
+      let currentBalance = parseFloat(userData.balance) || 0;
+      let newBalance = currentBalance + amount;
+      userRef.update({ balance: newBalance }).then(() => {
+        showMessage("Баланс пользователя успешно обновлён: " + newBalance + " ₽");
+      }).catch(err => {
+        showMessage("Ошибка при обновлении баланса: " + err.message);
+      });
+    });
+  });
+  
+  // Форма бана пользователя
+  document.getElementById('banForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let targetUid = document.getElementById('banUserId').value.trim();
+    
+    if (!targetUid) {
+      showMessage("Пожалуйста, введите ID пользователя.");
+      return;
+    }
+    
+    let userRef = firebase.database().ref('users/' + targetUid);
+    userRef.once('value').then(snapshot => {
+      let userData = snapshot.val();
+      if (!userData) {
+        showMessage("Пользователь не найден.");
+        return;
+      }
+      // Для бана устанавливаем флаг banned в true
+      userRef.update({ banned: true }).then(() => {
+        showMessage("Пользователь забанен.");
+      }).catch(err => {
+        showMessage("Ошибка при бане пользователя: " + err.message);
+      });
+    });
+  });
+  
+  // Функция для вывода сообщений
+  function showMessage(message) {
+    let msgDiv = document.getElementById('adminMessage');
+    msgDiv.innerHTML = '<div class="message">' + message + '</div>';
+    setTimeout(() => { msgDiv.innerHTML = ''; }, 5000);
+  }
+  
+  // Функция выхода
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      window.location.href = "login.html";
+    }).catch(err => {
+      showMessage("Ошибка выхода: " + err.message);
+    });
+  }
+</script>
+
+</body>
+</html>

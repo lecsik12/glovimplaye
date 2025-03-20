@@ -2,625 +2,386 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Оформление заказа | GlovimPlaye</title>
+  <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Firebase v8 -->
+
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  
-  <!-- Font Awesome для иконок -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #f7f7f7;
+    :root {
+      --bg-color: #2b2a2a;
+      --header-bg: #1f1f1f;
+      --accent-color: #ff7f50;
+      --accent-hover: #ff4500;
+      --text-color: #fff;
+      --review-bg: #3a3a3a;
+    }
+    
+    * {
       margin: 0;
-      padding: 20px;
-      color: #333;
+      padding: 0;
+      box-sizing: border-box;
     }
-    header {
-      background: #333;
-      color: #fff;
-      padding: 15px;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      overflow: hidden;
+    
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
     }
-    .product-details, .buyer-details {
-      padding: 20px;
-      flex: 1 1 400px;
+
+    a { text-decoration: none; color: inherit; }
+
+    /* Header */
+    header {
+      background: var(--header-bg);
+      padding: 16px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    .product-details {
-      border-right: 1px solid #eee;
+
+    header .logo {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--text-color);
+      cursor: pointer;
     }
-    .product-details h2, .buyer-details h2 {
-      margin-top: 0;
-      color: #ff7f50;
+
+    /* Профиль */
+    .profile-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      max-width: 800px;
+      margin: 0 auto;
     }
-    .product-img {
-      width: 100%;
-      max-height: 300px;
+
+    .profile-container img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid var(--accent-color);
       object-fit: cover;
-      border-radius: 4px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      transition: filter 0.3s ease;
     }
-    .seller-info {
+
+    .profile-container h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .profile-container p {
+      font-size: 16px;
+      color: #ccc;
+      margin-bottom: 10px;
+    }
+
+    .balance {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 24px;
+      color: var(--accent-color);
+    }
+
+    .support-badge {
+      font-size: 14px;
+      color: var(--accent-hover);
+      background: rgba(255, 127, 80, 0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+    }
+
+    .profile-container .btn {
+      width: 80%;
+      max-width: 300px;
+      margin: 12px auto;
+      padding: 12px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background 0.3s ease;
       display: flex;
       align-items: center;
-      margin-top: 15px;
+      justify-content: center;
     }
-    .seller-info img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      margin-right: 10px;
-      border: 2px solid #ff7f50;
+
+    .profile-container .btn i {
+      margin-right: 8px;
     }
-    .order-summary {
-      margin-top: 20px;
+
+    .profile-container .btn:hover {
+      background: var(--accent-hover);
     }
-    .order-summary p {
-      font-size: 16px;
-      margin: 5px 0;
-    }
-    .reviews-section {
+
+    /* Блок отзывов */
+    .reviews-container {
+      width: 100%;
+      max-width: 700px;
+      background: var(--review-bg);
       margin-top: 30px;
+      padding: 20px;
+      border-radius: 8px;
     }
-    .reviews-section h3 {
+    .reviews-container h2 {
       margin-bottom: 10px;
-      color: #555;
     }
     .review-item {
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid #555;
       padding: 10px 0;
     }
     .review-item:last-child {
       border-bottom: none;
     }
-    .review-item strong {
-      color: #ff7f50;
+    .review-item p {
+      margin-bottom: 4px;
     }
-    .buyer-info {
-      border: 1px solid #eee;
-      padding: 15px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .buyer-info img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 2px solid #ff7f50;
-      margin-bottom: 10px;
-    }
-    .checkout-form label {
-      display: block;
-      margin-top: 10px;
+    .review-author {
       font-weight: bold;
+      color: var(--accent-color);
     }
-    .checkout-form input, .checkout-form textarea {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+    .review-rating {
+      color: gold;
     }
-    .checkout-btn, .review-btn {
-      background: #ff7f50;
-      color: #fff;
-      border: none;
-      padding: 12px 25px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      margin-top: 15px;
-      transition: background 0.3s;
-    }
-    .checkout-btn:hover, .review-btn:hover {
-      background: #ff4500;
-    }
-    .review-form {
-      margin-top: 20px;
-    }
-    @media(max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
-      .product-details {
-        border-right: none;
-        border-bottom: 1px solid #eee;
-      }
-    }
-  </style>
 
-  <style>
-    /* Второй блок стилей (из вашего кода) */
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Arial', sans-serif;
-      background: #f7f7f7;
-      margin: 0;
+    /* Блок товаров пользователя */
+    .products-container {
+      width: 100%;
+      max-width: 700px;
+      background: #3a3a3a;
+      margin-top: 30px;
       padding: 20px;
-      color: #333;
-    }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: #fff;
       border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    h2 { color: #ff7f50; text-align: center; }
-    .reviews-section {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .reviews-section h3 {
+    .products-container h2 {
       margin-bottom: 10px;
     }
-    .rating-buttons {
+    .user-product {
+      border-bottom: 1px solid #555;
+      padding: 10px 0;
       display: flex;
-      justify-content: center;
-      gap: 20px;
+      align-items: center;
+      gap: 15px;
     }
-    .rating-buttons button {
-      background: #ff7f50;
-      border: none;
-      color: white;
-      font-size: 16px;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background 0.3s;
+    .user-product:last-child {
+      border-bottom: none;
     }
-    .rating-buttons button:hover {
-      background: #ff4500;
+    .user-product img {
+      width: 60px;
+      height: 60px;
+      border-radius: 4px;
+      object-fit: cover;
     }
-    .rating-buttons button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+    .user-product-info {
+      flex: 1;
     }
-    .rating-percent {
-      font-size: 18px;
-      margin-top: 10px;
+    .user-product-title {
+      font-weight: bold;
+      color: var(--accent-color);
+      margin-bottom: 5px;
+    }
+    .user-product-price {
+      color: #ccc;
+      font-size: 14px;
     }
 
-    /* --- Добавлено/Изменено: стили для блока способа оплаты и количества --- */
-    .payment-section {
-      margin-top: 15px;
-    }
-    .payment-section label {
-      display: block;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    .payment-section select {
-      width: 100%;
-      max-width: 300px;
-      padding: 8px;
-      margin-top: 5px;
-    }
-    .payment-section .price-from {
-      display: inline-block;
-      margin-top: 5px;
-      color: #666;
+    /* Footer */
+    footer {
+      background: var(--header-bg);
+      text-align: center;
+      padding: 12px;
       font-size: 14px;
-    }
-    .quantity-section {
-      margin-top: 15px;
-    }
-    .quantity-section a {
-      color: #007bff;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    .quantity-section a:hover {
-      text-decoration: underline;
-    }
-    .quantity-wrapper {
-      display: none;
-      margin-top: 10px;
-    }
-    .quantity-wrapper label {
-      font-weight: bold;
-    }
-    .quantity-wrapper input[type="number"] {
-      width: 80px;
-      padding: 5px;
-      margin-left: 5px;
-    }
-    .payment-note {
-      font-size: 14px;
-      color: #666;
-      margin-top: 15px;
-      line-height: 1.4;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Оформление заказа</h1>
-</header>
-
-<div class="container">
-  <!-- Левая колонка: Информация о товаре, продавце и отзывы продавца -->
-  <div class="product-details">
-    <h2>Детали товара</h2>
-    <!-- Картинка товара -->
-    <img id="productImg" class="product-img" src="placeholder.jpg" alt="Изображение товара">
-    <!-- Название и описание -->
-    <h3 id="productName">Название товара</h3>
-    <p id="productDescription">Описание товара...</p>
-    <p><strong>Цена:</strong> <span id="productPrice">0</span> ₽</p>
-    <!-- Информация о продавце -->
-    <div class="seller-info">
-      <img id="sellerAvatar" src="default-avatar.png" alt="Продавец">
-      <div>
-        <p><strong>Продавец:</strong> <span id="sellerName">Неизвестно</span></p>
-      </div>
-    </div>
-    <!-- Итог заказа -->
-    <div class="order-summary">
-      <p><strong>Итого к оплате:</strong> <span id="orderTotal">0</span> ₽</p>
-    </div>
-    <!-- Блок отзывов продавца -->
-    <div class="reviews-section">
-      <h3>Отзывы о продавце</h3>
-      <div id="reviewsList">
-        <!-- Отзывы будут динамически подгружаться -->
-        <p>Нет отзывов.</p>
-      </div>
-    </div>
-  </div>
+  <header>
+    <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
+  </header>
   
-  <!-- Правая колонка: Данные покупателя, оформление заказа и отзыв -->
-  <div class="buyer-details">
-    <h2>Ваши данные</h2>
-    <!-- Информация о покупателе (без email) -->
-    <div class="buyer-info">
-      <img id="buyerAvatar" src="default-avatar.png" alt="Ваш аватар">
-      <p><strong id="buyerName">Ваше имя</strong></p>
-    </div>
-    
-    <!-- Форма оформления заказа -->
-    <form id="checkoutForm" class="checkout-form">
-      <label for="address">Адрес доставки:</label>
-      <textarea id="address" rows="3" required placeholder="Введите адрес доставки"></textarea>
-      
-      <!-- Добавлено/Изменено: Способ оплаты + цена «от ...» -->
-      <div class="payment-section">
-        <label for="paymentMethod">Способ оплаты:</label>
-        <select id="paymentMethod" name="paymentMethod">
-          <option value="">Не выбран</option>
-          <option value="bankCard">Банковская карта</option>
-          <option value="qiwi">Qiwi</option>
-          <option value="yoomoney">ЮMoney</option>
-        </select>
-        <span class="price-from">от <span id="priceFrom">350</span> ₽</span>
-      </div>
+  <main class="profile-container" id="profileContainer">
+    <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
+    <h1 id="profileNickname">Загрузка...</h1>
+    <p id="profileEmail">Загрузка...</p>
+    <p class="balance">Баланс: <span id="balanceAmount">0</span> ₽</p>
+    <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
 
-      <!-- Добавлено/Изменено: Купить несколько штук -->
-      <div class="quantity-section">
-        <a href="#" id="buyMultipleLink">Купить несколько штук</a>
-        <div class="quantity-wrapper" id="quantityWrapper">
-          <label for="quantity">Количество:</label>
-          <input type="number" id="quantity" min="1" value="1">
-        </div>
-      </div>
+    <button class="btn" onclick="editProfile()">
+      <i class="fas fa-edit"></i> Редактировать профиль
+    </button>
+    <button class="btn" onclick="window.open('https://t.me/Glovimplaye_bot', '_blank')">
+      <i class="fab fa-telegram-plane"></i> Написать в поддержку
+    </button>
+    <button class="btn" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> Выйти
+    </button>
 
-      <!-- Заменяем старую кнопку на новую -->
-      <button type="submit" class="checkout-btn" id="buyBtn">Купить</button>
-
-      <!-- Примечание -->
-      <p class="payment-note">
-        Продавец не сможет получить оплату до тех пор, пока вы не подтвердите выполнение им всех обязательств.
-      </p>
-    </form>
-    
-    <!-- Блок отзывов продавца (рейтинг) -->
-    <div class="reviews-section" id="reviewSection" style="display:none;">
-      <h3>Рейтинг продавца: <span id="ratingPercent">0%</span></h3>
-      <div class="rating-buttons">
-        <button id="likeBtn">👍 Лайк</button>
-        <button id="dislikeBtn">👎 Дизлайк</button>
-      </div>
-
-      <!-- Форма отзыва -->
-      <div class="review-form">
-        <form id="reviewForm">
-          <label for="reviewText">Оставьте отзыв:</label>
-          <textarea id="reviewText" rows="3" placeholder="Напишите ваш отзыв..."></textarea>
-          <button type="submit" class="review-btn">Отправить отзыв</button>
-        </form>
+    <!-- Блок отзывов -->
+    <div class="reviews-container" id="reviewsContainer">
+      <h2>Отзывы</h2>
+      <div id="reviewsList">
+        <!-- Отзывы из Firebase -->
       </div>
     </div>
-  </div>
-</div>
 
-<script>
-  // Firebase конфигурация
-  var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-    authDomain: "glovimplaye-b1023.firebaseapp.com",
-    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-    projectId: "glovimplaye-b1023",
-    storageBucket: "glovimplaye-b1023.firebasestorage.app",
-    messagingSenderId: "553440591519",
-    appId: "1:553440591519:web:b7be45a9253689f322acaa"
-  };
-  firebase.initializeApp(firebaseConfig);
+    <!-- Блок товаров пользователя -->
+    <div class="products-container" id="productsContainer">
+      <h2>Мои товары</h2>
+      <div id="userProductsList">
+        <!-- Товары пользователя -->
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    © 2025 GlovimPlaye. Все права защищены.
+  </footer>
 
-  // Функция для получения параметров URL
-  function getParameterByName(name, url = window.location.href) {
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-  }
-
-  // Получаем id товара из URL
-  const productId = getParameterByName('id');
-  if (!productId) {
-    alert("Товар не найден!");
-    window.location.href = "index.html";
-  }
-
-  // Загрузка данных товара из Firebase
-  let currentSeller = "";
-  firebase.database().ref('products/' + productId).once('value').then(snapshot => {
-    if (!snapshot.exists()) {
-      alert("Товар не найден!");
-      window.location.href = "index.html";
-      return;
-    }
-    const product = snapshot.val();
-    document.getElementById("productName").innerText = product.name;
-    document.getElementById("productDescription").innerText = product.description || "Описание отсутствует";
-    document.getElementById("productPrice").innerText = product.price;
-    document.getElementById("orderTotal").innerText = product.price;
-    if (product.image) {
-      document.getElementById("productImg").src = product.image;
-    }
-    document.getElementById("sellerName").innerText = product.sellerName || "Неизвестно";
-    document.getElementById("sellerAvatar").src = product.sellerAvatar || "default-avatar.png";
-    currentSeller = product.sellerName || "Неизвестно";
-    loadReviews(currentSeller);
-  }).catch(error => {
-    console.error("Ошибка получения товара:", error);
-  });
-
-  // Отображение данных покупателя из localStorage (без email)
-  document.addEventListener("DOMContentLoaded", function() {
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-    if (!currentUser) {
-      alert("Пожалуйста, войдите в систему для оформления заказа.");
-      window.location.href = "login.html";
-      return;
-    }
-    document.getElementById("buyerName").innerText = currentUser.displayName;
-    document.getElementById("buyerAvatar").src = currentUser.photoURL || "default-avatar.png";
-  });
-
-  // Функция отправки сообщения в Telegram-бот (Cryptobot)
-  function sendOrderToTelegram(orderData) {
-    const botToken = "357860:AA6gJoYF..."; // Сократил для примера
-    const chatId = "YOUR_CHAT_ID"; // Замените на актуальный ID чата
-    const message = `Новый заказ:
-Товар: ${orderData.productName}
-Цена: ${orderData.productPrice} ₽
-Продавец: ${orderData.sellerName}
-Покупатель: ${orderData.buyer.displayName}
-Адрес доставки: ${orderData.address}
-Способ оплаты: ${orderData.paymentMethod}
-Количество: ${orderData.quantity}`;
-
-    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    
-    fetch(telegramUrl)
-      .then(response => response.json())
-      .then(data => {
-        console.log("Сообщение отправлено в Telegram:", data);
-      })
-      .catch(error => {
-        console.error("Ошибка отправки в Telegram:", error);
-      });
-  }
-
-  // Клик по ссылке «Купить несколько штук»
-  const buyMultipleLink = document.getElementById('buyMultipleLink');
-  const quantityWrapper = document.getElementById('quantityWrapper');
-  buyMultipleLink.addEventListener('click', function(e) {
-    e.preventDefault();
-    if (quantityWrapper.style.display === 'none' || quantityWrapper.style.display === '') {
-      quantityWrapper.style.display = 'block';
-    } else {
-      quantityWrapper.style.display = 'none';
-    }
-  });
-
-  // Обработка оформления заказа (submit формы)
-  const checkoutForm = document.getElementById("checkoutForm");
-  checkoutForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-    if (!currentUser) {
-      alert("Пожалуйста, войдите в систему для оформления заказа.");
-      return;
-    }
-
-    // Добавлено/Изменено: получаем способ оплаты и количество
-    const paymentMethod = document.getElementById("paymentMethod").value;
-    const quantityValue = document.getElementById("quantity").value || "1";
-    const quantity = parseInt(quantityValue);
-
-    if (!paymentMethod) {
-      alert("Пожалуйста, выберите способ оплаты.");
-      return;
-    }
-    if (quantity < 1) {
-      alert("Количество не может быть меньше 1.");
-      return;
-    }
-    
-    const orderData = {
-      productId: productId,
-      productName: document.getElementById("productName").innerText,
-      productPrice: document.getElementById("productPrice").innerText,
-      sellerName: document.getElementById("sellerName").innerText,
-      buyer: currentUser,
-      address: document.getElementById("address").value,
-      paymentMethod: paymentMethod,  // добавили способ оплаты
-      quantity: quantity,            // добавили количество
-      createdAt: firebase.database.ServerValue.TIMESTAMP
+  <script>
+    // Firebase конфигурация (замените на свои данные)
+    var firebaseConfig = {
+      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+      authDomain: "glovimplaye-b1023.firebaseapp.com",
+      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+      projectId: "glovimplaye-b1023",
+      storageBucket: "glovimplaye-b1023.firebasestorage.app",
+      messagingSenderId: "553440591519",
+      appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
+    firebase.initializeApp(firebaseConfig);
 
-    firebase.database().ref('orders').push(orderData, function(error) {
-      if (error) {
-        alert("Ошибка оформления заказа: " + error.message);
+    // Отслеживаем авторизацию
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        loadUserProfile(user);
       } else {
-        alert("Заказ успешно оформлен!");
-        sendOrderToTelegram(orderData);
-        // Скрываем форму заказа и показываем форму отзыва
-        document.getElementById("checkoutForm").style.display = "none";
-        document.getElementById("reviewSection").style.display = "block";
+        window.location.href = "login.html";
       }
     });
-  });
 
-  // Функция загрузки отзывов по продавцу
-  function loadReviews(sellerName) {
-    const reviewsRef = firebase.database().ref('reviews/' + sellerName);
-    reviewsRef.on('value', snapshot => {
-      const reviewsList = document.getElementById("reviewsList");
-      reviewsList.innerHTML = "";
-      if (!snapshot.exists()) {
-        reviewsList.innerHTML = "<p>Нет отзывов.</p>";
-        return;
-      }
-      snapshot.forEach(childSnapshot => {
-        const review = childSnapshot.val();
-        const reviewDiv = document.createElement("div");
-        reviewDiv.className = "review-item";
-        reviewDiv.innerHTML = `<strong>${review.buyerName}:</strong> ${review.text}`;
-        reviewsList.appendChild(reviewDiv);
-      });
-    });
-  }
-
-  // Обработка отправки отзыва
-  const reviewForm = document.getElementById("reviewForm");
-  reviewForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-    if (!currentUser) {
-      alert("Пожалуйста, войдите в систему для оставления отзыва.");
-      return;
-    }
-    
-    const reviewText = document.getElementById("reviewText").value;
-    if (!reviewText.trim()) {
-      alert("Отзыв не может быть пустым.");
-      return;
-    }
-    
-    // Формируем объект отзыва
-    const reviewData = {
-      buyerName: currentUser.displayName,
-      text: reviewText,
-      createdAt: firebase.database.ServerValue.TIMESTAMP
-    };
-    
-    // Сохраняем отзыв под именем продавца
-    firebase.database().ref('reviews/' + currentSeller).push(reviewData, function(error) {
-      if (error) {
-        alert("Ошибка отправки отзыва: " + error.message);
-      } else {
-        alert("Отзыв успешно отправлен!");
-        reviewForm.reset();
-      }
-    });
-  });
-</script>
-
-<script>
-  // Повторная инициализация Firebase внизу (из вашего кода).
-  // Можно удалить, если уже инициализировано выше.
-  var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H2BExF...",
-    authDomain: "glovimplaye-b1023.firebaseapp.com",
-    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-    projectId: "glovimplaye-b1023",
-    storageBucket: "glovimplaye-b1023.firebasestorage.app",
-    messagingSenderId: "553440591519",
-    appId: "1:553440591519:web:b7be45a9253689f322acaa"
-  };
-  // firebase.initializeApp(firebaseConfig); // Уже инициализировано выше
-
-  let sellerName = "Продавец123"; // Получите из данных товара
-  let currentUser = "Покупатель123"; // Получите из авторизации
-
-  // Функция загрузки рейтинга продавца
-  function loadRating() {
-    firebase.database().ref('reviews/' + sellerName).once('value').then(snapshot => {
-      let data = snapshot.val();
-      let likes = data?.likes || 0;
-      let dislikes = data?.dislikes || 0;
-      let total = likes + dislikes;
-      let ratingPercent = total > 0 ? Math.round((likes / total) * 100) : 0;
-      
-      document.getElementById("ratingPercent").innerText = ratingPercent + "%";
-    });
-  }
-
-  // Функция отправки лайка/дизлайка
-  function sendReview(type) {
-    firebase.database().ref('reviews/' + sellerName).once('value').then(snapshot => {
-      let data = snapshot.val() || { likes: 0, dislikes: 0 };
-      
-      if (type === "like") {
-        data.likes += 1;
-      } else {
-        data.dislikes += 1;
-      }
-
-      firebase.database().ref('reviews/' + sellerName).set(data, error => {
-        if (!error) {
-          alert("Спасибо за вашу оценку!");
-          document.getElementById("likeBtn").disabled = true;
-          document.getElementById("dislikeBtn").disabled = true;
-          loadRating();
+    // Функция загрузки профиля
+    function loadUserProfile(user) {
+      const userId = user.uid;
+      firebase.database().ref('users/' + userId).once('value').then(snapshot => {
+        let userData = snapshot.val();
+        if (!userData) {
+          console.error("Нет данных для пользователя", userId);
+          return;
         }
+        // Добавляем поддержку — если в БД стоит флаг support, добавляем значок (можно изменить оформление)
+        let nicknameText = userData.nickname || "Без ника";
+        if (userData.support === true || userData.role === "support") {
+          nicknameText += ' <span class="support-badge">Поддержка</span>';
+        }
+        document.getElementById('profileNickname').innerHTML = nicknameText;
+        document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+        document.getElementById('profileEmail').innerText = user.email || "user@example.com";
+        
+        if (userData.createdAt) {
+          let date = new Date(userData.createdAt);
+          document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
+        } else {
+          document.getElementById('profileCreatedDate').innerText = "Неизвестно";
+        }
+
+        let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
+        document.getElementById('profileAvatar').src = avatarUrl;
+
+        // Загружаем отзывы и товары
+        loadReviews(userId);
+        loadUserProducts(userId);
       });
-    });
-  }
+    }
 
-  // Назначаем события на кнопки
-  document.getElementById("likeBtn").addEventListener("click", () => sendReview("like"));
-  document.getElementById("dislikeBtn").addEventListener("click", () => sendReview("dislike"));
+    // Функция загрузки отзывов
+    function loadReviews(userId) {
+      firebase.database().ref('users/' + userId + '/reviews').on('value', (snapshot) => {
+        let reviews = snapshot.val() || {};
+        let reviewsArray = Object.entries(reviews);
+        let reviewsHTML = '';
 
-  // Загружаем рейтинг при загрузке страницы
-  loadRating();
-</script>
+        if (reviewsArray.length === 0) {
+          reviewsHTML = '<p>Отзывов пока нет.</p>';
+        } else {
+          reviewsArray.forEach(([id, review]) => {
+            let authorName = review.authorName || "Аноним";
+            let rating = review.rating !== undefined ? review.rating : "N/A";
+            let comment = review.comment || "";
+            let createdAt = review.createdAt ? new Date(review.createdAt).toLocaleDateString('ru-RU') : "";
+            reviewsHTML += `
+              <div class="review-item">
+                <p><span class="review-author">${authorName}</span> — <span class="review-rating">★${rating}</span></p>
+                <p>${comment}</p>
+                <p style="font-size: 12px; color: #aaa;">${createdAt}</p>
+              </div>
+            `;
+          });
+        }
+        document.getElementById('reviewsList').innerHTML = reviewsHTML;
+      });
+    }
+
+    // Функция загрузки товаров пользователя
+    function loadUserProducts(userId) {
+      firebase.database().ref('products').on('value', (snapshot) => {
+        let allProducts = snapshot.val() || {};
+        let productsArray = Object.entries(allProducts);
+        let userProducts = productsArray.filter(([id, product]) => {
+          return product.sellerId === userId;
+        });
+        let productsHTML = '';
+        if (userProducts.length === 0) {
+          productsHTML = '<p>Вы ещё не выставляли товары.</p>';
+        } else {
+          userProducts.forEach(([id, product]) => {
+            let name = product.name || "Без названия";
+            let price = product.price !== undefined ? product.price : "N/A";
+            let image = product.image || "placeholder.jpg";
+            productsHTML += `
+              <div class="user-product">
+                <img src="${image}" alt="Товар">
+                <div class="user-product-info">
+                  <div class="user-product-title">${name}</div>
+                  <div class="user-product-price">${price} ₽</div>
+                </div>
+              </div>
+            `;
+          });
+        }
+        document.getElementById('userProductsList').innerHTML = productsHTML;
+      });
+    }
+
+    // Функции редактирования и выхода
+    function editProfile() {
+      alert("Редактирование профиля пока не реализовано.");
+    }
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login.html";
+      }).catch(error => {
+        console.error("Ошибка выхода:", error);
+      });
+    }
+  </script>
 
 </body>
 </html>
