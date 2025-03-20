@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-
+  
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
@@ -261,8 +261,9 @@
         <button onclick="editProfile()">
           <i class="fas fa-edit"></i> Редактировать профиль
         </button>
+        <!-- Изменяем функцию пополнения баланса -->
         <button onclick="topUpBalance()">
-          <i class="fas fa-plus-circle"></i> Пополнить баланс
+          <i class="fas fa-plus-circle"></i> Пополнить баланс через CryptoBot
         </button>
         <button onclick="window.open('https://t.me/Glovimplaye_bot', '_blank')">
           <i class="fab fa-telegram-plane"></i> Написать в поддержку
@@ -273,7 +274,7 @@
       </div>
     </div>
     
-    <!-- Таблица с товарами пользователя -->
+    <!-- Таблица товаров пользователя -->
     <div class="profile-products">
       <h2 style="margin-bottom:15px;">Мои товары</h2>
       <table class="product-table">
@@ -291,7 +292,7 @@
     </div>
   </main>
   
-  <!-- Нижняя панель (только для мобильных) -->
+  <!-- Нижняя панель (мобильная навигация) -->
   <div class="bottom-nav">
     <a href="index.html">
       <i class="fas fa-home"></i>
@@ -392,7 +393,7 @@
       });
     }
     
-    // Функция пополнения баланса
+    // Функция пополнения баланса через CryptoBot
     function topUpBalance() {
       const amount = prompt("Введите сумму для пополнения (₽):");
       const numericAmount = parseFloat(amount);
@@ -405,20 +406,9 @@
         alert("Вы не авторизованы.");
         return;
       }
-      const userRef = firebase.database().ref('users/' + user.uid);
-      userRef.once('value').then(snapshot => {
-        let userData = snapshot.val();
-        let currentBalance = parseFloat(userData.balance) || 0;
-        let newBalance = currentBalance + numericAmount;
-        userRef.update({ balance: newBalance })
-          .then(() => {
-            alert("Баланс успешно пополнен!");
-            document.getElementById('balanceAmount').innerText = newBalance;
-          })
-          .catch(error => {
-            alert("Ошибка при пополнении баланса: " + error.message);
-          });
-      });
+      // Формируем URL для CryptoBot с передачей суммы
+      let botUrl = `https://t.me/CryptoBot?start=send_${numericAmount}_RUB`;
+      window.open(botUrl, '_blank');
     }
     
     // Функции редактирования и выхода
