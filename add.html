@@ -116,8 +116,6 @@
     .social-links a:hover {
       color: #ff4500;
     }
-
- 
     /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
       position: fixed;
@@ -153,8 +151,6 @@
         display: none;
       }
     }
-    
-
   </style>
 </head>
 <body>
@@ -219,7 +215,6 @@
   </div>
 </main>
 
-
 <!-- Нижняя панель (мобильная навигация) -->
 <div class="bottom-nav">
   <a href="index.html">
@@ -235,11 +230,11 @@
     <span>Чат</span>
   </a>
   <a href="profile.html" class="bottom-nav-profile">
-   
     <i class="fas fa-user"></i>
     <span>Профиль</span>
   </a>
 </div>
+
 <!-- Футер -->
 <footer>
   <div class="social-links">
@@ -323,7 +318,7 @@
       description: document.getElementById('description').value,
       sellerName: currentUser.displayName,
       sellerAvatar: currentUser.photoURL || "default-avatar.png",
-      sellerId: currentUser.uid,  // <--- Добавлено поле идентификатора продавца
+      sellerId: currentUser.uid,
       price: parseFloat(document.getElementById('price').value),
       stock: parseInt(document.getElementById('stock').value),
       createdAt: firebase.database.ServerValue.TIMESTAMP
@@ -336,9 +331,38 @@
       } else {
         alert('Товар успешно добавлен!');
         addForm.reset();
+        // Отправляем уведомление в Telegram после успешного добавления товара
+        sendTelegramNotification(newProduct);
       }
     });
   });
+
+  /* ----------- Отправка уведомления в Telegram ----------- */
+  function sendTelegramNotification(product) {
+    // Замените значения ниже на свои данные
+    const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
+    const TELEGRAM_CHAT_ID = "YOUR_TELEGRAM_CHAT_ID";
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    
+    const text = `Новый товар добавлен!\n\n` +
+                 `*Название:* ${product.name}\n` +
+                 `*Категория:* ${product.category}\n` +
+                 `*Цена:* ${product.price}\n` +
+                 `*Продавец:* ${product.sellerName}`;
+
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CHAT_ID,
+        text: text,
+        parse_mode: "Markdown"
+      })
+    })
+    .then(response => response.json())
+    .then(data => console.log("Telegram уведомление отправлено", data))
+    .catch(error => console.error("Ошибка отправки в Telegram:", error));
+  }
 </script>
 
 </body>
