@@ -29,6 +29,7 @@
       background-color: #2b2a2a;
       color: #fff;
       padding: 20px;
+      padding-bottom: 70px; /* Чтобы контент не закрывался нижней навигацией */
     }
     header {
       background: linear-gradient(135deg, #3a3a3a, #222);
@@ -120,32 +121,30 @@
     .bottom-nav {
       position: fixed;
       bottom: 0;
+      left: 0;
       width: 100%;
-      background: var(--header-bg);
+      background: #222;
       display: flex;
       justify-content: space-around;
-      padding: 12px 0;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
-      z-index: 20;
+      align-items: center;
+      padding: 10px 0;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
+      z-index: 100;
     }
     .bottom-nav a {
       text-decoration: none;
-      color: var(--text-color);
+      color: #fff;
       text-align: center;
-      flex-grow: 1;
-      font-size: 14px;
+      flex: 1;
+      padding: 5px;
+      font-size: 12px;
     }
     .bottom-nav a i {
       display: block;
-      font-size: 22px;
-      margin-bottom: 2px;
+      font-size: 24px;
+      margin-bottom: 4px;
     }
-    .bottom-nav-profile img.avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      margin-bottom: 2px;
-    }
+    /* Скрываем нижнюю навигацию на десктопе */
     @media (min-width: 768px) {
       .bottom-nav {
         display: none;
