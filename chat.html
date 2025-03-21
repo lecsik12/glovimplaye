@@ -7,6 +7,7 @@
   
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   
   <!-- Font Awesome для иконок -->
@@ -19,7 +20,7 @@
       --bg-chat: #2a2a2a;
       --text-color: #eee;
       --text-muted: #999;
-      --accent-color: #ff7f50; /* Можно #00c853 или любой другой */
+      --accent-color: #ff7f50;
       --hover-color: #333;
     }
     * {
@@ -82,15 +83,32 @@
     .chat-item.active {
       background: #333;
     }
-    .chat-item img {
+    .avatar-container {
+      position: relative;
+    }
+    .avatar-container img {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       object-fit: cover;
-      margin-right: 12px;
+    }
+    .avatar-container input[type="file"] {
+      display: none;
+    }
+    .avatar-container button {
+      position: absolute;
+      bottom: -5px;
+      right: -5px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
     }
     .chat-item .details {
       flex: 1;
+      margin-left: 12px;
     }
     .chat-item .details .name {
       font-weight: bold;
@@ -217,11 +235,17 @@
       <i class="fas fa-cog"></i>
     </div>
     <div class="chat-list">
-      <!-- Единственный «аккаунт» — Официальный GlovimPlaye -->
+      <!-- Единственный «аккаунт» — Официальный GlovimPlaye с возможностью загрузки аватара -->
       <div class="chat-item active" id="officialChatBtn">
-        <img src="images/avatar.png" alt="Glovim Official">
+        <div class="avatar-container">
+          <img id="avatarImage" src="images/avatar.png" alt="Glovim Official">
+          <!-- Скрытый input для выбора файла -->
+          <input type="file" id="avatarInput" accept="image/png, image/jpeg">
+          <!-- Кнопка для запуска загрузки -->
+          <button id="uploadBtn"><i class="fas fa-camera" style="color: #fff; font-size: 12px;"></i></button>
+        </div>
         <div class="details">
-          <div class="name">GlovimPlaye</div>
+          <div class="name">GlovimPlaye</div> 
           <div class="last-message" id="lastMessage">...</div>
         </div>
         <div class="time" id="lastMessageTime">--:--</div>
@@ -232,7 +256,8 @@
   <!-- Основная область чата -->
   <div class="chat-area">
     <div class="chat-header">
-      <div class="chat-title">GlovimPlaye</div>
+      <div class="">GlovimPlaye</div> 
+      <img src="images/images.png" alt="Галочка" style="width: 24px; height: 24px;">
       <div class="chat-actions">
         <i class="fas fa-search"></i>
         <i class="fas fa-ellipsis-v"></i>
@@ -261,7 +286,7 @@
   };
   firebase.initializeApp(firebaseConfig);
   
-  // Будем хранить чат в узле officialChat
+  // Чат хранится в узле officialChat
   const chatRef = firebase.database().ref("officialChat");
   
   /************************
@@ -276,7 +301,7 @@
     const msg = snapshot.val();
     displayMessage(msg);
     
-    // Обновим «последнее сообщение» в боковой колонке
+    // Обновление боковой панели
     lastMessageEl.innerText = msg.text;
     let date = new Date(msg.timestamp);
     let timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
@@ -287,12 +312,9 @@
   });
   
   function displayMessage(msg) {
-    // Создаём div-обёртку
     const div = document.createElement("div");
-    // Если msg.sender === "admin" (или любая ваша логика), то слева, иначе справа
-    // Но в данном примере считаем, что всё, что не "Вы", идёт слева
-    // Можно добавить поле msg.isOfficial, чтобы понимать, что пишет GlovimPlaye
-    if (msg.sender === "You") {
+    // Сообщения от официального аккаунта GlovimPlaye (отправленные админом) показываем справа
+    if (msg.sender === "GlovimPlaye") {
       div.classList.add("message-item", "message-right");
     } else {
       div.classList.add("message-item", "message-left");
@@ -313,22 +335,24 @@
   const sendBtn = document.getElementById("sendBtn");
   const messageInput = document.getElementById("messageInput");
   
-  sendBtn.addEventListener("click", sendMessage);
-  messageInput.addEventListener("keypress", e => {
-    if (e.key === "Enter") sendMessage();
-  });
-  
+  // Функция отправки сообщения (только администратор может писать)
   function sendMessage() {
     const text = messageInput.value.trim();
     if (!text) return;
     
-    // Создаём объект сообщения
+    // Если обычный пользователь пытается отправить сообщение – блокируем
+    if (!currentUserIsAdmin) {
+      alert("В этот чат можно писать только с админ-панели.");
+      messageInput.value = "";
+      return;
+    }
+    
+    // Создаем объект сообщения от официального аккаунта
     const msgData = {
       text: text,
-      sender: "You", // Или "Покупатель", "Продавец" — на ваш выбор
+      sender: "GlovimPlaye",
       timestamp: firebase.database.ServerValue.TIMESTAMP
     };
-    // Записываем в БД
     chatRef.push(msgData)
       .then(() => {
         messageInput.value = "";
@@ -336,15 +360,75 @@
       .catch(err => console.error("Ошибка отправки:", err));
   }
   
+  sendBtn.addEventListener("click", sendMessage);
+  messageInput.addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+  });
+  
   /************************
-   * 4. ПРИМЕР: КЛИК ПО «ЧАТУ»
+   * 4. АУТЕНТИФИКАЦИЯ и ПРОВЕРКА РОЛИ
    ************************/
-  // Так как у нас только один чат, можно игнорировать, но оставим логику
+  let currentUserIsAdmin = false;
+  
+  firebase.auth().onAuthStateChanged(user => {
+    if (user) {
+      firebase.database().ref('users/' + user.uid).once('value').then(snapshot => {
+        const userData = snapshot.val();
+        if (userData && userData.role === "admin") {
+          currentUserIsAdmin = true;
+          messageInput.disabled = false;
+          sendBtn.disabled = false;
+        } else {
+          currentUserIsAdmin = false;
+          messageInput.disabled = true;
+          sendBtn.disabled = true;
+        }
+      });
+    } else {
+      messageInput.disabled = true;
+      sendBtn.disabled = true;
+    }
+  });
+  
+  /************************
+   * 5. КЛИК ПО «ЧАТУ»
+   ************************/
   const officialChatBtn = document.getElementById("officialChatBtn");
   officialChatBtn.addEventListener("click", () => {
-    // Можно сделать, если нужно очищать сообщения и загружать заново
-    // Но сейчас у нас и так всё в одном чате
     alert("Официальный чат уже выбран!");
+  });
+  
+  /************************
+   * 6. ЗАГРУЗКА АВАТАРА
+   ************************/
+  // Элементы для загрузки аватара
+  const avatarInput = document.getElementById("avatarInput");
+  const uploadBtn = document.getElementById("uploadBtn");
+  const avatarImage = document.getElementById("avatarImage");
+  
+  // При клике на кнопку открывается диалог выбора файла
+  uploadBtn.addEventListener("click", () => {
+    avatarInput.click();
+  });
+  
+  // Обработка выбора файла
+  avatarInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    // Проверка формата файла (PNG или JPEG)
+    if (!file.type.match("image/png") && !file.type.match("image/jpeg")) {
+      alert("Пожалуйста, выберите изображение в формате PNG или JPEG.");
+      return;
+    }
+    
+    // Чтение файла как Data URL
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      avatarImage.src = e.target.result;
+      // Здесь можно добавить загрузку файла на сервер или в Firebase Storage для постоянного хранения
+    };
+    reader.readAsDataURL(file);
   });
 </script>
 </body>
