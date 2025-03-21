@@ -78,16 +78,28 @@
     <button type="submit">Начислить деньги</button>
   </form>
   
-  <!-- Форма для бана пользователя -->
+  <!-- Форма для бана пользователя с указанием временного бана -->
   <form id="banForm">
     <label for="banUserId">ID пользователя</label>
     <input type="text" id="banUserId" placeholder="Введите UID пользователя" required>
+    
+    <label for="banDuration">Длительность бана (дней, 0 – перманентный)</label>
+    <input type="number" id="banDuration" placeholder="Например, 7" required>
     
     <button type="submit">Забанить пользователя</button>
   </form>
   
   <button onclick="logout()">Выйти</button>
 </div>
+
+<!-- Форма для разбана пользователя -->
+<form id="unbanForm">
+  <label for="unbanUserId">ID пользователя для разбана</label>
+  <input type="text" id="unbanUserId" placeholder="Введите UID пользователя" required>
+  
+  <button type="submit">Разбанить пользователя</button>
+</form>
+
 
 <script>
   // Firebase конфигурация (замените на свои данные)
@@ -102,7 +114,7 @@
   };
   firebase.initializeApp(firebaseConfig);
   
-  // Проверяем, что пользователь авторизован и имеет права администратора (например, role === "admin")
+  // Проверяем, что пользователь авторизован и имеет права администратора
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       firebase.database().ref('users/' + user.uid).once('value').then(snapshot => {
@@ -146,14 +158,22 @@
     });
   });
   
-  // Форма бана пользователя
+  // Форма бана пользователя с временным баном
   document.getElementById('banForm').addEventListener('submit', function(e) {
     e.preventDefault();
     let targetUid = document.getElementById('banUserId').value.trim();
+    let banDuration = parseInt(document.getElementById('banDuration').value, 10);
     
-    if (!targetUid) {
-      showMessage("Пожалуйста, введите ID пользователя.");
+    if (!targetUid || isNaN(banDuration) || banDuration < 0) {
+      showMessage("Пожалуйста, введите корректное значение для длительности бана.");
       return;
+    }
+    
+    let banData = { banned: true };
+    if (banDuration > 0) {
+      // Вычисляем время снятия бана (текущая дата + banDuration дней)
+      let unbanTimestamp = Date.now() + banDuration * 24 * 60 * 60 * 1000;
+      banData.unbanAt = unbanTimestamp;
     }
     
     let userRef = firebase.database().ref('users/' + targetUid);
@@ -163,14 +183,43 @@
         showMessage("Пользователь не найден.");
         return;
       }
-      // Для бана устанавливаем флаг banned в true
-      userRef.update({ banned: true }).then(() => {
-        showMessage("Пользователь забанен.");
+      userRef.update(banData).then(() => {
+        showMessage("Пользователь забанен " + (banDuration > 0 ? ("на " + banDuration + " дней") : "навсегда") + ".");
       }).catch(err => {
         showMessage("Ошибка при бане пользователя: " + err.message);
       });
     });
   });
+
+  // Форма разбанивания пользователя
+document.getElementById('unbanForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  let targetUid = document.getElementById('unbanUserId').value.trim();
+  
+  if (!targetUid) {
+    showMessage("Пожалуйста, введите UID пользователя для разбана.");
+    return;
+  }
+  
+  let userRef = firebase.database().ref('users/' + targetUid);
+  userRef.once('value').then(snapshot => {
+    let userData = snapshot.val();
+    if (!userData) {
+      showMessage("Пользователь не найден.");
+      return;
+    }
+    
+    // Обновляем данные: снимаем бан, удаляя поле unbanAt
+    userRef.update({ banned: false, unbanAt: null })
+      .then(() => {
+        showMessage("Пользователь успешно разбанен.");
+      })
+      .catch(err => {
+        showMessage("Ошибка при разбане пользователя: " + err.message);
+      });
+  });
+});
+
   
   // Функция для вывода сообщений
   function showMessage(message) {
@@ -187,6 +236,30 @@
       showMessage("Ошибка выхода: " + err.message);
     });
   }
+  
+  /* --- Проверка статуса бана при авторизации --- */
+  // Если пользователь забанен, проверяем, истёк ли срок бана. Если срок истёк – снимаем бан,
+  // иначе выводим сообщение и выходим из аккаунта.
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      let userRef = firebase.database().ref('users/' + user.uid);
+      userRef.once('value').then(snapshot => {
+        let userData = snapshot.val();
+        if (userData && userData.banned) {
+          if (userData.unbanAt && Date.now() < userData.unbanAt) {
+            alert("Ваш аккаунт заблокирован до " + new Date(userData.unbanAt).toLocaleString() + ".");
+            firebase.auth().signOut().then(() => window.location.href = "banned.html");
+          } else if (!userData.unbanAt) {
+            alert("Ваш аккаунт заблокирован навсегда.");
+            firebase.auth().signOut().then(() => window.location.href = "banned.html");
+          } else {
+            // Если время снятия бана прошло, снимаем бан
+            userRef.update({ banned: false, unbanAt: null });
+          }
+        }
+      });
+    }
+  });
 </script>
 
 </body>

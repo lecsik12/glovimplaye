@@ -77,12 +77,12 @@
       margin-right: 8px;
     }
     
-    .nickname-container {
+    .nickname-container, .phone-container, .location-container {
       display: none;
       margin-top: 20px;
     }
     
-    .nickname-input {
+    .nickname-input, .phone-input, .location-output {
       width: 100%;
       padding: 10px;
       border-radius: 6px;
@@ -125,8 +125,21 @@
     <div class="nickname-container" id="nicknameContainer">
       <h2>Выберите никнейм</h2>
       <input type="text" id="nicknameInput" class="nickname-input" placeholder="Введите ник">
-      <button class="save-btn" onclick="saveNickname()">Сохранить</button>
     </div>
+    
+    <div class="phone-container" id="phoneContainer">
+      <h2>Введите номер телефона</h2>
+      <!-- Изменён placeholder для поддержки ввода с кодом страны -->
+      <input type="tel" id="phoneInput" class="phone-input" placeholder="Введите номер (например, +7XXXXXXXXXX)">
+    </div>
+    
+    <div class="location-container" id="locationContainer">
+      <h2>Ваше местоположение</h2>
+      <!-- Здесь будет отображаться город и страна -->
+      <input type="text" id="locationOutput" class="location-output" readonly>
+    </div>
+    
+    <button class="save-btn" id="saveBtn" onclick="saveUserData()" style="display:none;">Сохранить</button>
   </div>
 
   <footer>
@@ -152,40 +165,110 @@
       var provider = new firebase.auth.GoogleAuthProvider();
       firebase.auth().signInWithPopup(provider).then((result) => {
         currentUser = result.user;
-        checkNickname();
+        checkUserData();
       }).catch((error) => {
         console.error("Ошибка входа:", error);
       });
     }
 
-    function checkNickname() {
+    function checkUserData() {
       let userId = currentUser.uid;
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
-        if (snapshot.exists() && snapshot.val().nickname) {
-          window.location.href = "profile.html"; // У пользователя уже есть ник, перекидываем в профиль
+        if (snapshot.exists() && snapshot.val().nickname && snapshot.val().phone && snapshot.val().location) {
+          // Если все данные уже есть, перекидываем в профиль
+          window.location.href = "profile.html";
         } else {
-          document.querySelector('.login-btn').style.display = 'none'; // Скрываем кнопку входа
-          document.getElementById('nicknameContainer').style.display = 'block'; // Показываем форму ввода
+          // Показываем форму для ввода недостающих данных
+          document.querySelector('.login-btn').style.display = 'none';
+          document.getElementById('nicknameContainer').style.display = 'block';
+          document.getElementById('phoneContainer').style.display = 'block';
+          document.getElementById('locationContainer').style.display = 'block';
+          document.getElementById('saveBtn').style.display = 'block';
+          getLocation(); // Запрос геолокации
         }
       });
     }
 
-    function saveNickname() {
+    // Получение местоположения с помощью API геолокации и обратного геокодирования
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+      } else {
+        document.getElementById('locationOutput').value = "Геолокация не поддерживается вашим браузером.";
+      }
+    }
+
+    function showPosition(position) {
+      let lat = position.coords.latitude;
+      let lon = position.coords.longitude;
+      // Используем API OpenStreetMap для обратного геокодирования
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+        .then(response => response.json())
+        .then(data => {
+          let city = data.address.city || data.address.town || data.address.village || '';
+          let country = data.address.country || '';
+          if(city && country){
+            document.getElementById('locationOutput').value = city + ", " + country;
+          } else {
+            document.getElementById('locationOutput').value = "Местоположение не определено";
+          }
+        })
+        .catch(error => {
+          console.error("Ошибка при обратном геокодировании:", error);
+          document.getElementById('locationOutput').value = "Ошибка определения местоположения";
+        });
+    }
+
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          document.getElementById('locationOutput').value = "Пользователь отклонил запрос на геолокацию.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          document.getElementById('locationOutput').value = "Информация о местоположении недоступна.";
+          break;
+        case error.TIMEOUT:
+          document.getElementById('locationOutput').value = "Запрос на получение местоположения истек.";
+          break;
+        case error.UNKNOWN_ERROR:
+          document.getElementById('locationOutput').value = "Произошла неизвестная ошибка.";
+          break;
+      }
+    }
+
+    function saveUserData() {
       let nickname = document.getElementById('nicknameInput').value.trim();
-      if (nickname === "") {
-        alert("Введите никнейм!");
+      let phone = document.getElementById('phoneInput').value.trim();
+      let location = document.getElementById('locationOutput').value.trim();
+      
+      if (nickname === "" || phone === "" || location === "") {
+        alert("Пожалуйста, заполните все поля.");
         return;
       }
 
-      let userId = currentUser.uid;
-      firebase.database().ref('users/' + userId).set({
-        nickname: nickname,
-        email: currentUser.email
-      }).then(() => {
-        window.location.href = "profile.html";
-      }).catch(error => {
-        console.error("Ошибка сохранения ника:", error);
-      });
+      // Проверка на уникальность никнейма
+      firebase.database().ref('users').orderByChild('nickname').equalTo(nickname).once('value')
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            alert("Данный никнейм уже занят. Пожалуйста, выберите другой.");
+          } else {
+            // Сохраняем данные пользователя
+            let userId = currentUser.uid;
+            firebase.database().ref('users/' + userId).set({
+              nickname: nickname,
+              email: currentUser.email,
+              phone: phone,
+              location: location
+            }).then(() => {
+              window.location.href = "profile.html";
+            }).catch(error => {
+              console.error("Ошибка сохранения данных:", error);
+            });
+          }
+        })
+        .catch(error => {
+          console.error("Ошибка проверки уникальности:", error);
+        });
     }
   </script>
 

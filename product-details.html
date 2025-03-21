@@ -17,7 +17,7 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       background: #f7f7f7;
       margin: 0;
       padding: 20px;
@@ -40,14 +40,16 @@
       display: flex;
       flex-wrap: wrap;
     }
-    .product-details, .buyer-details {
+    .product-details,
+    .checkout-section {
       padding: 20px;
       flex: 1 1 400px;
     }
     .product-details {
       border-right: 1px solid #eee;
     }
-    .product-details h2, .buyer-details h2 {
+    .product-details h2,
+    .checkout-section h2 {
       margin-top: 0;
       color: #ff7f50;
     }
@@ -62,6 +64,12 @@
       display: flex;
       align-items: center;
       margin-top: 15px;
+    }
+    .seller-info a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
     }
     .seller-info img {
       width: 50px;
@@ -94,26 +102,14 @@
     .review-item strong {
       color: #ff7f50;
     }
-    .buyer-info {
-      border: 1px solid #eee;
-      padding: 15px;
-      border-radius: 4px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-    .buyer-info img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      border: 2px solid #ff7f50;
-      margin-bottom: 10px;
-    }
     .checkout-form label {
       display: block;
       margin-top: 10px;
       font-weight: bold;
     }
-    .checkout-form input, .checkout-form textarea {
+    .checkout-form input, 
+    .checkout-form textarea, 
+    .checkout-form select {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -134,60 +130,16 @@
     .checkout-btn:hover, .review-btn:hover {
       background: #ff4500;
     }
-    .review-form {
-      margin-top: 20px;
-    }
-    /* Секция способа оплаты и количества */
-    .payment-section {
-      margin-top: 15px;
-    }
-    .payment-section label {
-      display: block;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    .payment-section select {
-      width: 100%;
-      max-width: 300px;
-      padding: 8px;
-      margin-top: 5px;
-    }
-    .payment-section .price-from {
-      display: inline-block;
-      margin-top: 5px;
-      color: #666;
-      font-size: 14px;
-    }
-    .quantity-section {
-      margin-top: 15px;
-    }
-    .quantity-section a {
-      color: #007bff;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    .quantity-section a:hover {
-      text-decoration: underline;
-    }
-    .quantity-wrapper {
-      display: none;
-      margin-top: 10px;
-    }
-    .quantity-wrapper label {
-      font-weight: bold;
-    }
-    .quantity-wrapper input[type="number"] {
-      width: 80px;
-      padding: 5px;
-      margin-left: 5px;
-    }
     .payment-note {
       font-size: 14px;
       color: #666;
       margin-top: 15px;
       line-height: 1.4;
     }
-    
+    /* Нижняя навигация (только на мобильных) */
+    .bottom-nav {
+      display: none;
+    }
     @media(max-width: 768px) {
       .container {
         flex-direction: column;
@@ -196,14 +148,20 @@
         border-right: none;
         border-bottom: 1px solid #eee;
       }
+      .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: #333;
+        padding: 12px 0;
+        justify-content: space-around;
+        color: #fff;
+      }
     }
   </style>
 </head>
 <body>
-
-<header>
-  <h1>Оформление заказа</h1>
-</header>
 
 <div class="container">
   <!-- Левая колонка: Информация о товаре, продавце и отзывы -->
@@ -213,11 +171,14 @@
     <h3 id="productName">Название товара</h3>
     <p id="productDescription">Описание товара...</p>
     <p><strong>Цена:</strong> <span id="productPrice">0</span> ₽</p>
+    <!-- Ссылка на профиль продавца. Изначально href оставлен пустым – будет обновлён скриптом -->
     <div class="seller-info">
-      <img id="sellerAvatar" src="default-avatar.png" alt="Продавец">
-      <div>
-        <p><strong>Продавец:</strong> <span id="sellerName">Неизвестно</span></p>
-      </div>
+      <a href="" id="sellerProfileLink">
+        <img id="sellerAvatar" src="default-avatar.png" alt="Продавец">
+        <div>
+          <p><strong>Продавец:</strong> <span id="sellerName">Неизвестно</span></p>
+        </div>
+      </a>
     </div>
     <div class="order-summary">
       <p><strong>Итого к оплате:</strong> <span id="orderTotal">0</span> ₽</p>
@@ -231,69 +192,36 @@
     </div>
   </div>
   
-  <!-- Правая колонка: Данные покупателя, оформление заказа и отзыв -->
-  <div class="buyer-details">
-    <h2>Ваши данные</h2>
-    <div class="buyer-info">
-      <img id="buyerAvatar" src="default-avatar.png" alt="Ваш аватар">
-      <p><strong id="buyerName">Ваше имя</strong></p>
-      <a href="seller.html?uid=ПРОДАВЕЦ_UID"></a>
-    </div>
+  <!-- Правая колонка: Оформление заказа с выбором способа оплаты -->
+  <div class="checkout-section">
+    <h2>Оформление заказа</h2>
     <form id="checkoutForm" class="checkout-form">
+      <!-- Поле для адреса доставки (если необходимо) -->
       <label for="address">Адрес доставки:</label>
-      <textarea id="address" rows="3" required placeholder="Введите адрес доставки"></textarea>
+      <textarea id="address" rows="2" placeholder="Введите адрес доставки"></textarea>
       
-
+      <!-- Секция выбора способа оплаты -->
+      <label for="paymentMethod">Способ оплаты:</label>
+      <select id="paymentMethod">
+        <option value="crypto">Криптовалюта</option>
+        <option value="card-ukr">Карта (Украина)</option>
+        <option value="card-rus">Карта (Россия)</option>
+        <option value="balance">С баланса</option>
+      </select>
+      <p class="payment-note">Выберите удобный способ оплаты. После успешного платежа вы будете перенаправлены в чат с продавцом.</p>
       
-      <div class="payment-section">
-        <label for="paymentMethod">Способ оплаты:</label>
-        <select id="paymentMethod" name="paymentMethod">
-          <option value="">Не выбран</option>
-          <option value="bankCard">Банковская карта</option>
-          <option value="qiwi">Qiwi</option>
-          <option value="yoomoney">ЮMoney</option>
-        </select>
-        <span class="price-from">от <span id="priceFrom">350</span> ₽</span>
-      </div>
-      
-      <div class="quantity-section">
-        <a href="#" id="buyMultipleLink">Купить несколько штук</a>
-        <div class="quantity-wrapper" id="quantityWrapper">
-          <label for="quantity">Количество:</label>
-          <input type="number" id="quantity" min="1" value="1">
-        </div>
-      </div>
-      
-      <button type="submit" class="checkout-btn" id="buyBtn">Купить</button>
-      <p class="payment-note">
-        Продавец не получит оплату, пока не подтвердите выполнение обязательств.
-      </p>
+      <!-- Кнопка оформить заказ -->
+      <button type="submit" class="checkout-btn">Купить</button>
     </form>
-    
-    <!-- Блок рейтинга и отзывов (появляется после успешного заказа) -->
-    <div class="reviews-section" id="reviewSection" style="display:none;">
-      <h3>Рейтинг продавца: <span id="ratingPercent">0%</span></h3>
-      <div class="rating-buttons">
-        <button id="likeBtn">👍 Лайк</button>
-        <button id="dislikeBtn">👎 Дизлайк</button>
-      </div>
-      <div class="review-form">
-        <form id="reviewForm">
-          <label for="reviewText">Оставьте отзыв:</label>
-          <textarea id="reviewText" rows="3" placeholder="Напишите ваш отзыв..."></textarea>
-          <button type="submit" class="review-btn">Отправить отзыв</button>
-        </form>
-      </div>
-    </div>
   </div>
 </div>
 
 <!-- Нижняя навигация для мобильных -->
-<div class="bottom-nav" style="position:fixed; bottom:0; width:100%; background:#333; padding:12px 0; display:flex; justify-content:space-around; color:#fff;">
-  <a href="index.html" style="text-decoration:none; color:#fff;"><i class="fas fa-home"></i><span>Главная</span></a>
-  <a href="add.html" style="text-decoration:none; color:#fff;"><i class="fas fa-plus"></i><span>Продать</span></a>
-  <a href="chat.html" style="text-decoration:none; color:#fff;"><i class="fas fa-comments"></i><span>Чат</span></a>
-  <a href="profile.html" style="text-decoration:none; color:#fff;"><img class="avatar" src="default-avatar.png" alt="Аватар" style="width:24px; height:24px; border-radius:50%;"><i class="fas fa-user"></i><span>Профиль</span></a>
+<div class="bottom-nav">
+  <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
+  <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
+  <a href="chat.html"><i class="fas fa-comments"></i><span>Чат</span></a>
+  <a href="profile.html"><img class="avatar" src="default-avatar.png" alt="Аватар" style="width:24px; height:24px; border-radius:50%;"><i class="fas fa-user"></i><span>Профиль</span></a>
 </div>
 
 <script>
@@ -309,7 +237,7 @@
   };
   firebase.initializeApp(firebaseConfig);
   
-  // Получаем параметры URL (например, id товара)
+  // Функция получения GET-параметров
   function getParameterByName(name, url = window.location.href) {
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -319,102 +247,14 @@
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
   }
   
-  // Проверка авторизации
+  // Проверка авторизации (покупатель)
   firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-      loadUserProfile(user);
-      loadUserProducts(user.uid);
-      loadUserReviews(user.uid);
-    } else {
+    if (!user) {
       window.location.href = "login.html";
     }
   });
   
-  // Загрузка профиля пользователя
-  function loadUserProfile(user) {
-    firebase.database().ref('users/' + user.uid).once('value').then(snapshot => {
-      const data = snapshot.val();
-      if (data) {
-        document.getElementById("buyerName").innerText = data.nickname || "Без ника";
-        document.getElementById("buyerAvatar").src = data.avatar || user.photoURL || "default-avatar.png";
-      }
-    });
-  }
-  
-  // Загрузка товаров пользователя (например, для страницы профиля с отзывами и товарами)
-  function loadUserProducts(userId) {
-    const productsRef = firebase.database().ref('products');
-    productsRef.orderByChild('sellerId').equalTo(userId).on('value', snapshot => {
-      const productsList = document.getElementById("productsList");
-      if(productsList) {
-        productsList.innerHTML = "";
-        if (!snapshot.exists()) {
-          productsList.innerHTML = "<p>Товаров нет.</p>";
-          return;
-        }
-        snapshot.forEach(childSnapshot => {
-          const product = childSnapshot.val();
-          const card = document.createElement("div");
-          card.className = "product-card";
-          card.innerHTML = `
-            <img src="${product.image || 'placeholder.jpg'}" alt="Изображение товара">
-            <h3>${product.name}</h3>
-            <p>${product.price} ₽</p>
-          `;
-          productsList.appendChild(card);
-        });
-      }
-    });
-  }
-  
-  // Загрузка отзывов для продавца (отзывы хранятся по uid продавца)
-  function loadUserReviews(userId) {
-    const reviewsRef = firebase.database().ref('reviews/' + userId);
-    reviewsRef.on('value', snapshot => {
-      const reviewsList = document.getElementById("reviewsList");
-      if(reviewsList) {
-        reviewsList.innerHTML = "";
-        if (!snapshot.exists()) {
-          reviewsList.innerHTML = "<p>Нет отзывов.</p>";
-          return;
-        }
-        snapshot.forEach(childSnapshot => {
-          const review = childSnapshot.val();
-          const reviewDiv = document.createElement("div");
-          reviewDiv.className = "review-item";
-          reviewDiv.innerHTML = `<strong>${review.buyerName}:</strong> ${review.text}`;
-          reviewsList.appendChild(reviewDiv);
-        });
-      }
-    });
-  }
-  
-  // Функция отправки заказа в Telegram через Cryptobot
-  function sendOrderToTelegram(orderData) {
-    const botToken = "357860:AA6gJoYF..."; // Замените на актуальный токен
-    const chatId = "YOUR_CHAT_ID"; // Замените на актуальный ID чата
-    const message = `Новый заказ:
-Товар: ${orderData.productName}
-Цена: ${orderData.productPrice} ₽
-Продавец: ${orderData.sellerName}
-Покупатель: ${orderData.buyer.displayName}
-Адрес доставки: ${orderData.address}
-Способ оплаты: ${orderData.paymentMethod}
-Количество: ${orderData.quantity}`;
-    
-    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-    
-    fetch(telegramUrl)
-      .then(response => response.json())
-      .then(data => {
-        console.log("Сообщение отправлено в Telegram:", data);
-      })
-      .catch(error => {
-        console.error("Ошибка отправки в Telegram:", error);
-      });
-  }
-  
-  // Получаем id товара из URL
+  // Получаем id товара из URL (например, ?id=PRODUCT_ID)
   const productId = getParameterByName('id');
   if (!productId) {
     alert("Товар не найден!");
@@ -437,136 +277,98 @@
     if (product.image) {
       document.getElementById("productImg").src = product.image;
     }
-    document.getElementById("sellerName").innerText = product.sellerName || "Неизвестно";
-    document.getElementById("sellerAvatar").src = product.sellerAvatar || "default-avatar.png";
-    currentSeller = product.sellerId; // предполагается, что sellerId соответствует uid продавца
-    loadUserReviews(currentSeller);
+    
+    // Сохраняем id продавца из данных товара
+    currentSeller = product.sellerId;
+    
+    // Загружаем данные продавца по sellerId, чтобы отобразить ник из профиля
+    firebase.database().ref('users/' + currentSeller).once('value').then(snapshot => {
+      const sellerData = snapshot.val();
+      if (sellerData && sellerData.nickname) {
+        document.getElementById("sellerName").innerText = sellerData.nickname;
+      } else {
+        document.getElementById("sellerName").innerText = product.sellerName || "Неизвестно";
+      }
+      document.getElementById("sellerAvatar").src = (sellerData && sellerData.avatar) ? sellerData.avatar : "default-avatar.png";
+    });
+    
+    // Обновляем ссылку на профиль продавца с правильным uid
+    document.getElementById("sellerProfileLink").href = "seller.html?uid=" + currentSeller;
+    
+    // Загружаем отзывы для продавца
+    loadSellerReviews(currentSeller);
   }).catch(error => {
     console.error("Ошибка получения товара:", error);
   });
   
-  // Обработка клика по ссылке "Купить несколько штук"
-  const buyMultipleLink = document.getElementById('buyMultipleLink');
-  const quantityWrapper = document.getElementById('quantityWrapper');
-  buyMultipleLink.addEventListener('click', function(e) {
-    e.preventDefault();
-    quantityWrapper.style.display = (quantityWrapper.style.display === 'block') ? 'none' : 'block';
-  });
+  // Загрузка отзывов для продавца (по sellerId)
+  function loadSellerReviews(sellerId) {
+    const reviewsRef = firebase.database().ref('reviews/' + sellerId);
+    reviewsRef.on('value', snapshot => {
+      const reviewsList = document.getElementById("reviewsList");
+      if(reviewsList) {
+        reviewsList.innerHTML = "";
+        if (!snapshot.exists()) {
+          reviewsList.innerHTML = "<p>Нет отзывов.</p>";
+          return;
+        }
+        snapshot.forEach(childSnapshot => {
+          const review = childSnapshot.val();
+          const reviewDiv = document.createElement("div");
+          reviewDiv.className = "review-item";
+          reviewDiv.innerHTML = `<strong>${review.buyerName}:</strong> ${review.text}`;
+          reviewsList.appendChild(reviewDiv);
+        });
+      }
+    });
+  }
   
-  // Обработка оформления заказа (submit формы)
+  // Обработка оформления заказа
   const checkoutForm = document.getElementById("checkoutForm");
   checkoutForm.addEventListener("submit", function(e) {
     e.preventDefault();
     
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-    if (!currentUser) {
-      alert("Пожалуйста, войдите в систему для оформления заказа.");
-      return;
-    }
-    
+    // Симуляция обработки платежа с выбранным способом
     const paymentMethod = document.getElementById("paymentMethod").value;
-    const quantity = parseInt(document.getElementById("quantity").value || "1");
-    if (!paymentMethod) {
-      alert("Пожалуйста, выберите способ оплаты.");
-      return;
-    }
-    if (quantity < 1) {
-      alert("Количество не может быть меньше 1.");
-      return;
-    }
-    
-    const orderData = {
-      productId: productId,
-      productName: document.getElementById("productName").innerText,
-      productPrice: document.getElementById("productPrice").innerText,
-      sellerName: document.getElementById("sellerName").innerText,
-      buyer: currentUser,
-      address: document.getElementById("address").value,
-      paymentMethod: paymentMethod,
-      quantity: quantity,
-      createdAt: firebase.database.ServerValue.TIMESTAMP
-    };
-    
-    firebase.database().ref('orders').push(orderData, function(error) {
-      if (error) {
-        alert("Ошибка оформления заказа: " + error.message);
-      } else {
-        alert("Заказ успешно оформлен!");
-        sendOrderToTelegram(orderData);
-        // Скрываем форму заказа и показываем блок отзывов/рейтинга
-        document.getElementById("checkoutForm").style.display = "none";
-        document.getElementById("reviewSection").style.display = "block";
-      }
-    });
-  });
-  
-  // Обработка отправки отзыва
-  const reviewForm = document.getElementById("reviewForm");
-  reviewForm.addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-    if (!currentUser) {
-      alert("Пожалуйста, войдите в систему для оставления отзыва.");
-      return;
-    }
-    
-    const reviewText = document.getElementById("reviewText").value;
-    if (!reviewText.trim()) {
-      alert("Отзыв не может быть пустым.");
-      return;
-    }
-    
-    const reviewData = {
-      buyerName: currentUser.displayName,
-      text: reviewText,
-      createdAt: firebase.database.ServerValue.TIMESTAMP
-    };
-    
-    firebase.database().ref('reviews/' + currentSeller).push(reviewData, function(error) {
-      if (error) {
-        alert("Ошибка отправки отзыва: " + error.message);
-      } else {
-        alert("Отзыв успешно отправлен!");
-        reviewForm.reset();
-      }
-    });
-  });
-  
-  // Функции для рейтинга (лайки/дизлайки)
-  function loadRating() {
-    firebase.database().ref('reviews/' + currentSeller).once('value').then(snapshot => {
-      let data = snapshot.val();
-      let likes = data?.likes || 0;
-      let dislikes = data?.dislikes || 0;
-      let total = likes + dislikes;
-      let ratingPercent = total > 0 ? Math.round((likes / total) * 100) : 0;
-      document.getElementById("ratingPercent").innerText = ratingPercent + "%";
-    });
-  }
-  
-  function sendReview(type) {
-    firebase.database().ref('reviews/' + currentSeller).once('value').then(snapshot => {
-      let data = snapshot.val() || { likes: 0, dislikes: 0 };
-      if (type === "like") {
-        data.likes += 1;
-      } else {
-        data.dislikes += 1;
-      }
-      firebase.database().ref('reviews/' + currentSeller).set(data, error => {
-        if (!error) {
-          alert("Спасибо за вашу оценку!");
-          document.getElementById("likeBtn").disabled = true;
-          document.getElementById("dislikeBtn").disabled = true;
-          loadRating();
-        }
+    processPayment(paymentMethod)
+      .then(() => {
+        // После успешной оплаты оформляем заказ
+        const orderData = {
+          productId: productId,
+          productName: document.getElementById("productName").innerText,
+          productPrice: document.getElementById("productPrice").innerText,
+          sellerName: document.getElementById("sellerName").innerText,
+          buyerId: firebase.auth().currentUser.uid,
+          address: document.getElementById("address").value,
+          paymentMethod: paymentMethod,
+          quantity: 1,
+          createdAt: firebase.database.ServerValue.TIMESTAMP
+        };
+        
+        firebase.database().ref('orders').push(orderData, function(error) {
+          if (error) {
+            alert("Ошибка оформления заказа: " + error.message);
+          } else {
+            alert("Заказ успешно оформлен!");
+            // Перенаправление в чат с продавцом
+            window.location.href = "chat.html?seller=" + currentSeller;
+          }
+        });
+      })
+      .catch(error => {
+        alert("Платеж не выполнен: " + error);
       });
+  });
+  
+  // Фейковая функция обработки платежа
+  function processPayment(method) {
+    return new Promise((resolve, reject) => {
+      console.log("Обработка платежа методом:", method);
+      setTimeout(() => {
+        resolve();
+      }, 2000);
     });
   }
-  
-  document.getElementById("likeBtn").addEventListener("click", () => sendReview("like"));
-  document.getElementById("dislikeBtn").addEventListener("click", () => sendReview("dislike"));
-  loadRating();
 </script>
 
 </body>

@@ -119,10 +119,15 @@
     }
     
     .balance {
-      font-size: 22px;
+      font-size: 26px;
       font-weight: bold;
       margin: 15px 0;
       color: var(--accent-color);
+      text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+      background: rgba(255, 127, 80, 0.1);
+      padding: 10px 15px;
+      border-radius: 8px;
+      display: inline-block;
     }
     
     .profile-actions {
@@ -255,7 +260,11 @@
       <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
       <h1 id="profileNickname">Загрузка...</h1>
       <p id="profileEmail">Загрузка...</p>
-      <p class="balance">Баланс: <span id="balanceAmount">0</span> ₽</p>
+      <!-- Фрагмент страницы profile.html -->
+<p class="balance">
+  Баланс: <span id="balanceAmount">0</span> ₽
+</p>
+
       <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
       <div class="profile-actions">
         <button onclick="editProfile()">

@@ -1,47 +1,66 @@
+// server.js
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-
+const bodyParser = require('body-parser');
+const axios = require('axios'); // Для реальных запросов к API платежной системы
 const app = express();
-const port = 3000;
 
-// Подключаем JSON-парсер и CORS
-app.use(express.json());
-app.use(cors());
+// Разбор JSON в теле запроса
+app.use(bodyParser.json());
 
-// Подключение к MongoDB Atlas — замените строку подключения на свою
-const uri = 'mongodb+srv://glovimplaye:ICjQNVFoG8brXIcN@cluster0.lsyvy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Подключение к MongoDB Atlas успешно установлено'))
-  .catch(err => console.error('Ошибка подключения к MongoDB Atlas:', err));
+// Статическая папка для клиентских файлов (например, HTML, CSS, JS)
+app.use(express.static('public'));
 
-// Определение схемы и модели товара
-const productSchema = new mongoose.Schema({
-  category: { type: String, required: true },
-  subcategory: { type: String, required: true },
-  name: { type: String, required: true },
-  description: String,
-  sellerName: { type: String, required: true },
-  price: { type: Number, required: true },
-  stock: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now }
-});
+/**
+ * Эндпоинт для создания платежного запроса.
+ * Принимает: amount, method, transactionId, userId, email
+ * Возвращает paymentLink (ссылку для оплаты)
+ */
+app.post('/create-payment', async (req, res) => {
+  const { amount, method, transactionId, userId, email } = req.body;
 
-const Product = mongoose.model('Product', productSchema);
-
-// API endpoint для добавления товара
-app.post('/api/products', async (req, res) => {
-  console.log('Полученные данные:', req.body);
-  try {
-    const product = new Product(req.body);
-    await product.save();
-    res.status(201).json({ message: 'Товар успешно добавлен', product });
-  } catch (err) {
-    console.error('Ошибка при добавлении товара:', err);
-    res.status(400).json({ message: 'Ошибка при добавлении товара', error: err.message });
+  // Здесь должен быть вызов API платежной системы (CryptoBot / CryptoPay)
+  // Для демонстрации формируем ссылку вручную:
+  let paymentLink = "";
+  if(method === 'cryptobot') {
+    // Пример ссылки для CryptoBot (здесь можно использовать ваш шаблон)
+    paymentLink = `https://t.me/CryptoBot?start=send_${amount}_RUB_${transactionId}`;
+  } else if(method === 'bankcard') {
+    // Если выбран способ банковской карты — формируется другая ссылка или происходит редирект на платежный шлюз
+    paymentLink = `https://yourbankgateway.example/pay?amount=${amount}&tx=${transactionId}`;
   }
+
+  // Здесь можно сохранить транзакцию в БД для последующего отслеживания
+  console.log(`Создана транзакция:
+    ID пользователя: ${userId},
+    Email: ${email},
+    Сумма: ${amount},
+    Метод: ${method},
+    TransactionID: ${transactionId}`);
+
+  res.json({ paymentLink });
 });
 
-app.listen(port, () => {
-  console.log(`Сервер запущен на порту ${port}`);
+/**
+ * Эндпоинт для обработки webhook (обратного вызова) от платежной системы.
+ * Здесь платежная система уведомляет сервер о статусе платежа.
+ */
+app.post('/payment-callback', (req, res) => {
+  const { transactionId, status, amount } = req.body;
+  console.log(`Webhook получен:
+    TransactionID: ${transactionId},
+    Статус: ${status},
+    Сумма: ${amount}`);
+  
+  // Если статус "success" — обновите баланс пользователя в БД
+  if (status === 'success') {
+    // updateUserBalance(transactionId, amount);
+  }
+  
+  // Отправляем подтверждение платежной системе
+  res.status(200).send('OK');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Сервер запущен на порту ${PORT}`);
 });
