@@ -285,6 +285,35 @@
       border-radius: 50%;
       margin-right: 10px;
     }
+
+/* Нижняя панель (мобильная навигация) */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #222;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
+  z-index: 100;
+}
+.bottom-nav a {
+  text-decoration: none;
+  color: #fff;
+  text-align: center;
+  flex: 1;
+  padding: 5px;
+  font-size: 12px;
+}
+.bottom-nav a i {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
     footer {
       background: #1f1f1f;
       padding: 20px;
@@ -389,6 +418,53 @@
         padding: 15px;
       }
     }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+      }
+      .header-center {
+        width: 100%;
+        margin-top: 10px;
+      }
+      .search-container {
+        max-width: 100%;
+        border-radius: 20px;
+      }
+      .search-input {
+        font-size: 14px;
+        padding: 8px;
+      }
+      .search-btn {
+        font-size: 14px;
+        padding: 8px;
+      }
+      .profile {
+        justify-content: center;
+      }
+      .container {
+        padding: 15px;
+      }
+      .subcategories {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .product-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+      .modal-content {
+        width: 95%;
+        padding: 15px;
+      }
+      .profile-menu {
+        width: 100%;
+        text-align: center;
+      }
+    }
+    
   </style>
 </head>
 <body>
@@ -455,6 +531,27 @@
     </tbody>
   </table>
 </div>
+
+<!-- Нижняя панель (мобильная навигация) -->
+<div class="bottom-nav">
+  <a href="index.html">
+    <i class="fas fa-home"></i>
+    <span>Главная</span>
+  </a>
+  <a href="add.html">
+    <i class="fas fa-plus"></i>
+    <span>Продать</span>
+  </a>
+  <a href="settings.html">
+    <i class="fas fa-comments"></i>
+    <span>Чат</span>
+  </a>
+  <a href="profile.html" class="bottom-nav-profile">
+    <i class="fas fa-user"></i>
+    <span>Профиль</span>
+  </a>
+</div>
+
 
 <!-- Футер -->
 <footer>
