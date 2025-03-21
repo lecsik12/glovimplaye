@@ -116,6 +116,45 @@
     .social-links a:hover {
       color: #ff4500;
     }
+
+ 
+    /* Нижняя панель (мобильная навигация) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: var(--header-bg);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
+      z-index: 20;
+    }
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      text-align: center;
+      flex-grow: 1;
+      font-size: 14px;
+    }
+    .bottom-nav a i {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+    .bottom-nav-profile img.avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-bottom: 2px;
+    }
+    @media (min-width: 768px) {
+      .bottom-nav {
+        display: none;
+      }
+    }
+    
+
   </style>
 </head>
 <body>
@@ -180,6 +219,27 @@
   </div>
 </main>
 
+
+<!-- Нижняя панель (мобильная навигация) -->
+<div class="bottom-nav">
+  <a href="index.html">
+    <i class="fas fa-home"></i>
+    <span>Главная</span>
+  </a>
+  <a href="add.html">
+    <i class="fas fa-plus"></i>
+    <span>Продать</span>
+  </a>
+  <a href="settings.html">
+    <i class="fas fa-comments"></i>
+    <span>Чат</span>
+  </a>
+  <a href="profile.html" class="bottom-nav-profile">
+   
+    <i class="fas fa-user"></i>
+    <span>Профиль</span>
+  </a>
+</div>
 <!-- Футер -->
 <footer>
   <div class="social-links">
