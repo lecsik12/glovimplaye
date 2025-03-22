@@ -3,24 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>CS:GO — Подкатегории | GlovimPlaye</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="format-detection" content="telephone=no">
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <!-- Добавляем Firebase Realtime Database -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
+  
   <!-- Font Awesome (иконки) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
+  
   <style>
-    /* Стили остаются без изменений */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    /* Общие стили для всех устройств */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       background: #2b2a2a url('background.jpg') no-repeat center center fixed;
@@ -28,9 +24,11 @@
       background-blend-mode: multiply;
       color: #fff;
       min-height: 100vh;
-      padding: 20px 20px 60px 20px;
+      padding: 20px;
       margin: 0;
     }
+    
+    /* Хедер для ПК (исходный вариант) */
     header {
       width: 100%;
       background: #1f1f1f;
@@ -40,8 +38,8 @@
       padding: 15px 20px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.5);
       border-radius: 0 0 8px 8px;
-      position: relative;
       flex-wrap: wrap;
+      position: relative;
     }
     .logo-button {
       background: none;
@@ -52,25 +50,17 @@
       cursor: pointer;
       transition: color 0.3s, transform 0.3s;
     }
-    .logo-button:hover {
-      color: #ff4500;
-      transform: scale(1.05);
-    }
-    .header-center {
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 5px 0;
-    }
+    .logo-button:hover { color: #ff4500; transform: scale(1.05); }
     .search-container {
-      display: flex;
+      flex: 1;
       max-width: 400px;
       width: 100%;
+      margin: 0 20px;
+      display: flex;
       border: 2px solid rgba(255,255,255,0.2);
       border-radius: 30px;
       overflow: hidden;
-      background-color: #222;
+      background: #222;
     }
     .search-input {
       flex: 1;
@@ -81,68 +71,8 @@
       color: #fff;
       outline: none;
     }
-    .search-input::placeholder {
-      color: rgba(255,255,255,0.6);
-    }
-    .search-btn {
-      padding: 8px 15px;
-      font-size: 14px;
-      background: #ff7f50;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .search-btn:hover {
-      background: #ff4500;
-    }
-    .search-results {
-      position: absolute;
-      background-color: #333;
-      width: 400px;
-      max-height: 300px;
-      overflow-y: auto;
-      margin-top: 5px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-      display: none;
-      z-index: 9999;
-    }
-    .search-result-item {
-      display: flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-bottom: 1px solid #444;
-      color: #fff;
-      cursor: pointer;
-    }
-    .search-result-item:hover {
-      background-color: #444;
-    }
-    .search-result-item img {
-      width: 40px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 4px;
-      margin-right: 10px;
-    }
-    .result-text {
-      display: flex;
-      flex-direction: column;
-    }
-    .result-name {
-      font-weight: bold;
-    }
-    .no-results {
-      padding: 8px 12px;
-      color: #aaa;
-    }
-    .profile {
-      display: flex;
-      align-items: center;
-      position: relative;
-    }
-    .avatar {
+    .search-input::placeholder { color: rgba(255,255,255,0.6); }
+    .profile img {
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -150,42 +80,14 @@
       cursor: pointer;
       transition: transform 0.3s;
     }
-    .avatar:hover {
-      transform: scale(1.1);
-    }
-    .profile-menu {
-      display: none;
-      position: absolute;
-      top: 50px;
-      right: 0;
-      background: #f9f8f8;
-      color: #333;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      overflow: hidden;
-      z-index: 10;
-    }
-    .profile-menu.active {
-      display: block;
-    }
-    .profile-menu a {
-      display: block;
-      padding: 10px 15px;
-      text-decoration: none;
-      color: #333;
-      transition: background 0.3s;
-    }
-    .profile-menu a:hover {
-      background: #f6f4f4;
-    }
-    .logout {
-      color: red;
-      font-weight: bold;
-    }
-    .auth-container {
-      text-align: center;
-      margin: 20px 0;
-    }
+    .profile img:hover { transform: scale(1.1); }
+    
+    /* Заголовок выбора подкатегории */
+    .subcategory-title { margin: 15px 0; font-size: 18px; }
+    .subcategory-title .mobile { display: none; }
+    
+    /* Остальные стили (без изменений) */
+    .auth-container { text-align: center; margin: 20px 0; }
     .login-btn {
       background: #fff;
       color: #000;
@@ -220,10 +122,7 @@
       border-radius: 8px;
       margin-right: 10px;
     }
-    .csgo-header h1 {
-      font-size: 24px;
-      color: #ff7f50;
-    }
+    .csgo-header h1 { font-size: 24px; color: #ff7f50; }
     .subcategories {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -239,9 +138,7 @@
       text-decoration: none;
       transition: background 0.3s;
     }
-    .subcategory-card:hover {
-      background: #2a2a2a;
-    }
+    .subcategory-card:hover { background: #2a2a2a; }
     .product-table {
       width: 100%;
       border-collapse: collapse;
@@ -256,64 +153,35 @@
       text-align: left;
       border-bottom: 1px solid #444;
     }
-    .product-table th {
-      background: #333;
-      font-weight: bold;
-    }
-    .product-table tr:hover {
-      background: #3a3a3a;
-    }
-    .product-name {
-      color: #ff7f50;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .product-name:hover {
-      text-decoration: underline;
-    }
-    .price {
-      font-weight: bold;
-      color: #ff7f50;
-    }
-    .seller {
+    .product-table th { background: #333; font-weight: bold; }
+    .product-table tr:hover { background: #3a3a3a; }
+    .product-name { color: #ff7f50; font-weight: bold; text-decoration: none; }
+    .product-name:hover { text-decoration: underline; }
+    .price { font-weight: bold; color: #ff7f50; }
+    .seller { display: flex; align-items: center; }
+    .seller img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #222;
       display: flex;
+      justify-content: space-around;
       align-items: center;
+      padding: 10px 0;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
+      z-index: 100;
     }
-    .seller img {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      margin-right: 10px;
+    .bottom-nav a {
+      text-decoration: none;
+      color: #fff;
+      text-align: center;
+      flex: 1;
+      padding: 5px;
+      font-size: 12px;
     }
-
-/* Нижняя панель (мобильная навигация) */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background: #222;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 0;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
-  z-index: 100;
-}
-.bottom-nav a {
-  text-decoration: none;
-  color: #fff;
-  text-align: center;
-  flex: 1;
-  padding: 5px;
-  font-size: 12px;
-}
-.bottom-nav a i {
-  display: block;
-  font-size: 24px;
-  margin-bottom: 4px;
-}
-
+    .bottom-nav a i { display: block; font-size: 24px; margin-bottom: 4px; }
     footer {
       background: #1f1f1f;
       padding: 20px;
@@ -328,9 +196,7 @@
       text-decoration: none;
       transition: color 0.3s;
     }
-    .social-links a:hover {
-      color: #ff4500;
-    }
+    .social-links a:hover { color: #ff4500; }
     .modal {
       display: none;
       position: fixed;
@@ -340,7 +206,7 @@
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0,0,0,0.6);
+      background-color: rgba(0, 0, 0, 0.6);
     }
     .modal-content {
       background: #fff;
@@ -359,23 +225,15 @@
       cursor: pointer;
       color: #333;
     }
-    .profile-details {
-      text-align: center;
-    }
+    .profile-details { text-align: center; }
     .profile-details img {
       width: 100px;
       height: 100px;
       border-radius: 50%;
       border: 3px solid #ff7f50;
     }
-    .profile-details h2 {
-      margin: 10px 0 5px;
-      color: #ff7f50;
-    }
-    .profile-details p {
-      color: #666;
-      margin: 0;
-    }
+    .profile-details h2 { margin: 10px 0 5px; color: #ff7f50; }
+    .profile-details p { color: #666; margin: 0; }
     .edit-btn {
       margin-top: 20px;
       padding: 10px 20px;
@@ -386,391 +244,215 @@
       cursor: pointer;
       transition: background 0.3s;
     }
-    .edit-btn:hover {
-      background: #ff4500;
-    }
+    .edit-btn:hover { background: #ff4500; }
+    
+    /* Мобильные переопределения: упрощённый хедер для узких экранов */
     @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-      }
-      .header-center {
-        width: 100%;
-        margin-top: 10px;
-      }
-      .search-input {
-        font-size: 12px;
-        padding: 6px;
-      }
-      .search-btn {
-        font-size: 12px;
-        padding: 6px;
-      }
-      .subcategories {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .product-table th,
-      .product-table td {
-        padding: 8px;
-        font-size: 12px;
-      }
-      .modal-content {
-        width: 90%;
-        padding: 15px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      header {
-        flex-direction: column;
-        text-align: center;
-        padding: 10px;
-      }
-      .header-center {
-        width: 100%;
-        margin-top: 10px;
-      }
-      .search-container {
-        max-width: 100%;
-        border-radius: 20px;
-      }
-      .search-input {
-        font-size: 14px;
-        padding: 8px;
-      }
-      .search-btn {
-        font-size: 14px;
-        padding: 8px;
-      }
-      .profile {
-        justify-content: center;
-      }
-      .container {
-        padding: 15px;
-      }
-      .subcategories {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .product-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-      .modal-content {
-        width: 95%;
-        padding: 15px;
-      }
-      .profile-menu {
-        width: 100%;
-        text-align: center;
-      }
+      header { padding: 10px; }
+      .logo-button { font-size: 20px; }
+      .search-container { margin: 0 10px; }
+      .search-input { padding: 5px 10px; font-size: 14px; }
+      .profile img { width: 35px; height: 35px; }
+      /* Переключение заголовка подкатегорий */
+      .subcategory-title .desktop { display: none; }
+      .subcategory-title .mobile { display: inline; }
     }
     
+    /* Дополнительные адаптивные стили для остальных элементов */
+    @media (max-width: 768px) {
+      .container { padding: 15px; }
+      .subcategories { grid-template-columns: repeat(2, 1fr); }
+      .product-table { display: block; overflow-x: auto; white-space: nowrap; }
+      .modal-content { width: 95%; padding: 15px; }
+    }
   </style>
 </head>
 <body>
-
-<!-- Хедер -->
-<header>
-  <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
-  <div class="header-center">
+  <!-- Хедер -->
+  <header>
+    <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
     <div class="search-container">
-      <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
-      <button class="search-btn">Поиск</button>
+      <input type="text" class="search-input" placeholder="Поиск...">
+    </div>
+    <div class="profile" id="profileSection" style="display: none;">
+      <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar">
+    </div>
+  </header>
+  
+  <!-- Блок авторизации -->
+  <div class="auth-container" id="authContainer">
+    <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
+  </div>
+  
+  <!-- Основной контент -->
+  <div class="container">
+    <div class="csgo-header">
+      <img src="images/csgo.jpg" alt="CS:GO">
+      <h1>CS:GO</h1>
+    </div>
+    <!-- Заголовок с выбором подкатегорий -->
+    <p class="subcategory-title">
+      <span class="desktop">Выберите подкатегорию:</span>
+      <span class="mobile">Подкатегории:</span>
+    </p>
+    <div class="subcategories">
+      <a href="csgo-accounts.html" class="subcategory-card">Аккаунты</a>
+      <a href="csgo-skins.html" class="subcategory-card">Скины</a>
+      <a href="csgo-donate.html" class="subcategory-card">Донат</a>
+      <a href="csgo-services.html" class="subcategory-card">Услуги</a>
+      <a href="csgo-items.html" class="subcategory-card">Товары</a>
+      <a href="csgo-items.html" class="subcategory-card">Prime Status</a>
+      <a href="csgo-items.html" class="subcategory-card">Другое</a>
+      <a href="csgo-items.html" class="subcategory-card">Буст</a>
+      <a href="csgo-items.html" class="subcategory-card">Аренда</a>
+    </div>
+    <!-- Таблица товаров -->
+    <table class="product-table">
+      <thead>
+        <tr>
+          <th>Название</th>
+          <th>Продавец</th>
+          <th>Наличие</th>
+          <th>Цена</th>
+        </tr>
+      </thead>
+      <tbody id="productList">
+        <!-- Товары будут добавляться динамически -->
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Нижняя панель (мобильная навигация) -->
+  <div class="bottom-nav">
+    <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
+    <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
+    <a href="chat.html"><i class="fas fa-comments"></i><span>Чат</span></a>
+    <a href="profile.html"><i class="fas fa-user"></i><span>Профиль</span></a>
+  </div>
+  
+  <!-- Футер -->
+  <footer>
+    <div class="social-links">
+      <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+      <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+    </div>
+    <p>© 2025 GlovimPlaye. Все права защищены.</p>
+  </footer>
+  
+  <!-- Модальное окно профиля -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeProfileModal()">&times;</span>
+      <div class="profile-details">
+        <img id="modalAvatar" src="default-avatar.png" alt="Avatar">
+        <h2 id="profileName"></h2>
+        <p id="profileEmail"></p>
+        <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
+      </div>
     </div>
   </div>
-  <div class="profile" id="profileSection" style="display:none;">
-    <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()">
-    <div class="profile-menu" id="profileMenu">
-      <a href="#" onclick="showProfileModal()">Мой профиль</a>
-      <a href="#">Заказы</a>
-      <a href="settings.html">Настройки</a>
-      <a href="#">Чат</a>
-      <a href="#">Уведомления</a>
-      <a href="#" class="logout" onclick="logout()">Выйти</a>
-    </div>
-  </div>
-</header>
-
-<!-- Авторизация (если не залогинен) -->
-<div class="auth-container" id="authContainer">
-  <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
-</div>
-
-<!-- Основной контент -->
-<div class="container">
-  <div class="csgo-header">
-    <img src="images/csgo.jpg" alt="CS:GO">
-    <h1>CS:GO</h1>
-  </div>
-
-  <p>Выберите подкатегорию:</p>
-  <div class="subcategories">
-    <a href="csgo-accounts.html" class="subcategory-card">Аккаунты</a>
-    <a href="csgo-skins.html" class="subcategory-card">Скины</a>
-    <a href="csgo-donate.html" class="subcategory-card">Донат</a>
-    <a href="csgo-services.html" class="subcategory-card">Услуги</a>
-    <a href="csgo-items.html" class="subcategory-card">Товары</a>
-    <a href="csgo-items.html" class="subcategory-card">Prime Status</a>
-    <a href="csgo-items.html" class="subcategory-card">Другое</a>
-    <a href="csgo-items.html" class="subcategory-card">Буст</a>
-    <a href="csgo-items.html" class="subcategory-card">Аренда</a>
-  </div>
-
-  <!-- Таблица товаров -->
-  <table class="product-table">
-    <thead>
-      <tr>
-        <th>Название</th>
-        <th>Продавец</th>
-        <th>Наличие</th>
-        <th>Цена</th>
-      </tr>
-    </thead>
-    <tbody id="productList">
-      <!-- Товары будут динамически добавляться сюда -->
-    </tbody>
-  </table>
-</div>
-
-<!-- Нижняя панель (мобильная навигация) -->
-<div class="bottom-nav">
-  <a href="index.html">
-    <i class="fas fa-home"></i>
-    <span>Главная</span>
-  </a>
-  <a href="add.html">
-    <i class="fas fa-plus"></i>
-    <span>Продать</span>
-  </a>
-  <a href="chat.html">
-    <i class="fas fa-comments"></i>
-    <span>Чат</span>
-  </a>
-  <a href="profile.html" class="bottom-nav-profile">
-    <i class="fas fa-user"></i>
-    <span>Профиль</span>
-  </a>
-</div>
-
-
-<!-- Футер -->
-<footer>
-  <div class="social-links">
-    <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-    <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-    <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-  </div>
-  <p>© 2025 GlovimPlaye. Все права защищены.</p>
-</footer>
-
-<!-- Модальное окно профиля -->
-<div id="profileModal" class="modal">
-  <div class="modal-content">
-    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
-    <div class="profile-details">
-      <img id="modalAvatar" src="" alt="Avatar">
-      <h2 id="profileName"></h2>
-      <p id="profileEmail"></p>
-      <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Firebase конфигурация
-  var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-    authDomain: "glovimplaye-b1023.firebaseapp.com",
-    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-    projectId: "glovimplaye-b1023",
-    storageBucket: "glovimplaye-b1023.firebasestorage.app",
-    messagingSenderId: "553440591519",
-    appId: "1:553440591519:web:b7be45a9253689f322acaa"
-  };
-  firebase.initializeApp(firebaseConfig);
-
-  var auth = firebase.auth();
-  var provider = new firebase.auth.GoogleAuthProvider();
-
-  document.addEventListener("DOMContentLoaded", function() {
-    var savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      updateProfile(JSON.parse(savedUser));
-    }
-  });
-
-  function login() {
-    auth.signInWithPopup(provider)
-      .then(function(result) {
-        var user = result.user;
-        var userData = {
-          uid: user.uid,
-          photoURL: user.photoURL,
-          displayName: user.displayName,
-          email: user.email
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        updateProfile(userData);
-      })
-      .catch(function(error) {
-        console.error("Ошибка входа:", error);
-      });
-  }
-
-  function updateProfile(user) {
-    document.getElementById("loginButton").style.display = "none";
-    document.getElementById("authContainer").style.display = "none";
-    document.getElementById("profileSection").style.display = "flex";
-    document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
-    document.getElementById("modalAvatar").src = user.photoURL || 'default-avatar.png';
-    document.getElementById("profileName").innerText = user.displayName;
-    document.getElementById("profileEmail").innerText = user.email;
-  }
-
-  function toggleProfileMenu() {
-    document.getElementById("profileMenu").classList.toggle("active");
-  }
-
-  function logout() {
-    auth.signOut().then(function() {
-      localStorage.removeItem("user");
-      document.getElementById("loginButton").style.display = "block";
-      document.getElementById("authContainer").style.display = "block";
-      document.getElementById("profileSection").style.display = "none";
-    }).catch(function(error) {
-      console.error("Ошибка выхода:", error);
-    });
-  }
-
-  function showProfileModal() {
-    document.getElementById("profileModal").style.display = "block";
-    var menu = document.getElementById("profileMenu");
-    if (menu) menu.classList.remove("active");
-  }
-
-  function closeProfileModal() {
-    document.getElementById("profileModal").style.display = "none";
-  }
-
-  function editProfile() {
-    alert("Функция редактирования профиля пока не реализована.");
-  }
-
-  window.onclick = function(event) {
-    var modal = document.getElementById("profileModal");
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  };
-
-  function goToHomePage() {
-    window.location.href = "index.html"; 
-  }
-
-  /* ========== Загрузка товаров из Firebase Realtime Database ========== */
-  window.onload = function() {
-    const productList = document.getElementById('productList');
-    // Слушаем изменения в разделе "products" базы данных
-    firebase.database().ref('products').on('value', snapshot => {
-      productList.innerHTML = ""; // Очищаем таблицу перед обновлением
-
-      if (!snapshot.exists()) {
-        productList.innerHTML = '<tr><td colspan="4">Товаров нет</td></tr>';
-        return;
+  
+  <!-- Скрипты -->
+  <script>
+    // Firebase конфигурация и инициализация
+    var firebaseConfig = {
+      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+      authDomain: "glovimplaye-b1023.firebaseapp.com",
+      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+      projectId: "glovimplaye-b1023",
+      storageBucket: "glovimplaye-b1023.firebasestorage.app",
+      messagingSenderId: "553440591519",
+      appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+    var provider = new firebase.auth.GoogleAuthProvider();
+    
+    document.addEventListener("DOMContentLoaded", function() {
+      var savedUser = localStorage.getItem("user");
+      if (savedUser) {
+        updateProfile(JSON.parse(savedUser));
       }
-
-      snapshot.forEach(childSnapshot => {
-        const product = childSnapshot.val();
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>
-            <a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a>
-          </td>
-          <td class="seller">
-            <img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар">
-            ${product.sellerName}
-          </td>
-          <td>${product.stock} шт.</td>
-          <td class="price">${product.price} ₽</td>
-        `;
-        productList.appendChild(row);
-      });
     });
-  };
-</script>
-
-<!-- Скрипты для поиска остаются без изменений -->
-<script>
-  const items = [
-    {
-      name: "Standoff 2",
-      category: "Мобильные игры",
-      link: "standoff2.html",
-      image: "images/standoff2.jpg"
-    },
-    // Остальные элементы массива...
-  ];
-
-  const searchInput = document.querySelector('.search-input');
-  const searchButton = document.querySelector('.search-btn');
-  const searchResultsContainer = document.getElementById('search-results');
-
-  function showSearchResults(query) {
-    searchResultsContainer.innerHTML = '';
-    if (!query) {
-      searchResultsContainer.style.display = 'none';
-      return;
-    }
-    const lowerQuery = query.toLowerCase();
-    const filteredItems = items.filter(item =>
-      item.name.toLowerCase().includes(lowerQuery) ||
-      item.category.toLowerCase().includes(lowerQuery)
-    );
-    if (filteredItems.length === 0) {
-      searchResultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
-    } else {
-      filteredItems.forEach(item => {
-        const resultItem = document.createElement('div');
-        resultItem.classList.add('search-result-item');
-        const imgElement = document.createElement('img');
-        imgElement.src = item.image;
-        imgElement.alt = item.name;
-        const textElement = document.createElement('div');
-        textElement.classList.add('result-text');
-        const nameElement = document.createElement('div');
-        nameElement.classList.add('result-name');
-        nameElement.textContent = item.name;
-        const categoryElement = document.createElement('div');
-        categoryElement.textContent = item.category;
-        textElement.appendChild(nameElement);
-        textElement.appendChild(categoryElement);
-        resultItem.appendChild(imgElement);
-        resultItem.appendChild(textElement);
-        resultItem.addEventListener('click', () => {
-          window.location.href = item.link;
+    
+    function login() {
+      auth.signInWithPopup(provider)
+        .then(function(result) {
+          var user = result.user;
+          var userData = {
+            uid: user.uid,
+            photoURL: user.photoURL,
+            displayName: user.displayName,
+            email: user.email
+          };
+          localStorage.setItem("user", JSON.stringify(userData));
+          updateProfile(userData);
+        })
+        .catch(function(error) {
+          console.error("Ошибка входа:", error);
         });
-        searchResultsContainer.appendChild(resultItem);
+    }
+    
+    function updateProfile(user) {
+      document.getElementById("loginButton").style.display = "none";
+      document.getElementById("authContainer").style.display = "none";
+      document.getElementById("profileSection").style.display = "flex";
+      document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
+      document.getElementById("modalAvatar").src = user.photoURL || 'default-avatar.png';
+      document.getElementById("profileName").innerText = user.displayName;
+      document.getElementById("profileEmail").innerText = user.email;
+    }
+    
+    function logout() {
+      auth.signOut().then(function() {
+        localStorage.removeItem("user");
+        document.getElementById("loginButton").style.display = "block";
+        document.getElementById("authContainer").style.display = "block";
+        document.getElementById("profileSection").style.display = "none";
+      }).catch(function(error) {
+        console.error("Ошибка выхода:", error);
       });
     }
-    searchResultsContainer.style.display = 'block';
-  }
-
-  searchButton.addEventListener('click', () => {
-    const query = searchInput.value.trim();
-    showSearchResults(query);
-  });
-
-  searchInput.addEventListener('input', () => {
-    const query = searchInput.value.trim();
-    showSearchResults(query);
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.search-container') && !e.target.closest('#search-results')) {
-      searchResultsContainer.style.display = 'none';
+    
+    function showProfileModal() {
+      document.getElementById("profileModal").style.display = "block";
     }
-  });
-</script>
-
+    
+    function closeProfileModal() {
+      document.getElementById("profileModal").style.display = "none";
+    }
+    
+    function editProfile() {
+      alert("Функция редактирования профиля пока не реализована.");
+    }
+    
+    function goToHomePage() {
+      window.location.href = "index.html";
+    }
+    
+    // Загрузка товаров из Firebase Realtime Database
+    window.onload = function() {
+      const productList = document.getElementById('productList');
+      firebase.database().ref('products').on('value', function(snapshot) {
+        productList.innerHTML = "";
+        if (!snapshot.exists()) {
+          productList.innerHTML = '<tr><td colspan="4">Товаров нет</td></tr>';
+          return;
+        }
+        snapshot.forEach(function(childSnapshot) {
+          const product = childSnapshot.val();
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a></td>
+            <td class="seller"><img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар"> ${product.sellerName}</td>
+            <td>${product.stock} шт.</td>
+            <td class="price">${product.price} ₽</td>
+          `;
+          productList.appendChild(row);
+        });
+      });
+    };
+  </script>
 </body>
 </html>
