@@ -158,7 +158,46 @@
       transform: translateY(-3px);
     }
     
-    /* Таблица товаров */
+    /* Раздел заказов (Продажи и Покупки) */
+    .profile-orders {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    .profile-orders h2 {
+      margin-bottom: 15px;
+    }
+    
+    .orders-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .orders-tabs button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      background: var(--accent-color);
+      color: var(--text-color);
+      transition: background 0.3s;
+    }
+    
+    .orders-tabs button.active {
+      background: var(--accent-hover);
+    }
+    
+    .orders-content p {
+      text-align: center;
+      padding: 15px;
+    }
+    
     .product-table {
       width: 100%;
       border-collapse: collapse;
@@ -166,7 +205,6 @@
       border-radius: 10px;
       overflow: hidden;
       box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-      animation: fadeInUp 0.6s ease-out;
     }
     
     .product-table th,
@@ -188,18 +226,6 @@
     .product-name {
       color: var(--accent-color);
       font-weight: bold;
-    }
-    
-    /* Анимация появления */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
     }
     
     /* Нижняя панель (мобильная навигация) */
@@ -246,6 +272,18 @@
       font-size: 14px;
       margin-top: 20px;
     }
+    
+    /* Анимация появления */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
   </style>
 </head>
 <body>
@@ -260,17 +298,14 @@
       <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
       <h1 id="profileNickname">Загрузка...</h1>
       <p id="profileEmail">Загрузка...</p>
-      <!-- Фрагмент страницы profile.html -->
-<p class="balance">
-  Баланс: <span id="balanceAmount">0</span> ₽
-</p>
-
+      <p class="balance">
+        Баланс: <span id="balanceAmount">0</span> ₽
+      </p>
       <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
       <div class="profile-actions">
         <button onclick="editProfile()">
           <i class="fas fa-edit"></i> Редактировать профиль
         </button>
-        <!-- Изменяем функцию пополнения баланса -->
         <button onclick="topUpBalance()">
           <i class="fas fa-plus-circle"></i> Пополнить баланс через CryptoBot
         </button>
@@ -283,7 +318,20 @@
       </div>
     </div>
     
-    <!-- Таблица товаров пользователя -->
+    <!-- Раздел заказов: Продажи и Покупки -->
+    <div class="profile-orders">
+      <h2>Заказы</h2>
+      <div class="orders-tabs">
+        <button id="salesTab" class="active" onclick="showSales()">Продажи</button>
+        <button id="purchasesTab" onclick="showPurchases()">Покупки</button>
+      </div>
+      <div class="orders-content" id="ordersContent">
+        <!-- Здесь будет динамически подгружаться таблица заказов -->
+        <p>Загрузка данных...</p>
+      </div>
+    </div>
+    
+    <!-- Таблица товаров пользователя (Мои товары) -->
     <div class="profile-products">
       <h2 style="margin-bottom:15px;">Мои товары</h2>
       <table class="product-table">
@@ -316,7 +364,6 @@
       <span>Чат</span>
     </a>
     <a href="profile.html" class="bottom-nav-profile">
-     
       <i class="fas fa-user"></i>
       <span>Профиль</span>
     </a>
@@ -344,6 +391,8 @@
       if (user) {
         loadUserProfile(user);
         loadUserProducts(user.uid);
+        // По умолчанию загружаем раздел "Продажи"
+        showSales();
       } else {
         window.location.href = "login.html";
       }
@@ -360,7 +409,7 @@
         }
         let nicknameText = userData.nickname || "Без ника";
         if (userData.role === "admin") {
-          nicknameText += ' <span class="admin-badge">Главний</span>';
+          nicknameText += ' <span class="admin-badge">Admin</span>';
         } else if (userData.support === true || userData.role === "support") {
           nicknameText += ' <span class="admin-badge" style="background: #3498db;">Поддержка</span>';
         }
@@ -402,6 +451,95 @@
       });
     }
     
+    // Раздел заказов – Продажи и Покупки
+    function showSales() {
+      document.getElementById('salesTab').classList.add('active');
+      document.getElementById('purchasesTab').classList.remove('active');
+      loadSales();
+    }
+    
+    function showPurchases() {
+      document.getElementById('purchasesTab').classList.add('active');
+      document.getElementById('salesTab').classList.remove('active');
+      loadPurchases();
+    }
+    
+    // Функция загрузки заказов для продаж (где вы – продавец)
+    function loadSales() {
+      const ordersRef = firebase.database().ref('orders');
+      const currentUser = firebase.auth().currentUser;
+      if (!currentUser) return;
+      ordersRef.orderByChild('sellerId').equalTo(currentUser.uid).on('value', snapshot => {
+        const ordersContent = document.getElementById('ordersContent');
+        ordersContent.innerHTML = "";
+        if (!snapshot.exists()) {
+          ordersContent.innerHTML = '<p>Продаж нет</p>';
+          return;
+        }
+        let table = document.createElement('table');
+        table.className = 'product-table';
+        let thead = document.createElement('thead');
+        thead.innerHTML = `<tr>
+          <th>Название</th>
+          <th>Покупатель</th>
+          <th>Цена</th>
+          <th>Дата</th>
+        </tr>`;
+        table.appendChild(thead);
+        let tbody = document.createElement('tbody');
+        snapshot.forEach(childSnapshot => {
+          const order = childSnapshot.val();
+          let date = new Date(order.date);
+          let row = document.createElement('tr');
+          row.innerHTML = `<td>${order.productName}</td>
+            <td>${order.buyerId}</td>
+            <td>${order.price} ₽</td>
+            <td>${date.toLocaleDateString('ru-RU')}</td>`;
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+        ordersContent.appendChild(table);
+      });
+    }
+    
+    // Функция загрузки заказов для покупок (где вы – покупатель)
+    function loadPurchases() {
+      const ordersRef = firebase.database().ref('orders');
+      const currentUser = firebase.auth().currentUser;
+      if (!currentUser) return;
+      ordersRef.orderByChild('buyerId').equalTo(currentUser.uid).on('value', snapshot => {
+        const ordersContent = document.getElementById('ordersContent');
+        ordersContent.innerHTML = "";
+        if (!snapshot.exists()) {
+          ordersContent.innerHTML = '<p>Покупок нет</p>';
+          return;
+        }
+        let table = document.createElement('table');
+        table.className = 'product-table';
+        let thead = document.createElement('thead');
+        thead.innerHTML = `<tr>
+          <th>Название</th>
+          <th>Продавец</th>
+          <th>Цена</th>
+          <th>Дата</th>
+        </tr>`;
+        table.appendChild(thead);
+        let tbody = document.createElement('tbody');
+        snapshot.forEach(childSnapshot => {
+          const order = childSnapshot.val();
+          let date = new Date(order.date);
+          let row = document.createElement('tr');
+          row.innerHTML = `<td>${order.productName}</td>
+            <td>${order.sellerId}</td>
+            <td>${order.price} ₽</td>
+            <td>${date.toLocaleDateString('ru-RU')}</td>`;
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+        ordersContent.appendChild(table);
+      });
+    }
+    
     // Функция пополнения баланса через CryptoBot
     function topUpBalance() {
       const amount = prompt("Введите сумму для пополнения (₽):");
@@ -415,7 +553,6 @@
         alert("Вы не авторизованы.");
         return;
       }
-      // Формируем URL для CryptoBot с передачей суммы
       let botUrl = `https://t.me/CryptoBot?start=send_${numericAmount}_RUB`;
       window.open(botUrl, '_blank');
     }
