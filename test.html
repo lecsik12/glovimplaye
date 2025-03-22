@@ -131,6 +131,23 @@
       transform: translateY(-2px);
     }
     
+    /* Стили для кнопки сообщения */
+    .message-button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background: var(--accent-color);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    
+    .message-button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+    
     /* Навигация по вкладкам (Отзывы / Товары) */
     .tabs {
       display: flex;
@@ -282,6 +299,8 @@
           <button onclick="topUpBalance()">Пополнить (с баланса)</button>
           <button onclick="topUpCrypto()">Пополнить (Cryptobot)</button>
         </div>
+        <!-- Кнопка для написания сообщения -->
+        <button class="message-button" onclick="openChat()">Написать пользователю</button>
       </div>
     </div>
     
@@ -383,7 +402,7 @@
       });
     }
     
-    // Загрузка отзывов пользователя (здесь предполагается, что отзывы хранятся по uid продавца)
+    // Загрузка отзывов пользователя (предполагается, что отзывы хранятся по uid продавца)
     function loadUserReviews(userId) {
       const reviewsRef = firebase.database().ref('reviews/' + userId);
       reviewsRef.on('value', snapshot => {
@@ -408,7 +427,6 @@
     
     // Функции пополнения баланса
     function topUpBalance() {
-      // Здесь можно добавить логику пополнения через систему баланса (например, перевод с привязанной карты)
       let amount = prompt("Введите сумму для пополнения (₽):");
       const numericAmount = parseFloat(amount);
       if (isNaN(numericAmount) || numericAmount <= 0) {
@@ -446,6 +464,18 @@
       // Открываем Cryptobot с передачей параметра суммы
       let botUrl = `https://t.me/CryptoBot?start=send_${numericAmount}_RUB`;
       window.open(botUrl, '_blank');
+    }
+    
+    // Функция открытия чата с пользователем
+    function openChat() {
+      const currentUser = firebase.auth().currentUser;
+      // Пытаемся получить id пользователя из URL
+      let profileUserId = new URLSearchParams(window.location.search).get('id');
+      // Если параметр отсутствует, используем id текущего пользователя
+      if (!profileUserId) {
+        profileUserId = currentUser.uid;
+      }
+      window.location.href = `chat.html?user=${profileUserId}`;
     }
     
     // Переключение вкладок

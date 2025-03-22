@@ -79,7 +79,22 @@
     }
     .user-info .details h1 { font-size: 28px; margin-bottom: 10px; }
     .user-info .details p { font-size: 16px; margin-bottom: 8px; }
-    /* Вкладки: Отзывы и Товары */
+    /* Кнопка для написания сообщения продавцу */
+    .message-button {
+      margin-top: 15px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      background: var(--accent-color);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .message-button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+    /* Вкладки: отзывы и товары продавца */
     .tabs {
       display: flex;
       margin-top: 30px;
@@ -189,11 +204,13 @@
   <main class="profile-container">
     <!-- Блок информации о продавце -->
     <div class="user-info">
-      <img id="profileAvatar" class="avatar" src="default-avatar.png" alt="Аватар">
+      <img id="profileAvatar" class="avatar" src="Images/photo_2025-02-22_08-29-19.jpg"alt="Аватар">
       <div class="details">
         <h1 id="profileNickname">Загрузка...</h1>
         <p id="profileEmail">Загрузка...</p>
         <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
+        <!-- Кнопка для написания сообщения продавцу через Telegram -->
+        <button class="message-button" onclick="openTelegram()">Написать продавцу</button>
       </div>
     </div>
     
@@ -249,6 +266,9 @@
       window.location.href = "index.html";
     }
     
+    // Глобальная переменная для хранения Telegram-аккаунта продавца
+    let sellerTelegram = null;
+    
     // Загрузка профиля продавца
     function loadSellerProfile(uid) {
       firebase.database().ref('users/' + uid).once('value').then(snapshot => {
@@ -264,6 +284,9 @@
           }
           let avatarUrl = data.avatar || "default-avatar.png";
           document.getElementById("profileAvatar").src = avatarUrl;
+          
+          // Сохраняем Telegram-аккаунт продавца
+          sellerTelegram = data.telegram || null;
         }
       }).catch(err => {
         console.error("Ошибка загрузки профиля продавца:", err);
@@ -315,6 +338,19 @@
           reviewsList.appendChild(reviewDiv);
         });
       });
+    }
+    
+    // Функция открытия Telegram-чата с продавцом
+    function openTelegram() {
+      console.log("Проверка Telegram продавца:", sellerTelegram);
+      if (sellerTelegram) {
+        // Удаляем возможный символ @ из начала, если он есть
+        let tgUsername = sellerTelegram.replace(/^@/, '');
+        // Перенаправляем в Telegram (можно использовать tg://resolve для мобильных или https://t.me/ для веб)
+        window.location.href = `https://t.me/${tgUsername}`;
+      } else {
+        alert("У продавца не указан Telegram-аккаунт.");
+      }
     }
     
     // Инициализация страницы продавца

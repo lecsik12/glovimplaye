@@ -10,6 +10,9 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  
+  <!-- CryptoJS для шифрования -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
@@ -29,7 +32,7 @@
       background-color: #2b2a2a;
       color: #fff;
       padding: 20px;
-      padding-bottom: 70px; /* Чтобы контент не закрывался нижней навигацией */
+      padding-bottom: 70px; /* чтобы контент не закрывался нижней навигацией */
     }
     header {
       background: linear-gradient(135deg, #3a3a3a, #222);
@@ -55,6 +58,24 @@
       color: #fff;
       transform: scale(1.1);
       text-shadow: 3px 3px 6px rgba(255, 127, 80, 0.8);
+    }
+    /* Верхняя навигация для ПК */
+    .top-nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .top-nav a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    .top-nav a:hover {
+      color: #ff7f50;
+    }
+    .top-nav a i {
+      margin-right: 5px;
     }
     /* Контейнер для формы */
     .container {
@@ -144,7 +165,7 @@
       font-size: 24px;
       margin-bottom: 4px;
     }
-    /* Скрываем нижнюю навигацию на десктопе */
+    /* Скрываем нижнюю навигацию на ПК */
     @media (min-width: 768px) {
       .bottom-nav {
         display: none;
@@ -157,6 +178,12 @@
 <!-- Хедер -->
 <header>
   <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
+  <!-- Верхняя навигация для ПК -->
+  <nav class="top-nav">
+    <a href="add.html"><i class="fas fa-plus"></i>Продать</a>
+    <a href="settings.html"><i class="fas fa-comments"></i>Чат</a>
+    <a href="profile.html"><i class="fas fa-user"></i>Профиль</a>
+  </nav>
 </header>
 
 <!-- Рекламный баннер -->
@@ -200,8 +227,13 @@
       <label for="productName">Название</label>
       <input type="text" id="productName" required />
 
-      <label for="description">Описание</label>
-      <textarea id="description"></textarea>
+      <!-- Публичное описание товара (открытое, для показа всем) -->
+      <label for="publicDescription">Описание товара</label>
+      <textarea id="publicDescription" placeholder="Введите описание товара" required></textarea>
+
+      <!-- Чувствительные данные, которые шифруются -->
+      <label for="sensitiveData">Чувствительные данные товара (будут зашифрованы)</label>
+      <textarea id="sensitiveData" placeholder="Введите дополнительные данные товара" required></textarea>
 
       <label for="price">Цена</label>
       <input type="number" id="price" required />
@@ -224,7 +256,7 @@
     <i class="fas fa-plus"></i>
     <span>Продать</span>
   </a>
-  <a href="settings.html">
+  <a href="chat.html">
     <i class="fas fa-comments"></i>
     <span>Чат</span>
   </a>
@@ -297,6 +329,20 @@
     window.location.href = "index.html";
   }
 
+  /* ---------- Функции шифрования/дешифрования данных товара ---------- */
+  // Функция шифрования данных (используется секретный ключ, который должен храниться надежно)
+  function encryptData(data) {
+    const secretKey = "GlovimPlayeSecretKey"; // Пример, измените для продакшена
+    return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
+  }
+
+  // Функция дешифрования данных (будет использоваться при выдаче товара после оплаты)
+  function decryptData(encryptedData) {
+    const secretKey = "GlovimPlayeSecretKey";
+    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+  }
+
   /* ---------- Добавление товара в Firebase Realtime Database ---------- */
   const addForm = document.getElementById('addProductForm');
   addForm.addEventListener('submit', function(e) {
@@ -309,17 +355,36 @@
       return;
     }
 
-    // Формируем объект товара, добавляя sellerId из currentUser.uid
+    // Собираем данные товара
+    const category = document.getElementById('category').value;
+    const subcategory = document.getElementById('subcategory').value;
+    const name = document.getElementById('productName').value;
+    const publicDescription = document.getElementById('publicDescription').value;
+    const sensitiveData = document.getElementById('sensitiveData').value;
+    const price = parseFloat(document.getElementById('price').value);
+    const stock = parseInt(document.getElementById('stock').value);
+
+    // Формируем объект с чувствительными данными, которые необходимо зашифровать
+    const sensitiveObject = {
+      sensitiveData: sensitiveData
+      // Можно добавить другие чувствительные данные, если необходимо
+    };
+
+    // Шифруем чувствительные данные товара
+    const encryptedData = encryptData(sensitiveObject);
+
+    // Формируем объект товара для сохранения – публичное описание сохраняется отдельно
     const newProduct = {
-      category: document.getElementById('category').value,
-      subcategory: document.getElementById('subcategory').value,
-      name: document.getElementById('productName').value,
-      description: document.getElementById('description').value,
+      category: category,
+      subcategory: subcategory,
+      name: name,
+      description: publicDescription, // публичное описание
+      encryptedData: encryptedData,   // зашифрованные чувствительные данные
       sellerName: currentUser.displayName,
       sellerAvatar: currentUser.photoURL || "default-avatar.png",
       sellerId: currentUser.uid,
-      price: parseFloat(document.getElementById('price').value),
-      stock: parseInt(document.getElementById('stock').value),
+      price: price,
+      stock: stock,
       createdAt: firebase.database.ServerValue.TIMESTAMP
     };
 
@@ -348,7 +413,7 @@
                  `*Категория:* ${product.category}\n` +
                  `*Цена:* ${product.price}\n` +
                  `*Продавец:* ${product.sellerName}`;
-
+                 
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

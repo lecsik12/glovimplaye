@@ -77,12 +77,18 @@
       margin-right: 8px;
     }
     
-    .nickname-container, .phone-container, .location-container {
+    .nickname-container,
+    .phone-container,
+    .location-container,
+    .telegram-container {
       display: none;
       margin-top: 20px;
     }
     
-    .nickname-input, .phone-input, .location-output {
+    .nickname-input,
+    .phone-input,
+    .location-output,
+    .telegram-input {
       width: 100%;
       padding: 10px;
       border-radius: 6px;
@@ -113,6 +119,18 @@
       text-align: center;
     }
   </style>
+  
+  <script>
+    // Функция для получения параметра из URL (если потребуется)
+    function getParameterByName(name, url = window.location.href) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+  </script>
 </head>
 <body>
 
@@ -129,13 +147,16 @@
     
     <div class="phone-container" id="phoneContainer">
       <h2>Введите номер телефона</h2>
-      <!-- Изменён placeholder для поддержки ввода с кодом страны -->
       <input type="tel" id="phoneInput" class="phone-input" placeholder="Введите номер (например, +7XXXXXXXXXX)">
+    </div>
+    
+    <div class="telegram-container" id="telegramContainer">
+      <h2>Введите Telegram</h2>
+      <input type="text" id="telegramInput" class="telegram-input" placeholder="Введите @username">
     </div>
     
     <div class="location-container" id="locationContainer">
       <h2>Ваше местоположение</h2>
-      <!-- Здесь будет отображаться город и страна -->
       <input type="text" id="locationOutput" class="location-output" readonly>
     </div>
     
@@ -171,17 +192,19 @@
       });
     }
 
+    // Проверка данных пользователя: если Telegram (и остальные поля) уже есть, регистрация не требуется
     function checkUserData() {
       let userId = currentUser.uid;
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
-        if (snapshot.exists() && snapshot.val().nickname && snapshot.val().phone && snapshot.val().location) {
-          // Если все данные уже есть, перекидываем в профиль
+        // Если данные пользователя содержат Telegram-аккаунт (можно добавить и проверку других полей)
+        if (snapshot.exists() && snapshot.val().telegram) {
           window.location.href = "profile.html";
         } else {
-          // Показываем форму для ввода недостающих данных
+          // Показываем форму для заполнения недостающих данных
           document.querySelector('.login-btn').style.display = 'none';
           document.getElementById('nicknameContainer').style.display = 'block';
           document.getElementById('phoneContainer').style.display = 'block';
+          document.getElementById('telegramContainer').style.display = 'block';
           document.getElementById('locationContainer').style.display = 'block';
           document.getElementById('saveBtn').style.display = 'block';
           getLocation(); // Запрос геолокации
@@ -236,38 +259,52 @@
       }
     }
 
+    // Сохранение данных пользователя с проверкой уникальности никнейма и Telegram
     function saveUserData() {
       let nickname = document.getElementById('nicknameInput').value.trim();
       let phone = document.getElementById('phoneInput').value.trim();
+      let telegram = document.getElementById('telegramInput').value.trim();
       let location = document.getElementById('locationOutput').value.trim();
       
-      if (nickname === "" || phone === "" || location === "") {
+      if (nickname === "" || phone === "" || telegram === "" || location === "") {
         alert("Пожалуйста, заполните все поля.");
         return;
       }
 
-      // Проверка на уникальность никнейма
+      // Проверка уникальности никнейма
       firebase.database().ref('users').orderByChild('nickname').equalTo(nickname).once('value')
         .then(snapshot => {
           if (snapshot.exists()) {
             alert("Данный никнейм уже занят. Пожалуйста, выберите другой.");
           } else {
-            // Сохраняем данные пользователя
-            let userId = currentUser.uid;
-            firebase.database().ref('users/' + userId).set({
-              nickname: nickname,
-              email: currentUser.email,
-              phone: phone,
-              location: location
-            }).then(() => {
-              window.location.href = "profile.html";
-            }).catch(error => {
-              console.error("Ошибка сохранения данных:", error);
-            });
+            // Проверка уникальности Telegram-аккаунта
+            firebase.database().ref('users').orderByChild('telegram').equalTo(telegram).once('value')
+              .then(snapshotTG => {
+                if (snapshotTG.exists()) {
+                  alert("Пользователь с таким Telegram-аккаунтом уже зарегистрирован.");
+                } else {
+                  // Сохраняем данные пользователя
+                  let userId = currentUser.uid;
+                  firebase.database().ref('users/' + userId).set({
+                    nickname: nickname,
+                    email: currentUser.email,
+                    phone: phone,
+                    telegram: telegram,
+                    location: location
+                  }).then(() => {
+                    window.location.href = "profile.html";
+                  }).catch(error => {
+                    console.error("Ошибка сохранения данных:", error);
+                  });
+                }
+              })
+              .catch(error => {
+                console.error("Ошибка проверки Telegram:", error);
+              });
           }
         })
         .catch(error => {
-          console.error("Ошибка проверки уникальности:", error);
+          console.error("Ошибка проверки уникальности никнейма:", error);
         });
     }
   </script>
