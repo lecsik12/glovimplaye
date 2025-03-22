@@ -38,7 +38,7 @@
       overflow: hidden;
     }
     
-    /* Левая панель */
+    /* Десктопная верстка */
     .sidebar {
       width: 300px;
       background: var(--bg-sidebar);
@@ -79,7 +79,7 @@
       border-bottom: 1px solid var(--border-color);
       cursor: pointer;
       transition: background 0.2s;
-      position: relative; /* для бэджа */
+      position: relative;
     }
     
     .chat-item:hover {
@@ -100,11 +100,10 @@
       margin-right: 15px;
     }
     
-    /* Стиль для бэджа уведомлений */
     .notification-badge {
       position: absolute;
-      top: 10px;      /* корректируйте по вкусу */
-      left: 50px;     /* корректируйте по вкусу */
+      top: 10px;
+      left: 50px;
       background: red;
       color: white;
       font-size: 12px;
@@ -128,7 +127,6 @@
       color: var(--text-secondary);
     }
     
-    /* Правая область */
     .main-area {
       flex: 1;
       display: flex;
@@ -232,30 +230,139 @@
     .chat-input button:hover {
       background: #ff9800;
     }
+    
+    /* Мобильная верстка */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      
+      /* Скрываем десктопный sidebar */
+      .sidebar {
+        display: none;
+      }
+      
+      /* Показываем мобильный header и нижнюю навигацию */
+      .mobile-header, .bottom-nav, .mobile-chat-list {
+        display: flex;
+      }
+      
+      .mobile-header {
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg-sidebar);
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .mobile-header .logo {
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--accent-color);
+        cursor: pointer;
+      }
+      
+      .mobile-header .balance {
+        font-size: 16px;
+        color: var(--accent-color);
+      }
+      
+      .mobile-header .open-chat-list {
+        font-size: 18px;
+        color: var(--text-color);
+        cursor: pointer;
+      }
+      
+      .bottom-nav {
+        justify-content: space-around;
+        align-items: center;
+        background: var(--bg-sidebar);
+        padding: 10px 0;
+        border-top: 1px solid var(--border-color);
+      }
+      
+      .bottom-nav a {
+        text-decoration: none;
+        color: var(--text-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+      }
+      
+      .bottom-nav a i {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+      
+      /* Список чатов для мобильного */
+      .mobile-chat-list {
+        flex-direction: column;
+        background: var(--bg-sidebar);
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 10px;
+        display: none;
+      }
+      
+      .mobile-chat-list.active {
+        display: flex;
+      }
+    }
+    
+    /* На десктопе мобильные элементы скрываем */
+    @media (min-width: 769px) {
+      .mobile-header, .bottom-nav, .mobile-chat-list {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
-
-  <!-- Левая панель: список чатов -->
+  <!-- Мобильный верхний хедер (виден только на мобильных) -->
+  <div class="mobile-header">
+    <div class="logo" onclick="window.location.href='profile.html'">Glovimplaye</div>
+    <div class="balance">+ 5.0 <i class="fas fa-coins"></i></div>
+    <div class="open-chat-list" onclick="toggleChatList()">
+      <i class="fas fa-bars"></i>
+    </div>
+  </div>
+  
+  <!-- Мобильный список чатов -->
+  <div class="mobile-chat-list" id="mobileChatList">
+    <div class="chat-item" onclick="selectChat('playerok'); toggleChatList();">
+      <div class="chat-icon">P</div>
+      <div id="playerokBadge" class="notification-badge"></div>
+      <div class="chat-info">
+        <div class="chat-title">Glovimplaye</div>
+        <div class="chat-last-msg" id="lastMsg-playerok">...</div>
+      </div>
+    </div>
+    <div class="chat-item" onclick="selectChat('global'); toggleChatList();">
+      <div class="chat-icon">G</div>
+      <div class="chat-info">
+        <div class="chat-title">Глобальный чат</div>
+        <div class="chat-last-msg" id="lastMsg-global">...</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Десктопный sidebar (виден на ПК) -->
   <div class="sidebar">
     <div class="sidebar-header">
-      <div class="logo" onclick="window.location.href='profile.html'"> Glovimplaye</div>
+      <div class="logo" onclick="window.location.href='profile.html'">Glovimplaye</div>
       <div class="balance">+ 5.0 <i class="fas fa-coins"></i></div>
     </div>
     <div class="chat-list">
-      <!-- Чат GlovimPlaye -->
       <div class="chat-item" onclick="selectChat('playerok')">
         <div class="chat-icon">P</div>
-        <!-- Бэдж непрочитанных для GlovimPlaye -->
         <div id="playerokBadge" class="notification-badge"></div>
         <div class="chat-info">
-          <div class="chat-title">GlovimPlaye</div>
+          <div class="chat-title">Glovimplaye</div>
           <div class="chat-last-msg" id="lastMsg-playerok">...</div>
         </div>
       </div>
-      
-       <!-- Дополнительный пункт, например, глобальный чат -->
-       <div class="chat-item" onclick="selectChat('global')">
+      <div class="chat-item" onclick="selectChat('global')">
         <div class="chat-icon">G</div>
         <div class="chat-info">
           <div class="chat-title">Глобальный чат</div>
@@ -264,7 +371,7 @@
       </div>
     </div>
   </div>
-
+  
   <!-- Правая область: чат -->
   <div class="main-area">
     <div class="chat-header" id="chatHeader">
@@ -282,8 +389,34 @@
       <button onclick="sendMessage()">Отправить</button>
     </div>
   </div>
-
+  
+  <!-- Нижняя навигация (видна только на мобильных) -->
+  <div class="bottom-nav">
+    <a href="index.html">
+      <i class="fas fa-home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="add.html">
+      <i class="fas fa-plus"></i>
+      <span>Продать</span>
+    </a>
+    <a href="chat.html">
+      <i class="fas fa-comments"></i>
+      <span>Чат</span>
+    </a>
+    <a href="profile.html">
+      <i class="fas fa-user"></i>
+      <span>Профиль</span>
+    </a>
+  </div>
+  
   <script>
+    // Функция для переключения отображения мобильного списка чатов
+    function toggleChatList() {
+      const chatList = document.getElementById('mobileChatList');
+      chatList.classList.toggle('active');
+    }
+    
     // Инициализация Firebase (замените на свои данные)
     var firebaseConfig = {
         apiKey: "AIzaSy...",
@@ -295,55 +428,47 @@
         appId: "1:553440591519:web:b7be45a9253689f322acaa"
       };
     firebase.initializeApp(firebaseConfig);
-
-    // Локальное хранение сообщений по чатам
+    
+    // Локальное хранение сообщений
     let chatsData = {
       playerok: [],
       support: [],
       global: []
     };
-
-    // Текущий открытый чат
+    
     let currentChat = null;
-    // Счётчик непрочитанных сообщений для чата GlovimPlaye
     let playerokUnread = 0;
-
-    // Селекторы элементов
+    
     const placeholder = document.getElementById('placeholder');
     const messagesContainer = document.getElementById('messagesContainer');
     const chatInput = document.getElementById('chatInput');
     const chatHeader = document.getElementById('chatHeader');
     const playerokBadge = document.getElementById('playerokBadge');
-
- // Функция выбора чата
- function selectChat(chatId) {
-    currentChat = chatId;
-    if (chatId === 'playerok') {
-      chatHeader.textContent = "Чат: GlovimPlaye";
-    } else if (chatId === 'support') {
-      chatHeader.textContent = "Чат: Поддержка";
-    } else if (chatId === 'global') {
-      chatHeader.textContent = "Глобальный чат";
-    }
-    placeholder.style.display = "none";
-    messagesContainer.style.display = "flex";
-    chatInput.style.display = (chatId === 'global') ? "none" : "flex";
-
-    messagesContainer.innerHTML = "";
-    if (chatsData[chatId] && chatsData[chatId].length) {
-      chatsData[chatId].forEach(msg => {
-        displayMessage(msg);
-      });
-    }
-
-      // Если открываем чат GlovimPlaye, сбрасываем счётчик непрочитанных
+    
+    function selectChat(chatId) {
+      currentChat = chatId;
+      if (chatId === 'playerok') {
+        chatHeader.textContent = "Чат: Glovimplaye";
+      } else if (chatId === 'support') {
+        chatHeader.textContent = "Чат: Поддержка";
+      } else if (chatId === 'global') {
+        chatHeader.textContent = "Глобальный чат";
+      }
+      placeholder.style.display = "none";
+      messagesContainer.style.display = "flex";
+      chatInput.style.display = (chatId === 'global') ? "none" : "flex";
+      messagesContainer.innerHTML = "";
+      if (chatsData[chatId] && chatsData[chatId].length) {
+        chatsData[chatId].forEach(msg => {
+          displayMessage(msg);
+        });
+      }
       if (chatId === 'playerok') {
         playerokUnread = 0;
         updatePlayerokBadge();
       }
     }
-
-    // Функция отображения сообщения
+    
     function displayMessage(msg) {
       const div = document.createElement('div');
       div.classList.add('message');
@@ -360,15 +485,12 @@
       `;
       messagesContainer.appendChild(div);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
-      // Обновляем последнее сообщение в списке чатов
       const lastMsgElement = document.getElementById('lastMsg-' + currentChat);
       if (lastMsgElement) {
         lastMsgElement.textContent = msg.text;
       }
     }
-
-    // Функция отправки сообщения для личных чатов
+    
     function sendMessage() {
       if (!currentChat) {
         alert("Сначала выберите диалог!");
@@ -377,7 +499,6 @@
       const input = document.getElementById('messageInput');
       const text = input.value.trim();
       if (!text) return;
-
       const now = new Date();
       const newMsg = {
         sender: "Вы",
@@ -385,57 +506,37 @@
         timestamp: now.getTime(),
         isMine: true
       };
-
       if (!chatsData[currentChat]) {
         chatsData[currentChat] = [];
       }
       chatsData[currentChat].push(newMsg);
       displayMessage(newMsg);
       input.value = "";
-      
-      // Если нужно отправлять сообщение в Firebase, можно раскомментировать:
-      /*
-      firebase.database().ref("chats/" + currentChat).push({
-        sender: "Вы",
-        text: text,
-        timestamp: now.getTime()
-      });
-      */
     }
-
-    // Функция отправки уведомления в Telegram через Bot API
+    
     function sendTelegramNotification(messageText) {
-      // Замените значения ниже на ваши данные (бот-токен и chat_id)
-      const botToken = "7865781632:AAERyXSt18Ll82wDbicwsCYaHmHaFdBYljQ"
-      const chatId = "1002424657816"
+      const botToken = "7865781632:AAERyXSt18Ll82wDbicwsCYaHmHaFdBYljQ";
+      const chatId = "1002424657816";
       const encodedText = encodeURIComponent(messageText);
       const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedText}`;
-      
       fetch(url)
         .then(response => response.json())
         .then(data => console.log("Telegram notification sent:", data))
         .catch(error => console.error("Error sending Telegram notification:", error));
     }
-
-    // Подписка на новые сообщения в чате GlovimPlaye (Firebase узел "chats/playerok")
+    
     firebase.database().ref("chats/playerok").on("child_added", function(snapshot) {
       const msg = snapshot.val();
-      // Добавляем сообщение в локальный массив
       chatsData.playerok.push(msg);
-      
-      // Если чат не открыт, увеличиваем счётчик непрочитанных и отправляем уведомление в Telegram
       if (currentChat !== 'playerok') {
         playerokUnread++;
         updatePlayerokBadge();
-        // Отправляем уведомление в Telegram (например, можно передавать текст сообщения)
         sendTelegramNotification(`Новое сообщение в GlovimPlaye: ${msg.text}`);
       } else {
-        // Если чат открыт, сразу отображаем сообщение
         displayMessage(msg);
       }
     });
-
-    // Функция обновления бэйджа непрочитанных для GlovimPlaye
+    
     function updatePlayerokBadge() {
       if (playerokUnread > 0) {
         playerokBadge.textContent = playerokUnread;
@@ -444,8 +545,7 @@
         playerokBadge.style.display = 'none';
       }
     }
-
-    // Если используется URL-параметр для выбора чата (например, ?user=playerok)
+    
     window.addEventListener('DOMContentLoaded', () => {
       const urlParams = new URLSearchParams(window.location.search);
       const chatUser = urlParams.get('user');
