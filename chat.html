@@ -5,7 +5,7 @@
   <title>Glovimplaye</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <!-- Подключение Font Awesome для иконок -->
+  <!-- Подключение Font Awesome для иконок (используется для остальных элементов) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <!-- Подключение Firebase -->
@@ -158,10 +158,9 @@
       color: var(--text-secondary);
     }
     
-    .placeholder i {
-      font-size: 48px;
+    .placeholder img {
+      max-width: 150px;
       margin-bottom: 10px;
-      color: var(--accent-color);
     }
     
     .messages {
@@ -255,11 +254,14 @@
         border-bottom: 1px solid var(--border-color);
       }
       
+      /* Используем статичное изображение для логотипа */
       .mobile-header .logo {
-        font-size: 20px;
-        font-weight: bold;
-        color: var(--accent-color);
-        cursor: pointer;
+        font-size: 0; /* скрываем текст, т.к. будет изображение */
+      }
+      
+      .mobile-header .logo img {
+        max-width: 120px;
+        height: auto;
       }
       
       .mobile-header .balance {
@@ -321,7 +323,10 @@
 <body>
   <!-- Мобильный верхний хедер (виден только на мобильных) -->
   <div class="mobile-header">
-    <div class="logo" onclick="window.location.href='profile.html'">Glovimplaye</div>
+    <div class="logo" onclick="window.location.href='profile.html'">
+      <!-- Статичное изображение логотипа -->
+      <img src="logo.png" alt="Glovimplaye">
+    </div>
     <div class="balance">+ 5.0 <i class="fas fa-coins"></i></div>
     <div class="open-chat-list" onclick="toggleChatList()">
       <i class="fas fa-bars"></i>
@@ -379,7 +384,8 @@
     </div>
     <div class="chat-body" id="chatBody">
       <div class="placeholder" id="placeholder">
-        <i class="far fa-comment-dots"></i>
+        <!-- Здесь можно также разместить статичное изображение, если нужно -->
+        <img src="placeholder.png" alt="Выберите диалог">
         <p>Выберите диалог для переписки</p>
       </div>
       <div class="messages" id="messagesContainer"></div>
