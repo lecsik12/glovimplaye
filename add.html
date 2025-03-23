@@ -70,19 +70,6 @@
     }
     .top-nav a:hover { color: #ff7f50; }
     .top-nav a i { margin-right: 5px; }
-    /* Блок с данными пользователя (синхронизация) */
-    #userInfo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 16px;
-    }
-    #userInfo img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
     /* Контейнер для формы */
     .container {
       background: rgba(48,44,44,0.85);
@@ -175,8 +162,6 @@
     <a href="settings.html"><i class="fas fa-comments"></i>Чат</a>
     <a href="profile.html"><i class="fas fa-user"></i>Профиль</a>
   </nav>
-  <!-- Блок синхронизации: отображает данные авторизованного пользователя -->
-  <div id="userInfo"></div>
 </header>
 
 <!-- Рекламный баннер -->
@@ -336,17 +321,9 @@
     }
   }
 
-  // Функция синхронизации: скрывает блок авторизации и обновляет данные в шапке
+  // Функция синхронизации: скрывает блок авторизации (если есть)
   function updateProfile(user) {
     document.getElementById("authContainer").style.display = "none";
-    const userInfoDiv = document.getElementById("userInfo");
-    // Если в localStorage уже есть userProfile, используем его; иначе – данные из user
-    const userProfile = localStorage.getItem("userProfile")
-      ? JSON.parse(localStorage.getItem("userProfile"))
-      : { nickname: user.displayName, avatar: user.photoURL || "default-avatar.png" };
-    if (userInfoDiv) {
-      userInfoDiv.innerHTML = `<img src="${userProfile.avatar}" alt="avatar"> <span>${userProfile.nickname}</span>`;
-    }
   }
 
   // Переход на главную страницу
