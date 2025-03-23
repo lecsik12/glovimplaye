@@ -5,6 +5,9 @@
   <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -22,6 +25,7 @@
       --accent-hover: #ff4500;
       --text-color: #fff;
       --card-bg: #252525;
+      --border-radius: 10px;
     }
     
     * {
@@ -36,6 +40,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
+      padding-bottom: 70px;
     }
     
     a {
@@ -80,7 +85,7 @@
     .profile-info {
       background: var(--card-bg);
       padding: 30px;
-      border-radius: 10px;
+      border-radius: var(--border-radius);
       box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
@@ -95,6 +100,11 @@
       border: 5px solid var(--accent-color);
       object-fit: cover;
       margin-bottom: 20px;
+      transition: transform 0.3s;
+    }
+    
+    .profile-info img:hover {
+      transform: scale(1.05);
     }
     
     .profile-info h1 {
@@ -158,11 +168,75 @@
       transform: translateY(-3px);
     }
     
-    /* Раздел заказов (Продажи и Покупки) */
+    /* Модальное окно для загрузки аватара */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .close-modal {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    
+    .custom-file-upload {
+      display: inline-block;
+      padding: 10px 20px;
+      cursor: pointer;
+      background: var(--accent-color);
+      color: #fff;
+      border-radius: 6px;
+      transition: background 0.3s;
+      margin-bottom: 15px;
+    }
+    
+    .custom-file-upload:hover {
+      background: var(--accent-hover);
+    }
+    
+    .modal input[type="file"] {
+      display: none;
+    }
+    
+    .upload-preview {
+      margin-top: 15px;
+    }
+    
+    .upload-preview img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid var(--accent-color);
+      object-fit: cover;
+    }
+    
+    /* Раздел заказов */
     .profile-orders {
       background: var(--card-bg);
       padding: 20px;
-      border-radius: 10px;
+      border-radius: var(--border-radius);
       box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
       animation: fadeInUp 0.6s ease-out;
     }
@@ -202,7 +276,7 @@
       width: 100%;
       border-collapse: collapse;
       background: var(--card-bg);
-      border-radius: 10px;
+      border-radius: var(--border-radius);
       overflow: hidden;
       box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
     }
@@ -240,6 +314,7 @@
       box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
       z-index: 20;
     }
+    
     .bottom-nav a {
       text-decoration: none;
       color: var(--text-color);
@@ -247,17 +322,20 @@
       flex-grow: 1;
       font-size: 14px;
     }
+    
     .bottom-nav a i {
       display: block;
       font-size: 22px;
       margin-bottom: 2px;
     }
+    
     .bottom-nav-profile img.avatar {
       width: 24px;
       height: 24px;
       border-radius: 50%;
       margin-bottom: 2px;
     }
+    
     @media (min-width: 768px) {
       .bottom-nav {
         display: none;
@@ -302,7 +380,11 @@
         Баланс: <span id="balanceAmount">0</span> ₽
       </p>
       <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
+      
       <div class="profile-actions">
+        <button onclick="openModal()">
+          <i class="fas fa-cloud-upload-alt"></i> Загрузить аватарку
+        </button>
         <button onclick="editProfile()">
           <i class="fas fa-edit"></i> Редактировать профиль
         </button>
@@ -318,7 +400,7 @@
       </div>
     </div>
     
-    <!-- Раздел заказов: Продажи и Покупки -->
+    <!-- Здесь могут располагаться блоки с заказами, товарами и прочим контентом -->
     <div class="profile-orders">
       <h2>Заказы</h2>
       <div class="orders-tabs">
@@ -326,12 +408,10 @@
         <button id="purchasesTab" onclick="showPurchases()">Покупки</button>
       </div>
       <div class="orders-content" id="ordersContent">
-        <!-- Здесь будет динамически подгружаться таблица заказов -->
         <p>Загрузка данных...</p>
       </div>
     </div>
     
-    <!-- Таблица товаров пользователя (Мои товары) -->
     <div class="profile-products">
       <h2 style="margin-bottom:15px;">Мои товары</h2>
       <table class="product-table">
@@ -348,6 +428,23 @@
       </table>
     </div>
   </main>
+  
+  <!-- Модальное окно для загрузки аватара -->
+  <div id="avatarModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <h3>Загрузить аватар</h3>
+      <label for="modalAvatarInput" class="custom-file-upload">
+        <i class="fas fa-cloud-upload-alt"></i> Выберите файл
+      </label>
+      <input type="file" id="modalAvatarInput" accept="image/*">
+      <br>
+      <button id="modalUploadBtn" style="margin-top:15px; padding:10px 20px; background: var(--accent-color); border: none; border-radius:6px; color:#fff; cursor:pointer;">
+        Загрузить
+      </button>
+      <div class="upload-preview" id="modalUploadPreview"></div>
+    </div>
+  </div>
   
   <!-- Нижняя панель (мобильная навигация) -->
   <div class="bottom-nav">
@@ -386,13 +483,27 @@
     };
     firebase.initializeApp(firebaseConfig);
     
+    // Инициализация Supabase (замените на свои данные)
+    const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    
+    // Функции открытия/закрытия модального окна
+    function openModal() {
+      document.getElementById('avatarModal').style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById('avatarModal').style.display = "none";
+      // Очистка предпросмотра и выбранного файла
+      document.getElementById('modalUploadPreview').innerHTML = "";
+      document.getElementById('modalAvatarInput').value = "";
+    }
+    
     // Проверка авторизации
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         loadUserProfile(user);
-        loadUserProducts(user.uid);
-        // По умолчанию загружаем раздел "Продажи"
-        showSales();
+        // Здесь можно добавить загрузку товаров, заказов и т.д.
       } else {
         window.location.href = "login.html";
       }
@@ -403,10 +514,7 @@
       const userId = user.uid;
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
         let userData = snapshot.val();
-        if (!userData) {
-          console.error("Нет данных для пользователя", userId);
-          return;
-        }
+        if (!userData) return;
         let nicknameText = userData.nickname || "Без ника";
         if (userData.role === "admin") {
           nicknameText += ' <span class="admin-badge">Admin</span>';
@@ -416,7 +524,6 @@
         document.getElementById('profileNickname').innerHTML = nicknameText;
         document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
         document.getElementById('profileEmail').innerText = user.email || "user@example.com";
-        
         if (userData.createdAt) {
           let date = new Date(userData.createdAt);
           document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
@@ -428,30 +535,60 @@
       });
     }
     
-    // Функция загрузки товаров пользователя
-    function loadUserProducts(userId) {
-      const productsRef = firebase.database().ref('products');
-      productsRef.orderByChild('sellerId').equalTo(userId).on('value', snapshot => {
-        const userProductsList = document.getElementById('userProductsList');
-        userProductsList.innerHTML = ""; // очищаем перед загрузкой
-        if (!snapshot.exists()) {
-          userProductsList.innerHTML = '<tr><td colspan="3">Товаров нет</td></tr>';
-          return;
-        }
-        snapshot.forEach(childSnapshot => {
-          const product = childSnapshot.val();
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td><a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a></td>
-            <td>${product.stock} шт.</td>
-            <td class="price">${product.price} ₽</td>
-          `;
-          userProductsList.appendChild(row);
+    // Функция загрузки аватара через Supabase с синхронизацией в Firebase
+    document.getElementById('modalUploadBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('modalAvatarInput');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Пожалуйста, выберите изображение для загрузки.');
+        return;
+      }
+      
+      // Имя bucket-а в Supabase
+      const bucketName = 'avatars';
+      // Генерация уникального имени файла
+      const filePath = `${Date.now()}_${file.name}`;
+      
+      // Загрузка файла в Supabase Storage
+      const { data, error } = await supabaseClient.storage
+        .from(bucketName)
+        .upload(filePath, file);
+      
+      if (error) {
+        console.error('Ошибка загрузки:', error);
+        alert('Ошибка загрузки: ' + JSON.stringify(error));
+        return;
+      }
+      
+      // Получение публичного URL загруженного файла
+      const { data: publicData } = supabaseClient.storage
+        .from(bucketName)
+        .getPublicUrl(filePath);
+      
+      if (publicData && publicData.publicUrl) {
+        // Обновление аватара на странице
+        document.getElementById('profileAvatar').src = publicData.publicUrl;
+        // Вывод предпросмотра в модальном окне
+        document.getElementById('modalUploadPreview').innerHTML = `<img src="${publicData.publicUrl}" alt="Preview">`;
+        // Обновление данных пользователя в Firebase
+        const userId = firebase.auth().currentUser.uid;
+        firebase.database().ref('users/' + userId).update({
+          avatar: publicData.publicUrl
+        }).then(() => {
+          firebase.auth().currentUser.updateProfile({
+            photoURL: publicData.publicUrl
+          });
+          alert('Аватар успешно обновлён!');
+          closeModal();
+        }).catch(err => {
+          console.error('Ошибка обновления профиля в Firebase:', err);
         });
-      });
-    }
+      } else {
+        alert('Не удалось получить публичный URL загруженного файла.');
+      }
+    });
     
-    // Раздел заказов – Продажи и Покупки
+    // Функции для заказов (продажи/покупки)
     function showSales() {
       document.getElementById('salesTab').classList.add('active');
       document.getElementById('purchasesTab').classList.remove('active');
@@ -464,7 +601,6 @@
       loadPurchases();
     }
     
-    // Функция загрузки заказов для продаж (где вы – продавец)
     function loadSales() {
       const ordersRef = firebase.database().ref('orders');
       const currentUser = firebase.auth().currentUser;
@@ -502,7 +638,6 @@
       });
     }
     
-    // Функция загрузки заказов для покупок (где вы – покупатель)
     function loadPurchases() {
       const ordersRef = firebase.database().ref('orders');
       const currentUser = firebase.auth().currentUser;
@@ -537,35 +672,6 @@
         });
         table.appendChild(tbody);
         ordersContent.appendChild(table);
-      });
-    }
-    
-    // Функция пополнения баланса через CryptoBot
-    function topUpBalance() {
-      const amount = prompt("Введите сумму для пополнения (₽):");
-      const numericAmount = parseFloat(amount);
-      if (isNaN(numericAmount) || numericAmount <= 0) {
-        alert("Пожалуйста, введите корректную сумму.");
-        return;
-      }
-      const user = firebase.auth().currentUser;
-      if (!user) {
-        alert("Вы не авторизованы.");
-        return;
-      }
-      let botUrl = `https://t.me/CryptoBot?start=send_${numericAmount}_RUB`;
-      window.open(botUrl, '_blank');
-    }
-    
-    // Функции редактирования и выхода
-    function editProfile() {
-      alert("Редактирование профиля пока не реализовано.");
-    }
-    function logout() {
-      firebase.auth().signOut().then(() => {
-        window.location.href = "login.html";
-      }).catch(error => {
-        console.error("Ошибка выхода:", error);
       });
     }
   </script>
