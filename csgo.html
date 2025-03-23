@@ -28,7 +28,7 @@
       margin: 0;
     }
     
-    /* Хедер для ПК (исходный вариант) */
+    /* Хедер для ПК */
     header {
       width: 100%;
       background: #1f1f1f;
@@ -72,12 +72,16 @@
       outline: none;
     }
     .search-input::placeholder { color: rgba(255,255,255,0.6); }
+    /* Блок профиля в шапке */
+    .profile {
+      display: none;
+      cursor: pointer;
+    }
     .profile img {
       width: 40px;
       height: 40px;
       border-radius: 50%;
       border: 2px solid #fff;
-      cursor: pointer;
       transition: transform 0.3s;
     }
     .profile img:hover { transform: scale(1.1); }
@@ -86,7 +90,7 @@
     .subcategory-title { margin: 15px 0; font-size: 18px; }
     .subcategory-title .mobile { display: none; }
     
-    /* Остальные стили (без изменений) */
+    /* Остальные стили */
     .auth-container { text-align: center; margin: 20px 0; }
     .login-btn {
       background: #fff;
@@ -168,10 +172,7 @@
       margin-right: 8px;
       object-fit: cover;
     }
-    .seller-name {
-      font-size: 16px;
-      color: #fff;
-    }
+    .seller-name { font-size: 16px; color: #fff; }
     .price { font-weight: bold; color: #ff7f50; }
     
     .bottom-nav {
@@ -260,20 +261,15 @@
     }
     .edit-btn:hover { background: #ff4500; }
     
-    /* Мобильные переопределения: упрощённый хедер для узких экранов */
+    /* Мобильные стили */
     @media (max-width: 768px) {
       header { padding: 10px; }
       .logo-button { font-size: 20px; }
       .search-container { margin: 0 10px; }
       .search-input { padding: 5px 10px; font-size: 14px; }
       .profile img { width: 35px; height: 35px; }
-      /* Переключение заголовка подкатегорий */
       .subcategory-title .desktop { display: none; }
       .subcategory-title .mobile { display: inline; }
-    }
-    
-    /* Дополнительные адаптивные стили для остальных элементов */
-    @media (max-width: 768px) {
       .container { padding: 15px; }
       .subcategories { grid-template-columns: repeat(2, 1fr); }
       .product-table { display: block; overflow-x: auto; white-space: nowrap; }
@@ -288,7 +284,8 @@
     <div class="search-container">
       <input type="text" class="search-input" placeholder="Поиск...">
     </div>
-    <div class="profile" id="profileSection" style="display: none;">
+    <!-- Блок профиля. Отображается, когда пользователь авторизован -->
+    <div class="profile" id="profileSection" onclick="showProfileModal()">
       <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar">
     </div>
   </header>
@@ -383,47 +380,51 @@
     var auth = firebase.auth();
     var provider = new firebase.auth.GoogleAuthProvider();
     
-    document.addEventListener("DOMContentLoaded", function() {
-      var savedUser = localStorage.getItem("user");
-      if (savedUser) {
-        updateProfile(JSON.parse(savedUser));
+    // Обновление профиля на основе данных из Firebase
+    function updateProfile(user) {
+      // Обновляем шапку
+      document.getElementById("profileSection").style.display = "flex";
+      document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
+      
+      // Обновляем модальное окно профиля (если оно есть)
+      if(document.getElementById("modalAvatar")){
+        document.getElementById("modalAvatar").src = user.photoURL || 'default-avatar.png';
+      }
+      if(document.getElementById("profileName")){
+        document.getElementById("profileName").innerText = user.displayName || "Неизвестно";
+      }
+      if(document.getElementById("profileEmail")){
+        document.getElementById("profileEmail").innerText = user.email || "";
+      }
+      
+      // Скрываем блок авторизации, если пользователь авторизован
+      document.getElementById("authContainer").style.display = "none";
+    }
+    
+    // Подписка на состояние авторизации
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        updateProfile(user);
+      } else {
+        // Если пользователь не авторизован, показываем блок авторизации и скрываем профиль
+        document.getElementById("authContainer").style.display = "block";
+        document.getElementById("profileSection").style.display = "none";
       }
     });
     
     function login() {
       auth.signInWithPopup(provider)
         .then(function(result) {
-          var user = result.user;
-          var userData = {
-            uid: user.uid,
-            photoURL: user.photoURL,
-            displayName: user.displayName,
-            email: user.email
-          };
-          localStorage.setItem("user", JSON.stringify(userData));
-          updateProfile(userData);
+          // Обновление профиля произойдёт через onAuthStateChanged
         })
         .catch(function(error) {
           console.error("Ошибка входа:", error);
         });
     }
     
-    function updateProfile(user) {
-      document.getElementById("loginButton").style.display = "none";
-      document.getElementById("authContainer").style.display = "none";
-      document.getElementById("profileSection").style.display = "flex";
-      document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
-      document.getElementById("modalAvatar").src = user.photoURL || 'default-avatar.png';
-      document.getElementById("profileName").innerText = user.displayName;
-      document.getElementById("profileEmail").innerText = user.email;
-    }
-    
     function logout() {
       auth.signOut().then(function() {
-        localStorage.removeItem("user");
-        document.getElementById("loginButton").style.display = "block";
-        document.getElementById("authContainer").style.display = "block";
-        document.getElementById("profileSection").style.display = "none";
+        // После выхода обновление состояния произойдёт через onAuthStateChanged
       }).catch(function(error) {
         console.error("Ошибка выхода:", error);
       });
