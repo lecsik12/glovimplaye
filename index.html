@@ -753,27 +753,10 @@ footer {
  
 </div>
 
-  <!-- Другой контент в header, если необходимо -->
-
-  <!-- Правая часть: иконка поиска и профиль -->
-  <div class="navbar-right">
-    <div class="profile" id="profileSection">
-      <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar" onclick="toggleProfileMenu()" />
-      <div class="profile-menu" id="profileMenu">
-        <a href="profile.html"howProfileModal()">Мой профиль</a>
-        <a href="chat.html">Чаты</a>
-        <a href="pr.html">Правила</a>
-        <a href="#" class="logout" onclick="logout()">Выйти</a>
-      </div>
-    </div>
-  </div>
-</>
 
 
-<!-- Авторизация (если не залогинен) -->
-<div class="auth-container" id="authContainer">
-  <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
-</div>
+
+
 
 
 <!-- Пример секции категорий (Игры) -->
@@ -915,21 +898,7 @@ footer {
     
     
 
-<!-- Модальное окно профиля -->
-<div id="profileModal" class="modal">
-  <div class="modal-content">
-    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
-    <div class="profile-details">
-      <img id="modalAvatar" src="default-avatar.png" alt="Avatar" />
-      <h2 id="profileName"></h2>
-      <p id="profileEmail"></p>
-      <button class="edit-btn" onclick="editProfile(profile.html)">Редактировать профиль</button>
-      <button class="edit-btn" onclick="window.open('https:t.me/Glovimplaye_bot', '_blank')">
-        Написать в поддержку
-      </button>
-    </div>
-  </div>
-</div>
+
 
 <!-- Футер -->
 <footer style="background-color: #1f1f1f; color: #bdbdbd; padding: 20px 0; font-family: Arial, sans-serif;">
@@ -972,18 +941,6 @@ footer {
 
 
 
-<!-- Дубликат модального окна профиля (если не нужен, можно удалить) -->
-<div id="profileModal" class="modal">
-  <div class="modal-content">
-    <span class="modal-close" onclick="closeProfileModal()">&times;</span>
-    <div class="profile-details">
-      <img id="modalAvatar" src="default-avatar.png" alt="Avatar" />
-      <h2 id="profileName"></h2>
-      <p id="profileEmail"></p>
-      <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
-    </div>
-  </div>
-</div>
 
 <script>
   /* ---------- Firebase конфиг (пример) ---------- */
@@ -996,84 +953,7 @@ footer {
     messagingSenderId: "553440591519",
     appId: "1:553440591519:web:b7be45a9253689f322acaa"
   };
-  firebase.initializeApp(firebaseConfig);
-
-  var auth = firebase.auth();
-  var provider = new firebase.auth.GoogleAuthProvider();
-
-  // Проверка сохранённого пользователя при загрузке
-  document.addEventListener("DOMContentLoaded", function(){
-    var savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      updateProfile(JSON.parse(savedUser));
-    }
-  });
-
-  function login() {
-    auth.signInWithPopup(provider)
-      .then(function(result) {
-        var user = result.user;
-        var userData = {
-          uid: user.uid,
-          photoURL: user.photoURL,
-          displayName: user.displayName,
-          email: user.email
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        updateProfile(userData);
-      })
-      .catch(function(error) {
-        console.error("Ошибка входа:", error);
-      });
-  }
-
-  function updateProfile(user) {
-    document.getElementById("loginButton").style.display = "none";
-    document.getElementById("authContainer").style.display = "none";
-    document.getElementById("profileSection").style.display = "flex";
-    document.getElementById("avatar").src = user.photoURL || "default-avatar.png";
-    document.getElementById("modalAvatar").src = user.photoURL || "default-avatar.png";
-    document.getElementById("profileName").innerText = user.displayName;
-    document.getElementById("profileEmail").innerText = user.email;
-  }
-
-  function toggleProfileMenu() {
-    document.getElementById("profileMenu").classList.toggle("active");
-  }
-
-  function logout() {
-    auth.signOut().then(function() {
-      localStorage.removeItem("user");
-      document.getElementById("loginButton").style.display = "block";
-      document.getElementById("authContainer").style.display = "block";
-      document.getElementById("profileSection").style.display = "none";
-    }).catch(function(error) {
-      console.error("Ошибка выхода:", error);
-    });
-  }
-
-  function showProfileModal() {
-    document.getElementById("profileModal").style.display = "block";
-    var menu = document.getElementById("profileMenu");
-    if (menu) menu.classList.remove("active");
-  }
-  function closeProfileModal() {
-    document.getElementById("profileModal").style.display = "none";
-  }
-  function editProfile() {
-    
-    alert("Редактирование профиля пока не реализовано.");
-  }
-  window.onclick = function(event) {
-    var modal = document.getElementById("profileModal");
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  };
-
-  function goToHomePage() {
-    window.location.href = "index.html";
-  }
+ 
 
   // Оверлей поиска
   function openSearchOverlay() {
