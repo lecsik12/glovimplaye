@@ -299,7 +299,7 @@
 
   // Инициализация Supabase (замените на свои данные!)
   const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJI...your-data...';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
   const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
   var auth = firebase.auth();
@@ -469,17 +469,21 @@
     const sensitiveObject = { sensitiveData: sensitiveData };
     const encryptedData = encryptData(sensitiveObject);
 
-    // Формируем объект товара
+    // Вычисляем комиссию в 5%
+    const commission = price * 0.05;
+
+    // Формируем объект товара с комиссией
     const newProduct = {
       category: category,
       subcategory: subcategory,
       name: name,
       description: publicDescription,
       encryptedData: encryptedData,
-      sellerName: sellerName,                // <-- из профиля или fallback
-      sellerAvatar: sellerAvatar,            // <-- из профиля или fallback
+      sellerName: sellerName,
+      sellerAvatar: sellerAvatar,
       sellerId: currentUser.uid,
       price: price,
+      commission: commission,
       stock: stock,
       photoURLs: photoURLs,
       createdAt: firebase.database.ServerValue.TIMESTAMP
@@ -511,6 +515,7 @@
                  `*Название:* ${product.name}\n` +
                  `*Категория:* ${product.category}\n` +
                  `*Цена:* ${product.price}\n` +
+                 `*Комиссия (5%):* ${product.commission}\n` +
                  `*Продавец:* ${product.sellerName}`;
                  
     fetch(url, {
