@@ -194,6 +194,7 @@
   <!-- Левая колонка: Информация о товаре и продавце -->
   <div class="product-details">
     <h2>Детали товара</h2>
+    <!-- Отображение картинки товара -->
     <img id="productImg" class="product-img" src="placeholder.jpg" alt="Изображение товара">
     <h3 id="productName">Название товара</h3>
     <p id="productDescription">Описание товара...</p>
@@ -351,7 +352,10 @@
       document.getElementById("productPrice").innerText = currentProductPrice;
       document.getElementById("orderTotal").innerText = currentProductPrice;
 
-      if (product.image) {
+      // Отображаем изображение товара (используем photoURL, если оно есть, иначе image)
+      if (product.photoURL) {
+        document.getElementById("productImg").src = product.photoURL;
+      } else if (product.image) {
         document.getElementById("productImg").src = product.image;
       }
 
@@ -387,7 +391,7 @@
       console.error("Ошибка при загрузке данных:", error);
     });
 
-  // Функция шифрования данных (если требуется для других операций)
+  // Функция дешифрования данных (если требуется)
   function decryptData(encryptedData) {
     const secretKey = "GlovimPlayeSecretKey";
     const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
@@ -493,19 +497,15 @@
 
   // Функция для показа чувствительных данных товара только покупателю
   function showSensitiveData() {
-    // Загружаем зашифрованные данные товара из базы
     firebase.database().ref('products/' + productId).once('value')
       .then(snapshot => {
         const product = snapshot.val();
         if (!product || !product.encryptedData) {
           alert("Нет дополнительных данных товара для отображения.");
-          // Можно редиректить, например, в чат:
           window.location.href = "chat.html";
           return;
         }
-        // Дешифруем данные (при условии, что клиент знает секретный ключ)
         const sensitiveObj = decryptData(product.encryptedData);
-        // Отображаем данные в модальном окне
         document.getElementById("sensitiveDataContent").innerText = sensitiveObj.sensitiveData;
         document.getElementById("sensitiveDataModal").style.display = "flex";
       })
@@ -518,7 +518,6 @@
 
   function closeSensitiveModal() {
     document.getElementById("sensitiveDataModal").style.display = "none";
-    // После закрытия модального окна, перенаправляем покупателя в чат или другую страницу
     window.location.href = "chat.html";
   }
 </script>

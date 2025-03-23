@@ -157,9 +157,23 @@
     .product-table tr:hover { background: #3a3a3a; }
     .product-name { color: #ff7f50; font-weight: bold; text-decoration: none; }
     .product-name:hover { text-decoration: underline; }
+    .seller-container {
+      display: flex;
+      align-items: center;
+    }
+    .seller-container img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 8px;
+      object-fit: cover;
+    }
+    .seller-name {
+      font-size: 16px;
+      color: #fff;
+    }
     .price { font-weight: bold; color: #ff7f50; }
-    .seller { display: flex; align-items: center; }
-    .seller img { width: 30px; height: 30px; border-radius: 50%; margin-right: 10px; }
+    
     .bottom-nav {
       position: fixed;
       bottom: 0;
@@ -445,7 +459,12 @@
           const row = document.createElement('tr');
           row.innerHTML = `
             <td><a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a></td>
-            <td class="seller"><img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар"> ${product.sellerName}</td>
+            <td class="seller">
+              <div class="seller-container">
+                <img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар">
+                <span class="seller-name">${product.sellerName}</span>
+              </div>
+            </td>
             <td>${product.stock} шт.</td>
             <td class="price">${product.price} ₽</td>
           `;

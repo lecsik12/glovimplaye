@@ -5,6 +5,9 @@
   <title>GlovimPlaye | Добавить товар</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -93,6 +96,9 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+    }
+    form#addProductForm label {
+      font-size: 14px;
     }
     form#addProductForm input,
     form#addProductForm select,
@@ -227,11 +233,9 @@
       <label for="productName">Название</label>
       <input type="text" id="productName" required />
 
-      <!-- Публичное описание товара (открытое, для показа всем) -->
       <label for="publicDescription">Описание товара</label>
       <textarea id="publicDescription" placeholder="Введите описание товара" required></textarea>
 
-      <!-- Чувствительные данные, которые шифруются -->
       <label for="sensitiveData">Чувствительные данные товара (будут зашифрованы)</label>
       <textarea id="sensitiveData" placeholder="Введите дополнительные данные товара" required></textarea>
 
@@ -240,6 +244,10 @@
 
       <label for="stock">Наличие (шт.)</label>
       <input type="number" id="stock" required />
+
+      <!-- Поле для загрузки фото товара (множественный выбор) -->
+      <label for="productPhoto">Фото товара (максимум 3 фото)</label>
+      <input type="file" id="productPhoto" accept="image/*" multiple />
 
       <button type="submit">Добавить</button>
     </form>
@@ -279,7 +287,7 @@
 <script>
   // Firebase конфигурация (замените на свои данные!)
   var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    apiKey: "AIzaSyAhn2H...your-data...",
     authDomain: "glovimplaye-b1023.firebaseapp.com",
     databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
     projectId: "glovimplaye-b1023",
@@ -289,34 +297,66 @@
   };
   firebase.initializeApp(firebaseConfig);
 
+  // Инициализация Supabase (замените на свои данные!)
+  const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJI...your-data...';
+  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
   var auth = firebase.auth();
   var provider = new firebase.auth.GoogleAuthProvider();
 
-  // Проверяем авторизацию при загрузке страницы
-  document.addEventListener("DOMContentLoaded", function(){
+  // -------------------------------
+  // Загружаем профиль пользователя
+  // -------------------------------
+  function loadUserProfile(user) {
+    return firebase.database().ref('users/' + user.uid).once('value')
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          // Сохраним профиль в localStorage
+          localStorage.setItem("userProfile", JSON.stringify(data));
+        } else {
+          // Если нет записей в users/uid, удаляем userProfile
+          localStorage.removeItem("userProfile");
+        }
+      })
+      .catch(err => {
+        console.error("Ошибка при загрузке профиля:", err);
+      });
+  }
+
+  // -------------------------------
+  // Авторизация при загрузке
+  // -------------------------------
+  document.addEventListener("DOMContentLoaded", async function(){
     var savedUser = localStorage.getItem("user");
     if (savedUser) {
-      updateProfile(JSON.parse(savedUser));
+      // Уже есть данные об авторизации
+      const userData = JSON.parse(savedUser);
+      updateProfile(userData);
+      // Пробуем загрузить профиль из /users/uid
+      await loadUserProfile(userData);
     }
   });
 
   // Авторизация через Google
-  function login() {
-    auth.signInWithPopup(provider)
-      .then(function(result) {
-        var user = result.user;
-        var userData = {
-          uid: user.uid,
-          photoURL: user.photoURL,
-          displayName: user.displayName,
-          email: user.email
-        };
-        localStorage.setItem("user", JSON.stringify(userData));
-        updateProfile(userData);
-      })
-      .catch(function(error) {
-        console.error("Ошибка входа:", error);
-      });
+  async function login() {
+    try {
+      const result = await auth.signInWithPopup(provider);
+      const user = result.user;
+      const userData = {
+        uid: user.uid,
+        photoURL: user.photoURL,
+        displayName: user.displayName,
+        email: user.email
+      };
+      localStorage.setItem("user", JSON.stringify(userData));
+      updateProfile(userData);
+      // Загрузка данных из /users/uid
+      await loadUserProfile(userData);
+    } catch (error) {
+      console.error("Ошибка входа:", error);
+    }
   }
 
   function updateProfile(user) {
@@ -329,79 +369,138 @@
     window.location.href = "index.html";
   }
 
-  /* ---------- Функции шифрования/дешифрования данных товара ---------- */
-  // Функция шифрования данных (используется секретный ключ, который должен храниться надежно)
+  // -------------------------------
+  // Функции шифрования
+  // -------------------------------
   function encryptData(data) {
     const secretKey = "GlovimPlayeSecretKey"; // Пример, измените для продакшена
     return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
   }
-
-  // Функция дешифрования данных (будет использоваться при выдаче товара после оплаты)
   function decryptData(encryptedData) {
     const secretKey = "GlovimPlayeSecretKey";
     const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   }
 
-  /* ---------- Добавление товара в Firebase Realtime Database ---------- */
+  // -------------------------------
+  // Добавление товара
+  // -------------------------------
   const addForm = document.getElementById('addProductForm');
-  addForm.addEventListener('submit', function(e) {
+  addForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    // Получаем данные авторизованного пользователя
+    // Проверяем, авторизован ли пользователь
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (!currentUser) {
       alert("Для добавления товара необходимо войти в систему.");
       return;
     }
 
-    // Собираем данные товара
+    // Загружаем профиль из localStorage (если есть)
+    const userProfile = localStorage.getItem("userProfile")
+      ? JSON.parse(localStorage.getItem("userProfile"))
+      : null;
+
+    // Если в профиле есть nickname/avatar, используем их. Иначе fallback на displayName/photoURL
+    let sellerName = userProfile && userProfile.nickname
+      ? userProfile.nickname
+      : currentUser.displayName;
+    let sellerAvatar = userProfile && userProfile.avatar
+      ? userProfile.avatar
+      : (currentUser.photoURL || "default-avatar.png");
+
+    // Собираем данные формы
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
-    const name = document.getElementById('productName').value;
-    const publicDescription = document.getElementById('publicDescription').value;
+    const name = document.getElementById('productName').value.trim();
+    const publicDescription = document.getElementById('publicDescription').value.trim();
     const sensitiveData = document.getElementById('sensitiveData').value;
     const price = parseFloat(document.getElementById('price').value);
     const stock = parseInt(document.getElementById('stock').value);
 
-    // Формируем объект с чувствительными данными, которые необходимо зашифровать
-    const sensitiveObject = {
-      sensitiveData: sensitiveData
-      // Можно добавить другие чувствительные данные, если необходимо
-    };
+    // Валидация: цена не меньше 20 руб.
+    if (price < 20) {
+      alert("Цена не может быть меньше 20 рублей.");
+      return;
+    }
+    // Валидация: описание минимум 15 символов
+    if (publicDescription.length < 15) {
+      alert("Описание товара должно быть минимум 15 символов.");
+      return;
+    }
+    // Валидация: название минимум 5 символов
+    if (name.length < 5) {
+      alert("Название товара должно быть минимум 5 символов.");
+      return;
+    }
 
-    // Шифруем чувствительные данные товара
+    // Валидация фото: максимум 3 файла
+    const photoFiles = document.getElementById('productPhoto').files;
+    if (photoFiles.length > 3) {
+      alert("Можно загрузить максимум 3 фото товара.");
+      return;
+    }
+
+    // Загрузка фото (через Supabase)
+    let photoURLs = [];
+    for (const photoFile of photoFiles) {
+      const filePath = `${Date.now()}_${photoFile.name}`;
+      const { data, error } = await supabaseClient.storage
+        .from('products')
+        .upload(filePath, photoFile);
+      if (error) {
+        console.error("Ошибка загрузки фото товара:", error);
+        alert("Ошибка загрузки фото товара: " + error.message);
+        return;
+      }
+      // Получаем публичный URL загруженного фото
+      const { data: publicData } = supabaseClient.storage
+        .from('products')
+        .getPublicUrl(filePath);
+      if (publicData && publicData.publicUrl) {
+        photoURLs.push(publicData.publicUrl);
+      } else {
+        alert("Не удалось получить URL загруженного фото товара.");
+        return;
+      }
+    }
+
+    // Шифруем чувствительные данные
+    const sensitiveObject = { sensitiveData: sensitiveData };
     const encryptedData = encryptData(sensitiveObject);
 
-    // Формируем объект товара для сохранения – публичное описание сохраняется отдельно
+    // Формируем объект товара
     const newProduct = {
       category: category,
       subcategory: subcategory,
       name: name,
-      description: publicDescription, // публичное описание
-      encryptedData: encryptedData,   // зашифрованные чувствительные данные
-      sellerName: currentUser.displayName,
-      sellerAvatar: currentUser.photoURL || "default-avatar.png",
+      description: publicDescription,
+      encryptedData: encryptedData,
+      sellerName: sellerName,                // <-- из профиля или fallback
+      sellerAvatar: sellerAvatar,            // <-- из профиля или fallback
       sellerId: currentUser.uid,
       price: price,
       stock: stock,
+      photoURLs: photoURLs,
       createdAt: firebase.database.ServerValue.TIMESTAMP
     };
 
-    // Добавляем товар в базу
+    // Добавляем товар в базу Firebase
     firebase.database().ref('products').push(newProduct, function(error) {
       if (error) {
         alert('Ошибка добавления товара: ' + error.message);
       } else {
         alert('Товар успешно добавлен!');
         addForm.reset();
-        // Отправляем уведомление в Telegram после успешного добавления товара
+        // Отправляем уведомление в Telegram (опционально)
         sendTelegramNotification(newProduct);
       }
     });
   });
 
-  /* ----------- Отправка уведомления в Telegram ----------- */
+  // -------------------------------
+  // Уведомление в Telegram
+  // -------------------------------
   function sendTelegramNotification(product) {
     // Замените значения ниже на свои данные
     const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
