@@ -54,13 +54,9 @@
       display: flex;
       align-items: center;
       margin-top: 15px;
+      cursor: pointer;
     }
-    .seller-info a {
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      align-items: center;
-    }
+    .seller-info:hover { opacity: 0.8; }
     .seller-info img {
       width: 50px;
       height: 50px;
@@ -82,7 +78,6 @@
       transition: background 0.3s;
     }
     .checkout-btn:hover { background: #ff4500; }
-    
     /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
       position: fixed;
@@ -113,10 +108,7 @@
       border-radius: 50%;
       margin-bottom: 2px;
     }
-    @media (min-width: 768px) {
-      .bottom-nav { display: none; }
-    }
-    
+    @media (min-width: 768px) { .bottom-nav { display: none; } }
     footer {
       background: #1f1f1f;
       padding: 20px;
@@ -133,7 +125,6 @@
       transition: color 0.3s;
     }
     .social-links a:hover { color: #ff4500; }
-    
     /* Стили модальных окон */
     .modal {
       display: none;
@@ -176,12 +167,10 @@
     .btn.confirm:hover { background: #218838; }
     .btn.cancel { background: #dc3545; color: #fff; }
     .btn.cancel:hover { background: #c82333; }
-    
-    /* Модальное окно с данными товара для покупателя */
-    #sensitiveDataModal .modal-content {
+    /* Модальное окно для просмотра аккаунта продавца */
+    #sellerModal .modal-content {
       max-width: 500px;
     }
-    
     @keyframes fadeIn {
       from { opacity: 0; transform: scale(0.9); }
       to { opacity: 1; transform: scale(1); }
@@ -191,23 +180,23 @@
 <body>
 
 <div class="container">
-  <!-- Левая колонка: Информация о товаре и продавце -->
+  <!-- Левая колонка: Детали товара -->
   <div class="product-details">
     <h2>Детали товара</h2>
+    <!-- Фото товара -->
     <img id="productImg" class="product-img" src="placeholder.jpg" alt="Изображение товара">
     <h3 id="productName">Название товара</h3>
     <p id="productDescription">Описание товара...</p>
     <p><strong>Цена:</strong> <span id="productPrice">0</span> ₽</p>
-    <div class="seller-info">
-      <a href="" id="sellerProfileLink">
-        <img id="sellerAvatar" src="default-avatar.png" alt="Продавец">
-        <div>
-          <p><strong>Продавец:</strong> <span id="sellerName">Неизвестно</span></p>
-        </div>
-      </a>
-    </div>
     <div class="order-summary">
       <p><strong>Итого к оплате:</strong> <span id="orderTotal">0</span> ₽</p>
+    </div>
+    <!-- Блок продавца (при клике открывается модальное окно с данными продавца) -->
+    <div class="seller-info" onclick="openSellerModal()">
+      <img id="sellerAvatar" src="default-avatar.png" alt="Продавец">
+      <div>
+        <p><strong>Продавец:</strong> <span id="sellerName">Неизвестно</span></p>
+      </div>
     </div>
   </div>
   
@@ -286,6 +275,19 @@
   </div>
 </div>
 
+<!-- Модальное окно просмотра аккаунта продавца -->
+<div id="sellerModal" class="modal">
+  <div class="modal-content">
+    <h3>Аккаунт продавца</h3>
+    <img id="modalSellerAvatar" src="default-avatar.png" alt="Аватар продавца" style="width:80px;height:80px;border-radius:50%;margin-bottom:10px;">
+    <p><strong id="modalSellerName">Неизвестно</strong></p>
+    <p id="modalSellerAbout"></p>
+    <div class="modal-buttons">
+      <button class="btn cancel" onclick="closeSellerModal()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
 <script>
   // Инициализация Firebase
   var firebaseConfig = {
@@ -300,7 +302,7 @@
   firebase.initializeApp(firebaseConfig);
   console.log("Firebase инициализирован");
 
-  // Функция получения GET-параметров из URL
+  // Функция получения GET-параметра из URL
   function getParameterByName(name, url = window.location.href) {
     name = name.replace(/[\[\]]/g, '\\$&');
     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -317,75 +319,81 @@
       window.location.href = "login.html";
     } else {
       console.log("Авторизованный пользователь:", user.email);
+      loadProduct();
     }
   });
 
-  // Получаем id товара из URL (?id=PRODUCT_ID)
-  const productId = getParameterByName('id');
-  if (!productId) {
-    alert("Товар не найден!");
-    window.location.href = "index.html";
-  }
-  console.log("Product ID:", productId);
-
-  // Глобальные переменные для sellerId и данных товара
+  // Глобальные переменные
   let currentSeller = null;
   let currentProductName = "";
   let currentProductPrice = "";
 
   // Загрузка данных товара из Firebase
-  firebase.database().ref('products/' + productId).once('value')
-    .then(snapshot => {
-      if (!snapshot.exists()) {
-        alert("Товар не найден!");
-        window.location.href = "index.html";
-        return;
-      }
-      const product = snapshot.val();
-      console.log("Данные товара:", product);
+  function loadProduct() {
+    const productId = getParameterByName('id');
+    if (!productId) {
+      alert("Товар не найден!");
+      window.location.href = "index.html";
+      return;
+    }
+    console.log("Product ID:", productId);
+    firebase.database().ref('products/' + productId).once('value')
+      .then(snapshot => {
+        if (!snapshot.exists()) {
+          alert("Товар не найден!");
+          window.location.href = "index.html";
+          return;
+        }
+        const product = snapshot.val();
+        console.log("Данные товара:", product);
 
-      currentProductName = product.name;
-      currentProductPrice = product.price;
-      document.getElementById("productName").innerText = currentProductName;
-      document.getElementById("productDescription").innerText = product.description || "Описание отсутствует";
-      document.getElementById("productPrice").innerText = currentProductPrice;
-      document.getElementById("orderTotal").innerText = currentProductPrice;
+        currentProductName = product.name;
+        currentProductPrice = product.price;
+        document.getElementById("productName").innerText = currentProductName;
+        document.getElementById("productDescription").innerText = product.description || "Описание отсутствует";
+        document.getElementById("productPrice").innerText = currentProductPrice;
+        document.getElementById("orderTotal").innerText = currentProductPrice;
 
-      // Отображаем изображение товара (используем photoURL или image)
-      if (product.photoURL) {
-        document.getElementById("productImg").src = product.photoURL;
-      } else if (product.image) {
-        document.getElementById("productImg").src = product.image;
-      }
+        // Отображаем фото товара: сначала проверяем photoURLs (если имеется массив), затем photoURL и image
+        if (product.photoURLs && product.photoURLs.length > 0) {
+          document.getElementById("productImg").src = product.photoURLs[0];
+        } else if (product.photoURL) {
+          document.getElementById("productImg").src = product.photoURL;
+        } else if (product.image) {
+          document.getElementById("productImg").src = product.image;
+        } else {
+          document.getElementById("productImg").src = "placeholder.jpg";
+        }
 
-      if (!product.sellerId) {
-        alert("Ошибка: идентификатор продавца не найден.");
-        throw new Error("sellerId отсутствует");
-      }
-      currentSeller = product.sellerId;
-      console.log("Seller ID:", currentSeller);
+        if (!product.sellerId) {
+          alert("Ошибка: идентификатор продавца не найден.");
+          throw new Error("sellerId отсутствует");
+        }
+        currentSeller = product.sellerId;
+        // Загружаем данные продавца
+        return firebase.database().ref('users/' + currentSeller).once('value');
+      })
+      .then(snap => {
+        if (snap && snap.exists()) {
+          const sellerData = snap.val();
+          console.log("Данные продавца:", sellerData);
+          document.getElementById("sellerName").innerText = sellerData.nickname || "Неизвестно";
+          document.getElementById("sellerAvatar").src = sellerData.avatar || "default-avatar.png";
+          // Заполняем данные модального окна продавца
+          document.getElementById("modalSellerName").innerText = sellerData.nickname || "Неизвестно";
+          document.getElementById("modalSellerAvatar").src = sellerData.avatar || "default-avatar.png";
+          document.getElementById("modalSellerAbout").innerText = sellerData.about || "";
+        } else {
+          document.getElementById("sellerName").innerText = "Неизвестно";
+          document.getElementById("sellerAvatar").src = "default-avatar.png";
+        }
+      })
+      .catch(error => {
+        console.error("Ошибка при загрузке данных:", error);
+      });
+  }
 
-      // Загрузка данных продавца
-      return firebase.database().ref('users/' + currentSeller).once('value');
-    })
-    .then(snap => {
-      if (!snap || !snap.exists()) {
-        console.error("Данные продавца не найдены");
-        document.getElementById("sellerName").innerText = "Неизвестно";
-        document.getElementById("sellerAvatar").src = "default-avatar.png";
-        return;
-      }
-      const sellerData = snap.val();
-      console.log("Данные продавца:", sellerData);
-      document.getElementById("sellerName").innerText = sellerData.nickname || "Неизвестно";
-      document.getElementById("sellerAvatar").src = sellerData.avatar || "default-avatar.png";
-      document.getElementById("sellerProfileLink").href = "seller.html?uid=" + currentSeller;
-    })
-    .catch(error => {
-      console.error("Ошибка при загрузке данных:", error);
-    });
-
-  // Функция дешифрования зашифрованных данных
+  // Функция дешифрования зашифрованных данных товара (если требуется)
   function decryptData(encryptedData) {
     const secretKey = "GlovimPlayeSecretKey";
     const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
@@ -395,7 +403,7 @@
   // Функция обработки платежа с баланса покупателя
   function processPaymentWithBalance() {
     return new Promise((resolve, reject) => {
-      let buyerId = firebase.auth().currentUser.uid;
+      const buyerId = firebase.auth().currentUser.uid;
       firebase.database().ref('users/' + buyerId).once('value')
         .then(snap => {
           let buyerData = snap.val();
@@ -453,7 +461,7 @@
     closeModal();
     processPaymentWithBalance()
       .then(() => {
-        // Создаем заказ
+        const productId = getParameterByName('id');
         const orderData = {
           productId: productId,
           productName: currentProductName,
@@ -470,11 +478,10 @@
           .then(snapshot => {
             const orderId = snapshot.key;
             console.log("Заказ создан, orderId:", orderId);
-            // Вычисляем комиссию и сумму для продавца
             let price = parseFloat(currentProductPrice);
             let commission = price * 0.05;
             let sellerPayment = price - commission;
-            // Обновляем баланс продавца (зачисляем 95% от цены)
+            // Обновляем баланс продавца
             firebase.database().ref('users/' + currentSeller).once('value')
               .then(snapSeller => {
                 let sellerData = snapSeller.val();
@@ -491,11 +498,10 @@
                     return firebase.database().ref('adminBalance').set(adminBalance);
                   })
                   .then(() => {
-                    // Удаляем товар из базы – он больше не доступен для покупки
+                    // Удаляем товар, так как он куплен
                     firebase.database().ref('products/' + productId).remove()
                       .then(() => {
                         console.log("Товар удалён после покупки.");
-                        // Показываем зашифрованные данные товара покупателю
                         showSensitiveData();
                       })
                       .catch(err => {
@@ -526,6 +532,7 @@
 
   // Функция показа зашифрованных данных товара для покупателя
   function showSensitiveData() {
+    const productId = getParameterByName('id');
     firebase.database().ref('products/' + productId).once('value')
       .then(snapshot => {
         const product = snapshot.val();
@@ -544,10 +551,17 @@
         window.location.href = "chat.html";
       });
   }
-
   function closeSensitiveModal() {
     document.getElementById("sensitiveDataModal").style.display = "none";
     window.location.href = "chat.html";
+  }
+
+  // Функции для модального окна аккаунта продавца
+  function openSellerModal() {
+    document.getElementById("sellerModal").style.display = "flex";
+  }
+  function closeSellerModal() {
+    document.getElementById("sellerModal").style.display = "none";
   }
 </script>
 
