@@ -22,11 +22,7 @@
 
   <style>
     /* Общие стили */
-    * {
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: Arial, sans-serif;
       background: url('background.jpg') no-repeat center center fixed;
@@ -42,8 +38,8 @@
       padding: 20px 40px;
       display: flex;
       align-items: center;
-      justify-content: space-between; 
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+      justify-content: space-between;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
       border-radius: 8px;
       margin-bottom: 20px;
     }
@@ -54,15 +50,13 @@
       font-size: 32px;
       font-weight: bold;
       cursor: pointer;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      transition: color 0.3s, transform 0.3s, text-shadow 0.3s;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      transition: color 0.3s, transform 0.3s;
     }
     .logo-button:hover {
       color: #fff;
       transform: scale(1.1);
-      text-shadow: 3px 3px 6px rgba(255, 127, 80, 0.8);
     }
-    /* Верхняя навигация для ПК */
     .top-nav {
       display: flex;
       gap: 20px;
@@ -74,39 +68,36 @@
       font-size: 16px;
       transition: color 0.3s;
     }
-    .top-nav a:hover {
-      color: #ff7f50;
-    }
-    .top-nav a i {
-      margin-right: 5px;
-    }
-    /* Блок с информацией о пользователе */
+    .top-nav a:hover { color: #ff7f50; }
+    .top-nav a i { margin-right: 5px; }
+    /* Блок с данными пользователя (синхронизация) */
     #userInfo {
       display: flex;
       align-items: center;
       gap: 8px;
       font-size: 16px;
     }
+    #userInfo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
     /* Контейнер для формы */
     .container {
-      background: rgba(48, 44, 44, 0.85);
+      background: rgba(48,44,44,0.85);
       padding: 20px;
       border-radius: 8px;
       max-width: 700px;
       margin: 0 auto;
     }
-    .container h2 {
-      margin-bottom: 15px;
-      text-align: center;
-    }
+    .container h2 { margin-bottom: 15px; text-align: center; }
     form#addProductForm {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-    form#addProductForm label {
-      font-size: 14px;
-    }
+    form#addProductForm label { font-size: 14px; }
     form#addProductForm input,
     form#addProductForm select,
     form#addProductForm textarea {
@@ -115,10 +106,7 @@
       border-radius: 5px;
       font-size: 14px;
     }
-    form#addProductForm textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
+    form#addProductForm textarea { resize: vertical; min-height: 60px; }
     form#addProductForm button {
       padding: 10px 20px;
       background: #ff7f50;
@@ -129,17 +117,15 @@
       font-size: 16px;
       transition: background 0.3s;
     }
-    form#addProductForm button:hover {
-      background: #ff4500;
-    }
+    form#addProductForm button:hover { background: #ff4500; }
     /* Футер */
     footer {
-      background: rgba(71, 68, 68, 0.85);
+      background: rgba(71,68,68,0.85);
       padding: 20px;
       text-align: center;
-      color: #fff;
       margin-top: 30px;
       border-radius: 8px;
+      color: #fff;
     }
     .social-links a {
       margin: 0 10px;
@@ -148,9 +134,7 @@
       text-decoration: none;
       transition: color 0.3s;
     }
-    .social-links a:hover {
-      color: #ff4500;
-    }
+    .social-links a:hover { color: #ff4500; }
     /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
       position: fixed;
@@ -178,12 +162,7 @@
       font-size: 24px;
       margin-bottom: 4px;
     }
-    /* Скрываем нижнюю навигацию на ПК */
-    @media (min-width: 768px) {
-      .bottom-nav {
-        display: none;
-      }
-    }
+    @media (min-width: 768px) { .bottom-nav { display: none; } }
   </style>
 </head>
 <body>
@@ -191,7 +170,6 @@
 <!-- Хедер -->
 <header>
   <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
-  <!-- Верхняя навигация для ПК -->
   <nav class="top-nav">
     <a href="add.html"><i class="fas fa-plus"></i>Продать</a>
     <a href="settings.html"><i class="fas fa-comments"></i>Чат</a>
@@ -207,9 +185,9 @@
   <p>Купите прямо сейчас и получите бонусы!</p>
 </div>
 
-<!-- Авторизация (если не залогинен) -->
+<!-- Блок авторизации (если не залогинен) -->
 <div class="auth-container" id="authContainer" style="text-align:center; margin:50px 0;">
-  <button id="loginButton" class="login-btn" onclick="login()" 
+  <button id="loginButton" class="login-btn" onclick="login()"
     style="background:#fff; color:#efedec; border:none; padding:12px 30px; font-size:18px; border-radius:8px; cursor:pointer;">
       Войти через Google
   </button>
@@ -254,7 +232,6 @@
       <label for="stock">Наличие (шт.)</label>
       <input type="number" id="stock" required />
 
-      <!-- Поле для загрузки фото товара (множественный выбор) -->
       <label for="productPhoto">Фото товара (максимум 3 фото)</label>
       <input type="file" id="productPhoto" accept="image/*" multiple />
 
@@ -277,7 +254,7 @@
     <i class="fas fa-comments"></i>
     <span>Чат</span>
   </a>
-  <a href="profile.html" class="bottom-nav-profile">
+  <a href="profile.html">
     <i class="fas fa-user"></i>
     <span>Профиль</span>
   </a>
@@ -314,36 +291,28 @@
   var auth = firebase.auth();
   var provider = new firebase.auth.GoogleAuthProvider();
 
-  // -------------------------------
-  // Загружаем профиль пользователя
-  // -------------------------------
+  // Загрузка профиля пользователя из Firebase
   function loadUserProfile(user) {
     return firebase.database().ref('users/' + user.uid).once('value')
       .then(snapshot => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          // Сохраним профиль в localStorage
+          // Сохраняем профиль в localStorage
           localStorage.setItem("userProfile", JSON.stringify(data));
         } else {
-          // Если нет записей в users/uid, удаляем userProfile
+          // Если данных нет, удаляем профиль
           localStorage.removeItem("userProfile");
         }
       })
-      .catch(err => {
-        console.error("Ошибка при загрузке профиля:", err);
-      });
+      .catch(err => { console.error("Ошибка при загрузке профиля:", err); });
   }
 
-  // -------------------------------
-  // Авторизация при загрузке
-  // -------------------------------
+  // При загрузке страницы проверяем наличие данных пользователя
   document.addEventListener("DOMContentLoaded", async function(){
-    var savedUser = localStorage.getItem("user");
+    const savedUser = localStorage.getItem("user");
     if (savedUser) {
-      // Уже есть данные об авторизации
       const userData = JSON.parse(savedUser);
       updateProfile(userData);
-      // Пробуем загрузить профиль из /users/uid
       await loadUserProfile(userData);
     }
   });
@@ -361,24 +330,22 @@
       };
       localStorage.setItem("user", JSON.stringify(userData));
       updateProfile(userData);
-      // Загрузка данных из /users/uid
       await loadUserProfile(userData);
     } catch (error) {
       console.error("Ошибка входа:", error);
     }
   }
 
-  // Функция синхронизации аккаунта: скрывает блок авторизации и отображает данные пользователя
+  // Функция синхронизации: скрывает блок авторизации и обновляет данные в шапке
   function updateProfile(user) {
-    // Скрываем блок авторизации
     document.getElementById("authContainer").style.display = "none";
-    // Обновляем блок с информацией о пользователе в шапке
     const userInfoDiv = document.getElementById("userInfo");
+    // Если в localStorage уже есть userProfile, используем его; иначе – данные из user
     const userProfile = localStorage.getItem("userProfile")
       ? JSON.parse(localStorage.getItem("userProfile"))
       : { nickname: user.displayName, avatar: user.photoURL || "default-avatar.png" };
     if (userInfoDiv) {
-      userInfoDiv.innerHTML = `<img src="${userProfile.avatar}" alt="avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"> <span>${userProfile.nickname}</span>`;
+      userInfoDiv.innerHTML = `<img src="${userProfile.avatar}" alt="avatar"> <span>${userProfile.nickname}</span>`;
     }
   }
 
@@ -387,11 +354,9 @@
     window.location.href = "index.html";
   }
 
-  // -------------------------------
-  // Функции шифрования
-  // -------------------------------
+  // Функции шифрования (пример)
   function encryptData(data) {
-    const secretKey = "GlovimPlayeSecretKey"; // Пример, измените для продакшена
+    const secretKey = "GlovimPlayeSecretKey";
     return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
   }
   function decryptData(encryptedData) {
@@ -400,34 +365,20 @@
     return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   }
 
-  // -------------------------------
-  // Добавление товара
-  // -------------------------------
+  // Обработка отправки формы добавления товара
   const addForm = document.getElementById('addProductForm');
   addForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-
-    // Проверяем, авторизован ли пользователь
     const currentUser = JSON.parse(localStorage.getItem("user"));
     if (!currentUser) {
       alert("Для добавления товара необходимо войти в систему.");
       return;
     }
-
-    // Загружаем профиль из localStorage (если есть)
     const userProfile = localStorage.getItem("userProfile")
       ? JSON.parse(localStorage.getItem("userProfile"))
       : null;
-
-    // Если в профиле есть nickname/avatar, используем их. Иначе fallback на displayName/photoURL
-    let sellerName = userProfile && userProfile.nickname
-      ? userProfile.nickname
-      : currentUser.displayName;
-    let sellerAvatar = userProfile && userProfile.avatar
-      ? userProfile.avatar
-      : (currentUser.photoURL || "default-avatar.png");
-
-    // Собираем данные формы
+    let sellerName = (userProfile && userProfile.nickname) ? userProfile.nickname : currentUser.displayName;
+    let sellerAvatar = (userProfile && userProfile.avatar) ? userProfile.avatar : (currentUser.photoURL || "default-avatar.png");
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
     const name = document.getElementById('productName').value.trim();
@@ -436,30 +387,25 @@
     const price = parseFloat(document.getElementById('price').value);
     const stock = parseInt(document.getElementById('stock').value);
 
-    // Валидация: цена не меньше 20 руб.
     if (price < 20) {
       alert("Цена не может быть меньше 20 рублей.");
       return;
     }
-    // Валидация: описание минимум 15 символов
     if (publicDescription.length < 15) {
       alert("Описание товара должно быть минимум 15 символов.");
       return;
     }
-    // Валидация: название минимум 5 символов
     if (name.length < 5) {
       alert("Название товара должно быть минимум 5 символов.");
       return;
     }
 
-    // Валидация фото: максимум 3 файла
     const photoFiles = document.getElementById('productPhoto').files;
     if (photoFiles.length > 3) {
       alert("Можно загрузить максимум 3 фото товара.");
       return;
     }
 
-    // Загрузка фото (через Supabase)
     let photoURLs = [];
     for (const photoFile of photoFiles) {
       const filePath = `${Date.now()}_${photoFile.name}`;
@@ -467,11 +413,9 @@
         .from('products')
         .upload(filePath, photoFile);
       if (error) {
-        console.error("Ошибка загрузки фото товара:", error);
         alert("Ошибка загрузки фото товара: " + error.message);
         return;
       }
-      // Получаем публичный URL загруженного фото
       const { data: publicData } = supabaseClient.storage
         .from('products')
         .getPublicUrl(filePath);
@@ -483,14 +427,9 @@
       }
     }
 
-    // Шифруем чувствительные данные
     const sensitiveObject = { sensitiveData: sensitiveData };
     const encryptedData = encryptData(sensitiveObject);
-
-    // Вычисляем комиссию в 5%
     const commission = price * 0.05;
-
-    // Формируем объект товара с комиссией
     const newProduct = {
       category: category,
       subcategory: subcategory,
@@ -507,35 +446,23 @@
       createdAt: firebase.database.ServerValue.TIMESTAMP
     };
 
-    // Добавляем товар в базу Firebase
     firebase.database().ref('products').push(newProduct, function(error) {
       if (error) {
         alert('Ошибка добавления товара: ' + error.message);
       } else {
         alert('Товар успешно добавлен!');
         addForm.reset();
-        // Отправляем уведомление в Telegram (опционально)
         sendTelegramNotification(newProduct);
       }
     });
   });
 
-  // -------------------------------
-  // Уведомление в Telegram
-  // -------------------------------
+  // Отправка уведомления в Telegram (опционально)
   function sendTelegramNotification(product) {
-    // Замените значения ниже на свои данные
     const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
     const TELEGRAM_CHAT_ID = "YOUR_TELEGRAM_CHAT_ID";
     const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    
-    const text = `Новый товар добавлен!\n\n` +
-                 `*Название:* ${product.name}\n` +
-                 `*Категория:* ${product.category}\n` +
-                 `*Цена:* ${product.price}\n` +
-                 `*Комиссия (5%):* ${product.commission}\n` +
-                 `*Продавец:* ${product.sellerName}`;
-                 
+    const text = `Новый товар добавлен!\n\n*Название:* ${product.name}\n*Категория:* ${product.category}\n*Цена:* ${product.price}\n*Комиссия (5%):* ${product.commission}\n*Продавец:* ${product.sellerName}`;
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
