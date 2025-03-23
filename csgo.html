@@ -290,11 +290,7 @@
     </div>
   </header>
   
-  <!-- Блок авторизации -->
-  <div class="auth-container" id="authContainer">
-    <button id="loginButton" class="login-btn" onclick="login()">Войти через Google</button>
-  </div>
-  
+
   <!-- Основной контент -->
   <div class="container">
     <div class="csgo-header">
@@ -351,128 +347,117 @@
     <p>© 2025 GlovimPlaye. Все права защищены.</p>
   </footer>
   
-  <!-- Модальное окно профиля -->
-  <div id="profileModal" class="modal">
-    <div class="modal-content">
-      <span class="modal-close" onclick="closeProfileModal()">&times;</span>
-      <div class="profile-details">
-        <img id="modalAvatar" src="default-avatar.png" alt="Avatar">
-        <h2 id="profileName"></h2>
-        <p id="profileEmail"></p>
-        <button class="edit-btn" onclick="editProfile()">Редактировать профиль</button>
-      </div>
-    </div>
-  </div>
+ 
   
-  <!-- Скрипты -->
-  <script>
-    // Firebase конфигурация и инициализация
-    var firebaseConfig = {
-      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-      authDomain: "glovimplaye-b1023.firebaseapp.com",
-      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-      projectId: "glovimplaye-b1023",
-      storageBucket: "glovimplaye-b1023.firebasestorage.app",
-      messagingSenderId: "553440591519",
-      appId: "1:553440591519:web:b7be45a9253689f322acaa"
-    };
-    firebase.initializeApp(firebaseConfig);
-    var auth = firebase.auth();
-    var provider = new firebase.auth.GoogleAuthProvider();
+ <!-- Скрипты -->
+ <script>
+  // Firebase конфигурация и инициализация
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var auth = firebase.auth();
+  var provider = new firebase.auth.GoogleAuthProvider();
+  
+  // Обновление профиля на основе данных из Firebase
+  function updateProfile(user) {
+    // Обновляем шапку
+    document.getElementById("profileSection").style.display = "flex";
+    document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
     
-    // Обновление профиля на основе данных из Firebase
-    function updateProfile(user) {
-      // Обновляем шапку
-      document.getElementById("profileSection").style.display = "flex";
-      document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
-      
-      // Обновляем модальное окно профиля (если оно есть)
-      if(document.getElementById("modalAvatar")){
-        document.getElementById("modalAvatar").src = user.photoURL || 'default-avatar.png';
-      }
-      if(document.getElementById("profileName")){
-        document.getElementById("profileName").innerText = user.displayName || "Неизвестно";
-      }
-      if(document.getElementById("profileEmail")){
-        document.getElementById("profileEmail").innerText = user.email || "";
-      }
-      
-      // Скрываем блок авторизации, если пользователь авторизован
-      document.getElementById("authContainer").style.display = "none";
+    // Обновляем модальное окно профиля (если оно есть)
+    if(document.getElementById("modalAvatar")){
+      document.getElementById("modalAvatar").src = user.photoURL || 'default-avatar.png';
+    }
+    if(document.getElementById("profileName")){
+      document.getElementById("profileName").innerText = user.displayName || "Неизвестно";
+    }
+    if(document.getElementById("profileEmail")){
+      document.getElementById("profileEmail").innerText = user.email || "";
     }
     
-    // Подписка на состояние авторизации
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        updateProfile(user);
-      } else {
-        // Если пользователь не авторизован, показываем блок авторизации и скрываем профиль
-        document.getElementById("authContainer").style.display = "block";
-        document.getElementById("profileSection").style.display = "none";
-      }
+    // Скрываем блок авторизации, если пользователь авторизован
+    document.getElementById("authContainer").style.display = "none";
+  }
+  
+  // Подписка на состояние авторизации
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      updateProfile(user);
+    } else {
+      // Если пользователь не авторизован, показываем блок авторизации и скрываем профиль
+      document.getElementById("authContainer").style.display = "block";
+      document.getElementById("profileSection").style.display = "none";
+    }
+  });
+  
+  function login() {
+    auth.signInWithPopup(provider)
+      .then(function(result) {
+        // Обновление профиля произойдёт через onAuthStateChanged
+      })
+      .catch(function(error) {
+        console.error("Ошибка входа:", error);
+      });
+  }
+  
+  function logout() {
+    auth.signOut().then(function() {
+      // После выхода обновление состояния произойдёт через onAuthStateChanged
+    }).catch(function(error) {
+      console.error("Ошибка выхода:", error);
     });
-    
-    function login() {
-      auth.signInWithPopup(provider)
-        .then(function(result) {
-          // Обновление профиля произойдёт через onAuthStateChanged
-        })
-        .catch(function(error) {
-          console.error("Ошибка входа:", error);
-        });
-    }
-    
-    function logout() {
-      auth.signOut().then(function() {
-        // После выхода обновление состояния произойдёт через onAuthStateChanged
-      }).catch(function(error) {
-        console.error("Ошибка выхода:", error);
+  }
+  
+  function showProfileModal() {
+    document.getElementById("profileModal").style.display = "block";
+  }
+  
+  function closeProfileModal() {
+    document.getElementById("profileModal").style.display = "none";
+  }
+  
+  function editProfile() {
+    alert("Функция редактирования профиля пока не реализована.");
+  }
+  
+  function goToHomePage() {
+    window.location.href = "index.html";
+  }
+  
+  // Загрузка товаров из Firebase Realtime Database
+  window.onload = function() {
+    const productList = document.getElementById('productList');
+    firebase.database().ref('products').on('value', function(snapshot) {
+      productList.innerHTML = "";
+      if (!snapshot.exists()) {
+        productList.innerHTML = '<tr><td colspan="4">Товаров нет</td></tr>';
+        return;
+      }
+      snapshot.forEach(function(childSnapshot) {
+        const product = childSnapshot.val();
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td><a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a></td>
+          <td class="seller">
+            <div class="seller-container">
+              <img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар">
+              <span class="seller-name">${product.sellerName}</span>
+            </div>
+          </td>
+          <td>${product.stock} шт.</td>
+          <td class="price">${product.price} ₽</td>
+        `;
+        productList.appendChild(row);
       });
-    }
-    
-    function showProfileModal() {
-      document.getElementById("profileModal").style.display = "block";
-    }
-    
-    function closeProfileModal() {
-      document.getElementById("profileModal").style.display = "none";
-    }
-    
-    function editProfile() {
-      alert("Функция редактирования профиля пока не реализована.");
-    }
-    
-    function goToHomePage() {
-      window.location.href = "index.html";
-    }
-    
-    // Загрузка товаров из Firebase Realtime Database
-    window.onload = function() {
-      const productList = document.getElementById('productList');
-      firebase.database().ref('products').on('value', function(snapshot) {
-        productList.innerHTML = "";
-        if (!snapshot.exists()) {
-          productList.innerHTML = '<tr><td colspan="4">Товаров нет</td></tr>';
-          return;
-        }
-        snapshot.forEach(function(childSnapshot) {
-          const product = childSnapshot.val();
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td><a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a></td>
-            <td class="seller">
-              <div class="seller-container">
-                <img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар">
-                <span class="seller-name">${product.sellerName}</span>
-              </div>
-            </td>
-            <td>${product.stock} шт.</td>
-            <td class="price">${product.price} ₽</td>
-          `;
-          productList.appendChild(row);
-        });
-      });
-    };
-  </script>
+    });
+  };
+</script>
 </body>
 </html>
