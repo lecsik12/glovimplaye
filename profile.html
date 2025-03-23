@@ -72,7 +72,7 @@
       transform: scale(1.05);
     }
     
-    /* Новый блок для данных пользователя в хедере */
+    /* Блок для данных пользователя в хедере */
     #headerUserInfo {
       position: absolute;
       right: 40px;
@@ -383,10 +383,8 @@
   </style>
 </head>
 <body>
-
   <header>
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
-    <!-- Новый блок для отображения информации о пользователе в хедере -->
     <div id="headerUserInfo"></div>
   </header>
   
@@ -492,7 +490,7 @@
   </footer>
   
   <script>
-    // Firebase конфигурация (замените на свои данные)
+    // Установка Firebase-конфигурации (замените на свои данные)
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -504,38 +502,39 @@
     };
     firebase.initializeApp(firebaseConfig);
     
-    // Инициализация Supabase (замените на свои данные)
+    // Установка постоянства сессии
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        console.log("Постоянство сессии установлено");
+      })
+      .catch((error) => {
+        console.error("Ошибка установки постоянства сессии:", error);
+      });
+    
+    // Инициализация Supabase
     const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
     
-    // Функции открытия/закрытия модального окна
-    function openModal() {
-      document.getElementById('avatarModal').style.display = "flex";
-    }
-    function closeModal() {
-      document.getElementById('avatarModal').style.display = "none";
-      document.getElementById('modalUploadPreview').innerHTML = "";
-      document.getElementById('modalAvatarInput').value = "";
-    }
-    
-    // Проверка авторизации через Firebase
+    // Проверка авторизации
     firebase.auth().onAuthStateChanged(function(user) {
+      console.log("Profile page, onAuthStateChanged:", user);
       if (user) {
         loadUserProfile(user);
-        // Дополнительная логика (загрузка товаров, заказов и т.д.)
+        // Здесь можно добавить дополнительную логику (например, загрузку товаров или заказов)
       } else {
+        console.log("Пользователь не найден, перенаправление на login.html");
         window.location.href = "login.html";
       }
     });
     
-    // Функция загрузки профиля пользователя из Firebase
+    // Загрузка профиля пользователя из Firebase
     function loadUserProfile(user) {
       const userId = user.uid;
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
         let userData = snapshot.val();
         if (!userData) return;
-        // Формирование строки с никнеймом и, при необходимости, бейджем
+        // Формирование строки с никнеймом и бейджем (если требуется)
         let nicknameText = userData.nickname || "Без ника";
         if (userData.role === "admin") {
           nicknameText += ' <span class="admin-badge">Admin</span>';
@@ -562,7 +561,7 @@
       });
     }
     
-    // Функция обновления данных пользователя в хедере
+    // Обновление информации о пользователе в хедере
     function updateHeaderUserInfo(data) {
       const headerUserInfo = document.getElementById('headerUserInfo');
       if (headerUserInfo) {
@@ -570,7 +569,17 @@
       }
     }
     
-    // Функция загрузки аватара через Supabase и обновление Firebase
+    // Функции открытия/закрытия модального окна для загрузки аватара
+    function openModal() {
+      document.getElementById('avatarModal').style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById('avatarModal').style.display = "none";
+      document.getElementById('modalUploadPreview').innerHTML = "";
+      document.getElementById('modalAvatarInput').value = "";
+    }
+    
+    // Загрузка аватара через Supabase и обновление Firebase
     document.getElementById('modalUploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('modalAvatarInput');
       const file = fileInput.files[0];
@@ -608,7 +617,6 @@
           });
           alert('Аватар успешно обновлён!');
           closeModal();
-          // Обновляем данные в хедере после смены аватара
           updateHeaderUserInfo({ 
             nickname: document.getElementById('profileNickname').innerText, 
             avatar: publicData.publicUrl 
@@ -621,7 +629,7 @@
       }
     });
     
-    // Функции для заказов (продажи/покупки)
+    // Функции для работы с заказами
     function showSales() {
       document.getElementById('salesTab').classList.add('active');
       document.getElementById('purchasesTab').classList.remove('active');
@@ -708,7 +716,7 @@
       });
     }
     
-    // Пример функций редактирования профиля, пополнения баланса и выхода (реализуйте по необходимости)
+    // Примеры функций редактирования профиля и пополнения баланса (реализуйте по необходимости)
     function editProfile() { alert('Редактирование профиля'); }
     function topUpBalance() { alert('Пополнение баланса'); }
     function logout() {
@@ -717,6 +725,5 @@
       });
     }
   </script>
-  
 </body>
 </html>

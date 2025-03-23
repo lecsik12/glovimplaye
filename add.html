@@ -31,7 +31,7 @@
       background-color: #2b2a2a;
       color: #fff;
       padding: 20px;
-      padding-bottom: 70px; /* чтобы контент не закрывался нижней навигацией */
+      padding-bottom: 70px;
     }
     header {
       background: linear-gradient(135deg, #3a3a3a, #222);
@@ -154,12 +154,32 @@
 </head>
 <body>
 
+<!-- Хедер -->
+<header>
+  <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
+  <nav class="top-nav">
+    <a href="add.html"><i class="fas fa-plus"></i>Продать</a>
+    <a href="settings.html"><i class="fas fa-comments"></i>Чат</a>
+    <a href="profile.html"><i class="fas fa-user"></i>Профиль</a>
+  </nav>
+</header>
 
+<!-- Рекламный баннер -->
+<div class="ad-banner" style="background:#eee; padding:20px; text-align:center; margin-top:10px; color:#333;">
+  <h2>Специальная акция!</h2>
+  <p>Купите прямо сейчас и получите бонусы!</p>
+</div>
 
-
+<!-- Блок авторизации -->
+<div class="auth-container" id="authContainer" style="text-align:center; margin:50px 0; display:none;">
+  <button id="loginButton" class="login-btn" onclick="login()"
+    style="background:#fff; color:#efedec; border:none; padding:12px 30px; font-size:18px; border-radius:8px; cursor:pointer;">
+      Войти через Google
+  </button>
+</div>
 
 <!-- Основной контент: Форма добавления товара -->
-<main>
+<main id="mainContent" style="display:none;">
   <div class="container">
     <h2>Добавить товар</h2>
     <form id="addProductForm">
@@ -236,9 +256,9 @@
 </footer>
 
 <script>
-  // Firebase конфигурация (замените на свои данные!)
+  // Инициализация Firebase
   var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H...your-data...",
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
     authDomain: "glovimplaye-b1023.firebaseapp.com",
     databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
     projectId: "glovimplaye-b1023",
@@ -248,62 +268,54 @@
   };
   firebase.initializeApp(firebaseConfig);
 
-  // Инициализация Supabase (замените на свои данные!)
+  // Установка постоянства сессии
+  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch(function(error) {
+      console.error("Ошибка установки постоянства сессии:", error);
+    });
+
+  // Инициализация Supabase
   const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
+  const supabaseKey =' eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
   const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-  var auth = firebase.auth();
-  var provider = new firebase.auth.GoogleAuthProvider();
+  // Отображаем контент или кнопку входа, используя firebase.auth().onAuthStateChanged
+  firebase.auth().onAuthStateChanged(function(user) {
+    console.log("onAuthStateChanged:", user);
+    if (user) {
+      // Пользователь залогинен – показываем форму добавления товара
+      document.getElementById("authContainer").style.display = "none";
+      document.getElementById("mainContent").style.display = "block";
+      // Можно выполнить дополнительную загрузку профиля, если нужно:
+      loadUserProfile(user);
+    } else {
+      // Пользователь не залогинен – показываем кнопку входа
+      document.getElementById("authContainer").style.display = "block";
+      document.getElementById("mainContent").style.display = "none";
+    }
+  });
 
-  // Загрузка профиля пользователя из Firebase
+  // Функция загрузки профиля (при необходимости)
   function loadUserProfile(user) {
-    return firebase.database().ref('users/' + user.uid).once('value')
+    firebase.database().ref('users/' + user.uid).once('value')
       .then(snapshot => {
         if (snapshot.exists()) {
-          const data = snapshot.val();
-          // Сохраняем профиль в localStorage
-          localStorage.setItem("userProfile", JSON.stringify(data));
-        } else {
-          // Если данных нет, удаляем профиль
-          localStorage.removeItem("userProfile");
+          // Если нужно, можно сохранить данные или обновить интерфейс
+          console.log("Профиль загружен:", snapshot.val());
         }
       })
       .catch(err => { console.error("Ошибка при загрузке профиля:", err); });
   }
 
-  // При загрузке страницы проверяем наличие данных пользователя
-  document.addEventListener("DOMContentLoaded", async function(){
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      const userData = JSON.parse(savedUser);
-      updateProfile(userData);
-      await loadUserProfile(userData);
-    }
-  });
-
-  // Авторизация через Google
+  // Авторизация через Google (вызывается при клике на кнопку)
   async function login() {
+    const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      const result = await auth.signInWithPopup(provider);
-      const user = result.user;
-      const userData = {
-        uid: user.uid,
-        photoURL: user.photoURL,
-        displayName: user.displayName,
-        email: user.email
-      };
-      localStorage.setItem("user", JSON.stringify(userData));
-      updateProfile(userData);
-      await loadUserProfile(userData);
+      await firebase.auth().signInWithPopup(provider);
+      // onAuthStateChanged автоматически обновит интерфейс
     } catch (error) {
       console.error("Ошибка входа:", error);
     }
-  }
-
-  // Функция синхронизации: скрывает блок авторизации (если есть)
-  function updateProfile(user) {
-    document.getElementById("authContainer").style.display = "none";
   }
 
   // Переход на главную страницу
@@ -311,7 +323,7 @@
     window.location.href = "index.html";
   }
 
-  // Функции шифрования (пример)
+  // Функции шифрования
   function encryptData(data) {
     const secretKey = "GlovimPlayeSecretKey";
     return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
@@ -326,16 +338,19 @@
   const addForm = document.getElementById('addProductForm');
   addForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-    const currentUser = JSON.parse(localStorage.getItem("user"));
+    
+    // Получаем текущего пользователя напрямую через firebase.auth().currentUser
+    const currentUser = firebase.auth().currentUser;
     if (!currentUser) {
       alert("Для добавления товара необходимо войти в систему.");
       return;
     }
-    const userProfile = localStorage.getItem("userProfile")
-      ? JSON.parse(localStorage.getItem("userProfile"))
-      : null;
-    let sellerName = (userProfile && userProfile.nickname) ? userProfile.nickname : currentUser.displayName;
-    let sellerAvatar = (userProfile && userProfile.avatar) ? userProfile.avatar : (currentUser.photoURL || "default-avatar.png");
+
+    // Если требуется, можно загрузить профиль из базы
+    // (но в данном варианте мы работаем напрямую с currentUser)
+    let sellerName = currentUser.displayName || "Без имени";
+    let sellerAvatar = currentUser.photoURL || "default-avatar.png";
+
     const category = document.getElementById('category').value;
     const subcategory = document.getElementById('subcategory').value;
     const name = document.getElementById('productName').value.trim();

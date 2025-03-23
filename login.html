@@ -121,7 +121,7 @@
   </style>
   
   <script>
-    // Функция для получения параметра из URL (если потребуется)
+    // Функция для получения параметра из URL
     function getParameterByName(name, url = window.location.href) {
       name = name.replace(/[\[\]]/g, '\\$&');
       var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -181,6 +181,8 @@
     firebase.initializeApp(firebaseConfig);
 
     let currentUser;
+    // Получаем параметр редиректа (например, ?redirect=add.html)
+    const redirectUrl = getParameterByName('redirect') || 'profile.html';
 
     function loginWithGoogle() {
       var provider = new firebase.auth.GoogleAuthProvider();
@@ -192,13 +194,14 @@
       });
     }
 
-    // Проверка данных пользователя: если Telegram (и остальные поля) уже есть, регистрация не требуется
+    // Проверка данных пользователя: если Telegram (и другие поля) уже есть, регистрация не требуется
     function checkUserData() {
       let userId = currentUser.uid;
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
-        // Если данные пользователя содержат Telegram-аккаунт (можно добавить и проверку других полей)
+        // Если данные пользователя содержат Telegram (или любое другое нужное поле)
         if (snapshot.exists() && snapshot.val().telegram) {
-          window.location.href = "profile.html";
+          // Редирект на указанный URL (если задан параметр, иначе на профиль)
+          window.location.href = redirectUrl;
         } else {
           // Показываем форму для заполнения недостающих данных
           document.querySelector('.login-btn').style.display = 'none';
@@ -292,7 +295,7 @@
                     telegram: telegram,
                     location: location
                   }).then(() => {
-                    window.location.href = "profile.html";
+                    window.location.href = redirectUrl;
                   }).catch(error => {
                     console.error("Ошибка сохранения данных:", error);
                   });
