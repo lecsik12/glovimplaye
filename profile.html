@@ -57,6 +57,7 @@
       top: 0;
       z-index: 20;
       box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
+      position: relative;
     }
     
     header .logo {
@@ -69,6 +70,25 @@
     
     header .logo:hover {
       transform: scale(1.05);
+    }
+    
+    /* Новый блок для данных пользователя в хедере */
+    #headerUserInfo {
+      position: absolute;
+      right: 40px;
+      top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+    
+    #headerUserInfo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-color);
     }
     
     /* Профиль */
@@ -337,9 +357,7 @@
     }
     
     @media (min-width: 768px) {
-      .bottom-nav {
-        display: none;
-      }
+      .bottom-nav { display: none; }
     }
     
     /* Футер */
@@ -368,6 +386,8 @@
 
   <header>
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
+    <!-- Новый блок для отображения информации о пользователе в хедере -->
+    <div id="headerUserInfo"></div>
   </header>
   
   <main class="profile-container" id="profileContainer">
@@ -400,7 +420,7 @@
       </div>
     </div>
     
-    <!-- Здесь могут располагаться блоки с заказами, товарами и прочим контентом -->
+    <!-- Блок заказов -->
     <div class="profile-orders">
       <h2>Заказы</h2>
       <div class="orders-tabs">
@@ -412,6 +432,7 @@
       </div>
     </div>
     
+    <!-- Блок товаров -->
     <div class="profile-products">
       <h2 style="margin-bottom:15px;">Мои товары</h2>
       <table class="product-table">
@@ -494,27 +515,27 @@
     }
     function closeModal() {
       document.getElementById('avatarModal').style.display = "none";
-      // Очистка предпросмотра и выбранного файла
       document.getElementById('modalUploadPreview').innerHTML = "";
       document.getElementById('modalAvatarInput').value = "";
     }
     
-    // Проверка авторизации
+    // Проверка авторизации через Firebase
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         loadUserProfile(user);
-        // Здесь можно добавить загрузку товаров, заказов и т.д.
+        // Дополнительная логика (загрузка товаров, заказов и т.д.)
       } else {
         window.location.href = "login.html";
       }
     });
     
-    // Функция загрузки профиля
+    // Функция загрузки профиля пользователя из Firebase
     function loadUserProfile(user) {
       const userId = user.uid;
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
         let userData = snapshot.val();
         if (!userData) return;
+        // Формирование строки с никнеймом и, при необходимости, бейджем
         let nicknameText = userData.nickname || "Без ника";
         if (userData.role === "admin") {
           nicknameText += ' <span class="admin-badge">Admin</span>';
@@ -532,10 +553,24 @@
         }
         let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
         document.getElementById('profileAvatar').src = avatarUrl;
+        
+        // Обновляем данные в блоке хедера
+        updateHeaderUserInfo({
+          nickname: userData.nickname || user.displayName,
+          avatar: avatarUrl
+        });
       });
     }
     
-    // Функция загрузки аватара через Supabase с синхронизацией в Firebase
+    // Функция обновления данных пользователя в хедере
+    function updateHeaderUserInfo(data) {
+      const headerUserInfo = document.getElementById('headerUserInfo');
+      if (headerUserInfo) {
+        headerUserInfo.innerHTML = `<img src="${data.avatar}" alt="avatar"><span>${data.nickname}</span>`;
+      }
+    }
+    
+    // Функция загрузки аватара через Supabase и обновление Firebase
     document.getElementById('modalUploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('modalAvatarInput');
       const file = fileInput.files[0];
@@ -544,12 +579,9 @@
         return;
       }
       
-      // Имя bucket-а в Supabase
       const bucketName = 'avatars';
-      // Генерация уникального имени файла
       const filePath = `${Date.now()}_${file.name}`;
       
-      // Загрузка файла в Supabase Storage
       const { data, error } = await supabaseClient.storage
         .from(bucketName)
         .upload(filePath, file);
@@ -560,17 +592,13 @@
         return;
       }
       
-      // Получение публичного URL загруженного файла
       const { data: publicData } = supabaseClient.storage
         .from(bucketName)
         .getPublicUrl(filePath);
       
       if (publicData && publicData.publicUrl) {
-        // Обновление аватара на странице
         document.getElementById('profileAvatar').src = publicData.publicUrl;
-        // Вывод предпросмотра в модальном окне
         document.getElementById('modalUploadPreview').innerHTML = `<img src="${publicData.publicUrl}" alt="Preview">`;
-        // Обновление данных пользователя в Firebase
         const userId = firebase.auth().currentUser.uid;
         firebase.database().ref('users/' + userId).update({
           avatar: publicData.publicUrl
@@ -580,6 +608,11 @@
           });
           alert('Аватар успешно обновлён!');
           closeModal();
+          // Обновляем данные в хедере после смены аватара
+          updateHeaderUserInfo({ 
+            nickname: document.getElementById('profileNickname').innerText, 
+            avatar: publicData.publicUrl 
+          });
         }).catch(err => {
           console.error('Ошибка обновления профиля в Firebase:', err);
         });
@@ -672,6 +705,15 @@
         });
         table.appendChild(tbody);
         ordersContent.appendChild(table);
+      });
+    }
+    
+    // Пример функций редактирования профиля, пополнения баланса и выхода (реализуйте по необходимости)
+    function editProfile() { alert('Редактирование профиля'); }
+    function topUpBalance() { alert('Пополнение баланса'); }
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login.html";
       });
     }
   </script>
