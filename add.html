@@ -80,6 +80,13 @@
     .top-nav a i {
       margin-right: 5px;
     }
+    /* Блок с информацией о пользователе */
+    #userInfo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+    }
     /* Контейнер для формы */
     .container {
       background: rgba(48, 44, 44, 0.85);
@@ -190,6 +197,8 @@
     <a href="settings.html"><i class="fas fa-comments"></i>Чат</a>
     <a href="profile.html"><i class="fas fa-user"></i>Профиль</a>
   </nav>
+  <!-- Блок синхронизации: отображает данные авторизованного пользователя -->
+  <div id="userInfo"></div>
 </header>
 
 <!-- Рекламный баннер -->
@@ -359,9 +368,18 @@
     }
   }
 
+  // Функция синхронизации аккаунта: скрывает блок авторизации и отображает данные пользователя
   function updateProfile(user) {
     // Скрываем блок авторизации
     document.getElementById("authContainer").style.display = "none";
+    // Обновляем блок с информацией о пользователе в шапке
+    const userInfoDiv = document.getElementById("userInfo");
+    const userProfile = localStorage.getItem("userProfile")
+      ? JSON.parse(localStorage.getItem("userProfile"))
+      : { nickname: user.displayName, avatar: user.photoURL || "default-avatar.png" };
+    if (userInfoDiv) {
+      userInfoDiv.innerHTML = `<img src="${userProfile.avatar}" alt="avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"> <span>${userProfile.nickname}</span>`;
+    }
   }
 
   // Переход на главную страницу
