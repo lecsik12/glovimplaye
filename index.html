@@ -259,6 +259,22 @@
       vertical-align: middle;
     }
     
+    /* Блок "О сайте" */
+    .about-section {
+      background: #161616;
+      padding: 30px 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .about-section h2 {
+      color: #4fc3f7;
+      margin-bottom: 15px;
+    }
+    .about-section p {
+      color: #ccc;
+      line-height: 1.6;
+    }
+    
     /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
       display: none;
@@ -324,7 +340,8 @@
     }
     .admin-account {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: flex-start;
       margin-bottom: 15px;
       background: #262626;
       padding: 10px;
@@ -345,6 +362,11 @@
     .admin-account .admin-name {
       font-size: 14px;
       color: #ccc;
+    }
+    .admin-role {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 3px;
     }
     
     /* Футер */
@@ -531,11 +553,28 @@
     </div>
   </div>
   
+  <!-- Блок "О сайте" -->
+  <section class="about-section">
+    <div class="container" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px;">
+      <div style="flex: 1; min-width: 250px;">
+        <h2>О сайте</h2>
+        <p>
+          GlovimPlaye — это безопасная торговая площадка, где вы можете найти лучшие игры и приложения по низким ценам.
+          Здесь легко общаться, обмениваться опытом и получать качественную поддержку. Мы постоянно развиваемся, чтобы
+          предоставить вам лучший сервис.
+        </p>
+      </div>
+      <div style="flex: 1; min-width: 250px;">
+        <img src="images/about-image.jpg" alt="О сайте" style="width: 100%; border-radius: 8px;">
+      </div>
+    </div>
+  </section>
+  
   <!-- Правая боковая панель (админ-секция) — отображается только на десктопе -->
   <aside class="admin-sidebar">
-    <div class="sidebar-logo" onclick="location.href='index.html'"></div>
-    <h3>Админи</h3>
-    <!-- Здесь динамически будут загружаться админы -->
+    <div class="sidebar-logo" onclick="location.href='index.html'">GlovimPlaye</div>
+    <h3>Админы</h3>
+    <!-- Здесь динамически будут загружаться админы с ролями -->
   </aside>
   
   <!-- Нижняя панель (мобильная навигация) -->
@@ -643,7 +682,6 @@
     // Обновление аватарки в нижней панели
     function updateBottomNavAvatar(user) {
       var avatarUrl = user.photoURL || 'default-avatar.png';
-      // Если у пользователя в БД указан аватар, можно дополнительно его подгрузить
       firebase.database().ref('users/' + user.uid).once('value')
         .then(function(snapshot) {
           var userData = snapshot.val();
@@ -657,10 +695,10 @@
         });
     }
     
-    // Загрузка администраторов
+    // Загрузка администраторов с ролями
     function loadAdmins() {
       var adminsRef = firebase.database().ref('users');
-      adminsRef.orderByChild('role').equalTo('admin').once('value')
+      adminsRef.orderByChild('role').startAt('admin').endAt('admin\uf8ff').once('value')
         .then(function(snapshot) {
           var sidebar = document.querySelector('.admin-sidebar');
           sidebar.querySelectorAll('.admin-account').forEach(el => el.remove());
@@ -669,18 +707,26 @@
             var adminDiv = document.createElement('div');
             adminDiv.classList.add('admin-account');
             adminDiv.addEventListener('click', function() {
-              window.location.href = 'admin-profile.html?uid=' + childSnapshot.key;
+              window.location.href ='admin-seller.html?uid=' + childSnapshot.key;
             });
             
+            // Аватар
             var adminImg = document.createElement('img');
             adminImg.src = adminData.avatar || 'default-avatar.png';
             adminImg.alt = adminData.nickname || 'Admin';
             adminDiv.appendChild(adminImg);
             
+            // Имя администратора
             var adminName = document.createElement('div');
             adminName.classList.add('admin-name');
             adminName.textContent = adminData.nickname || 'Admin';
             adminDiv.appendChild(adminName);
+            
+            // Роль администратора (например, "Главный админ", "Дизайнер", "Поддержка")
+            var adminRole = document.createElement('div');
+            adminRole.classList.add('admin-role');
+            adminRole.textContent = adminData.roleLabel || adminData.role || 'Админ';
+            adminDiv.appendChild(adminRole);
             
             sidebar.appendChild(adminDiv);
           });

@@ -2,108 +2,807 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Real-time Chat на Supabase</title>
+  
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  
+  <!-- Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  
   <style>
-    body {
-      font-family: sans-serif;
-      margin: 20px;
+    /* Переменные в едином стиле (как на главной) */
+    :root {
+      --bg-color: #0e0e0e;
+      --header-bg: #161616;
+      --accent-color: #4fc3f7;
+      --accent-hover: #80deea;
+      --text-color: #ccc;
+      --card-bg: #1e1e1e;
+      --border-radius: 8px;
     }
-    #chat-container {
-      border: 1px solid #ccc;
-      padding: 10px;
-      height: 300px;
-      overflow-y: scroll;
+    
+    /* Сброс стилей */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Montserrat', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 70px; /* для нижней навигации на мобильных */
+    }
+    
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    /* Header */
+    header {
+      background: var(--header-bg);
+      padding: 20px 40px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
+      position: relative;
+    }
+    
+    header .logo {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--accent-color);
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    header .logo:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Блок для данных пользователя в хедере */
+    #headerUserInfo {
+      position: absolute;
+      right: 40px;
+      top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+    #headerUserInfo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--accent-color);
+    }
+    
+    /* Основной контейнер профиля */
+    .profile-container {
+      max-width: 1000px;
+      margin: 30px auto;
+      padding: 20px;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    /* Верхняя часть профиля (шапка профиля) */
+    .profile-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      background: var(--card-bg);
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
+    }
+    .profile-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--accent-color);
+      transition: transform 0.3s;
+    }
+    .avatar:hover {
+      transform: scale(1.05);
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .username {
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .admin-badge {
+      background: red;
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+    
+    .user-stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .stat-value {
+      font-weight: bold;
+      font-size: 18px;
+      color: var(--accent-color);
+    }
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .stars i {
+      color: gold;
+    }
+    .rating-value {
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+    
+    /* Правая часть шапки профиля */
+    .profile-right button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--border-radius);
+      background: var(--accent-color);
+      color: var(--text-color);
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .profile-right button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+    
+    /* Кнопки действий */
+    .profile-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .profile-actions button {
+      flex: 1 1 180px;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      background: var(--accent-color);
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .profile-actions button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-3px);
+    }
+    
+    /* Баланс и дата регистрации */
+    .balance-info {
+      text-align: center;
+      margin: 10px 0;
+    }
+    .balance {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--accent-color);
+      background: rgba(79,195,247,0.1);
+      padding: 10px 15px;
+      border-radius: 8px;
+      display: inline-block;
       margin-bottom: 10px;
     }
-    #chat-container li {
-      margin-bottom: 5px;
+    
+    /* Навигация по профилю */
+    .profile-nav {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      display: flex;
+      gap: 20px;
+      padding: 10px 20px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
     }
-    #chat-form input {
-      padding: 5px;
-      width: 80%;
+    .nav-item {
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 6px;
+      transition: background 0.3s;
     }
-    #chat-form button {
-      padding: 5px 10px;
+    .nav-item:hover {
+      background: #333;
+    }
+    .nav-item.active {
+      background: var(--accent-color);
+      color: #fff;
+    }
+    
+    /* Контент вкладок */
+    .tab-content {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      padding: 20px;
+      min-height: 150px;
+      margin-bottom: 20px;
+    }
+    
+    /* Таблицы товаров */
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      margin-top: 15px;
+    }
+    .product-table th,
+    .product-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+    }
+    .product-table th {
+      background: #333;
+      font-weight: bold;
+    }
+    .product-table tr:hover {
+      background: #3a3a3a;
+    }
+    
+    /* Модальное окно для загрузки аватара */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+    }
+    .close-modal {
+      position: absolute;
+      right: 15px;
+      top: 10px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .custom-file-upload {
+      display: inline-block;
+      padding: 10px 20px;
+      cursor: pointer;
+      background: var(--accent-color);
+      color: #fff;
+      border-radius: 6px;
+      transition: background 0.3s;
+      margin-bottom: 15px;
+    }
+    .custom-file-upload:hover {
+      background: var(--accent-hover);
+    }
+    .modal input[type="file"] {
+      display: none;
+    }
+    .upload-preview {
+      margin-top: 15px;
+    }
+    .upload-preview img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 3px solid var(--accent-color);
+      object-fit: cover;
+    }
+    
+    /* Нижняя панель (мобильная навигация) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: var(--header-bg);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
+      z-index: 20;
+    }
+    .bottom-nav a {
+      text-decoration: none;
+      color: var(--text-color);
+      text-align: center;
+      flex-grow: 1;
+      font-size: 14px;
+    }
+    .bottom-nav a i {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 2px;
+    }
+    .bottom-nav-profile img.avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      margin-bottom: 2px;
+    }
+    @media (min-width: 768px) {
+      .bottom-nav { display: none; }
+    }
+    
+    /* Footer */
+    footer {
+      background: var(--header-bg);
+      text-align: center;
+      padding: 15px;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+    
+    /* Анимация появления */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Чат в реальном времени</h1>
-  <div id="chat-container">
-    <ul id="messages"></ul>
+  <header>
+    <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
+    <div id="headerUserInfo"></div>
+  </header>
+  
+  <main class="profile-container" id="profileContainer">
+    <!-- Верхняя часть профиля (шапка профиля) -->
+    <div class="profile-header">
+      <div class="profile-left">
+        <!-- Аватар -->
+        <img id="profileAvatar" src="default-avatar.png" alt="Avatar" class="avatar">
+        <!-- Информация о пользователе -->
+        <div class="user-info">
+          <div class="username" id="profileNickname">
+            Загрузка...
+          </div>
+          <div class="user-stats" id="userStatsContainer">
+            <div class="stat-item">
+              <div class="stat-value" id="purchasesCount">0</div>
+              <div>Покупки</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="followersCount">0</div>
+              <div>Подписчики</div>
+            </div>
+            <div class="stat-item">
+              <div class="rating">
+                <div class="stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span class="rating-value" id="ratingValue">4.7</span>
+              </div>
+              <div>Рейтинг</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Правая часть: кнопка "Сообщение" -->
+      <div class="profile-right">
+        <button onclick="alert('Написать сообщение')">Сообщение</button>
+      </div>
+    </div>
+    
+    <!-- Кнопки действий -->
+    <div class="profile-actions">
+      <button onclick="openModal()">
+        <i class="fas fa-cloud-upload-alt"></i> Загрузить аватарку
+      </button>
+      <button onclick="editProfile()">
+        <i class="fas fa-edit"></i> Редактировать профиль
+      </button>
+      <button onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Выйти
+      </button>
+    </div>
+    
+    <!-- Баланс и дата регистрации -->
+    <div class="balance-info">
+      <p class="balance">
+        Баланс: <span id="balanceAmount">0</span> ₽
+      </p>
+      <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
+      <p id="profileEmail">Загрузка...</p>
+    </div>
+    
+    <!-- Навигация по профилю -->
+    <div class="profile-nav">
+      <div class="nav-item active" onclick="switchTab('lotsTab', this)">
+        Лоты <span id="lotsCount">(0)</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('reviewsTab', this)">
+        Отзывы <span id="reviewsCount">(0)</span>
+      </div>
+    </div>
+    
+    <!-- Контент вкладок -->
+    <div class="tab-content" id="lotsTab">
+      <h2>Мои товары</h2>
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Наличие</th>
+            <th>Цена</th>
+          </tr>
+        </thead>
+        <tbody id="userProductsList">
+          <!-- Товары будут добавляться динамически -->
+        </tbody>
+      </table>
+      <h2 style="margin-top:30px;">Заказы (Продажи)</h2>
+      <div id="ordersContentSales">
+        <!-- Таблица продаж загрузится динамически -->
+      </div>
+    </div>
+    
+    <div class="tab-content" id="reviewsTab" style="display:none;">
+      <p>Здесь могут быть отзывы, комментарии и т.д.</p>
+    </div>
+    
+    <!-- Блок заказов (Покупки) - скрыт по умолчанию -->
+    <div class="profile-orders" style="display:none;">
+      <h2>Заказы (Покупки)</h2>
+      <div id="ordersContentPurchases">
+        <!-- Таблица покупок загрузится динамически -->
+      </div>
+    </div>
+  </main>
+  
+  <!-- Модальное окно для загрузки аватара -->
+  <div id="avatarModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <h3>Загрузить аватар</h3>
+      <label for="modalAvatarInput" class="custom-file-upload">
+        <i class="fas fa-cloud-upload-alt"></i> Выберите файл
+      </label>
+      <input type="file" id="modalAvatarInput" accept="image/*">
+      <br>
+      <button id="modalUploadBtn" style="margin-top:15px; padding:10px 20px; background: var(--accent-color); border: none; border-radius:6px; color:#fff; cursor:pointer;">
+        Загрузить
+      </button>
+      <div class="upload-preview" id="modalUploadPreview"></div>
+    </div>
   </div>
-  <form id="chat-form">
-    <input type="text" id="message-input" placeholder="Введите сообщение..." autocomplete="off">
-    <button type="submit">Отправить</button>
-  </form>
-
-  <!-- Подключаем библиотеку Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  
+  <!-- Нижняя панель (мобильная навигация) -->
+  <div class="bottom-nav">
+    <a href="index.html">
+      <i class="fas fa-home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="add.html">
+      <i class="fas fa-plus"></i>
+      <span>Продать</span>
+    </a>
+    <a href="chat.html">
+      <i class="fas fa-comments"></i>
+      <span>Чат</span>
+    </a>
+    <a href="profile.html" class="bottom-nav-profile">
+      <i class="fas fa-user"></i>
+      <span>Профиль</span>
+    </a>
+  </div>
+  
+  <footer>
+    © 2025 GlovimPlaye. Все права защищены.
+  </footer>
+  
   <script>
-    // Замените на ваши данные проекта Supabase:
+    // Инициализация Firebase
+    var firebaseConfig = {
+      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+      authDomain: "glovimplaye-b1023.firebaseapp.com",
+      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+      projectId: "glovimplaye-b1023",
+      storageBucket: "glovimplaye-b1023.firebasestorage.app",
+      messagingSenderId: "553440591519",
+      appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    };
+    firebase.initializeApp(firebaseConfig);
+    
+    // Установка постоянства сессии
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        console.log("Постоянство сессии установлено");
+      })
+      .catch((error) => {
+        console.error("Ошибка установки постоянства сессии:", error);
+      });
+    
+    // Инициализация Supabase
     const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
-
-    // Инициализация клиента Supabase
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Элементы DOM
-    const messagesList = document.getElementById('messages');
-    const chatForm = document.getElementById('chat-form');
-    const messageInput = document.getElementById('message-input');
-
-    // Функция для загрузки уже существующих сообщений
-    async function loadMessages() {
-      const { data: messages, error } = await supabase
-        .from('messages')
-        .select('*')
-        .order('created_at', { ascending: true });
-      if (error) {
-        console.error('Ошибка загрузки сообщений:', error);
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    
+    // Проверка авторизации и загрузка данных профиля
+    firebase.auth().onAuthStateChanged(function(user) {
+      console.log("Profile page, onAuthStateChanged:", user);
+      if (user) {
+        loadUserProfile(user);
+        loadSales();
+        loadPurchases();
+      } else {
+        console.log("Пользователь не найден, перенаправление на login.html");
+        window.location.href = "login.html";
+      }
+    });
+    
+    // Загрузка профиля пользователя из Firebase
+    function loadUserProfile(user) {
+      const userId = user.uid;
+      firebase.database().ref('users/' + userId).once('value').then(snapshot => {
+        let userData = snapshot.val();
+        if (!userData) return;
+    
+        let nicknameText = userData.nickname || "Без ника";
+        if (userData.role === "admin") {
+          nicknameText += ' <span class="admin-badge">Admin</span>';
+        } else if (userData.support === true || userData.role === "support") {
+          nicknameText += ' <span class="admin-badge" style="background: #3498db;">Поддержка</span>';
+        }
+        document.getElementById('profileNickname').innerHTML = nicknameText;
+    
+        document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+        document.getElementById('profileEmail').innerText = user.email || "user@example.com";
+    
+        if (userData.createdAt) {
+          let date = new Date(userData.createdAt);
+          document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
+        } else {
+          document.getElementById('profileCreatedDate').innerText = "Неизвестно";
+        }
+    
+        let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
+        document.getElementById('profileAvatar').src = avatarUrl;
+    
+        document.getElementById('purchasesCount').innerText = userData.purchasesCount || 0;
+        document.getElementById('followersCount').innerText = userData.followersCount || 0;
+        document.getElementById('ratingValue').innerText = userData.rating || 4.7;
+    
+        updateHeaderUserInfo({
+          nickname: userData.nickname || user.displayName,
+          avatar: avatarUrl
+        });
+      });
+    }
+    
+    // Обновление информации о пользователе в хедере
+    function updateHeaderUserInfo(data) {
+      const headerUserInfo = document.getElementById('headerUserInfo');
+      if (headerUserInfo) {
+        headerUserInfo.innerHTML = `<img src="${data.avatar}" alt="avatar"><span>${data.nickname}</span>`;
+      }
+    }
+    
+    // Открытие/закрытие модального окна загрузки аватара
+    function openModal() {
+      document.getElementById('avatarModal').style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById('avatarModal').style.display = "none";
+      document.getElementById('modalUploadPreview').innerHTML = "";
+      document.getElementById('modalAvatarInput').value = "";
+    }
+    
+    // Загрузка аватара через Supabase и обновление Firebase
+    document.getElementById('modalUploadBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('modalAvatarInput');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Пожалуйста, выберите изображение для загрузки.');
         return;
       }
-      messagesList.innerHTML = '';
-      messages.forEach(msg => {
-        const li = document.createElement('li');
-        li.textContent = msg.user + ': ' + msg.message;
-        messagesList.appendChild(li);
-      });
-      // Прокрутка вниз
-      messagesList.parentNode.scrollTop = messagesList.parentNode.scrollHeight;
-    }
-
-    // Подписка на новые сообщения
-    supabase
-      .from('messages')
-      .on('INSERT', payload => {
-        const msg = payload.new;
-        const li = document.createElement('li');
-        li.textContent = msg.user + ': ' + msg.message;
-        messagesList.appendChild(li);
-        // Прокрутка вниз при получении нового сообщения
-        messagesList.parentNode.scrollTop = messagesList.parentNode.scrollHeight;
-      })
-      .subscribe();
-
-    // Обработка отправки сообщения
-    chatForm.addEventListener('submit', async e => {
-      e.preventDefault();
-      const message = messageInput.value.trim();
-      if (message === '') return;
-      // Для простоты зададим пользователя как "Anonymous"
-      const user = "Anonymous";
-      const { error } = await supabase
-        .from('messages')
-        .insert([{ user, message }]);
+      
+      const bucketName = 'avatars';
+      const filePath = `${Date.now()}_${file.name}`;
+      
+      const { data, error } = await supabaseClient.storage
+        .from(bucketName)
+        .upload(filePath, file);
+      
       if (error) {
-        console.error('Ошибка отправки сообщения:', error);
+        console.error('Ошибка загрузки:', error);
+        alert('Ошибка загрузки: ' + JSON.stringify(error));
+        return;
       }
-      messageInput.value = '';
+      
+      const { data: publicData } = supabaseClient.storage
+        .from(bucketName)
+        .getPublicUrl(filePath);
+      
+      if (publicData && publicData.publicUrl) {
+        document.getElementById('profileAvatar').src = publicData.publicUrl;
+        document.getElementById('modalUploadPreview').innerHTML = `<img src="${publicData.publicUrl}" alt="Preview">`;
+        const userId = firebase.auth().currentUser.uid;
+        firebase.database().ref('users/' + userId).update({
+          avatar: publicData.publicUrl
+        }).then(() => {
+          firebase.auth().currentUser.updateProfile({
+            photoURL: publicData.publicUrl
+          });
+          alert('Аватар успешно обновлён!');
+          closeModal();
+          updateHeaderUserInfo({ 
+            nickname: document.getElementById('profileNickname').innerText, 
+            avatar: publicData.publicUrl 
+          });
+        }).catch(err => {
+          console.error('Ошибка обновления профиля в Firebase:', err);
+        });
+      } else {
+        alert('Не удалось получить публичный URL загруженного файла.');
+      }
     });
-
-    // Первоначальная загрузка сообщений
-    loadMessages();
+    
+    // Переключение вкладок
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.profile-nav .nav-item').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      el.classList.add('active');
+    
+      document.getElementById('lotsTab').style.display = 'none';
+      document.getElementById('reviewsTab').style.display = 'none';
+    
+      document.getElementById(tabId).style.display = 'block';
+    }
+    
+    // Загрузка продаж (заказы, где текущий пользователь – продавец)
+    function loadSales() {
+      const ordersRef = firebase.database().ref('orders');
+      const currentUser = firebase.auth().currentUser;
+      if (!currentUser) return;
+      ordersRef.orderByChild('sellerId').equalTo(currentUser.uid).on('value', snapshot => {
+        const container = document.getElementById('ordersContentSales');
+        container.innerHTML = "";
+        if (!snapshot.exists()) {
+          container.innerHTML = '<p>Продаж нет</p>';
+          return;
+        }
+        let table = document.createElement('table');
+        table.className = 'product-table';
+        let thead = document.createElement('thead');
+        thead.innerHTML = `<tr>
+          <th>Название</th>
+          <th>Покупатель</th>
+          <th>Цена</th>
+          <th>Дата</th>
+        </tr>`;
+        table.appendChild(thead);
+        let tbody = document.createElement('tbody');
+        snapshot.forEach(childSnapshot => {
+          const order = childSnapshot.val();
+          let date = new Date(order.date);
+          let row = document.createElement('tr');
+          row.innerHTML = `<td>${order.productName}</td>
+            <td>${order.buyerId}</td>
+            <td>${order.price} ₽</td>
+            <td>${date.toLocaleDateString('ru-RU')}</td>`;
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+        container.appendChild(table);
+      });
+    }
+    
+    // Загрузка покупок (заказы, где текущий пользователь – покупатель)
+    function loadPurchases() {
+      const ordersRef = firebase.database().ref('orders');
+      const currentUser = firebase.auth().currentUser;
+      if (!currentUser) return;
+      ordersRef.orderByChild('buyerId').equalTo(currentUser.uid).on('value', snapshot => {
+        const container = document.getElementById('ordersContentPurchases');
+        container.innerHTML = "";
+        if (!snapshot.exists()) {
+          container.innerHTML = '<p>Покупок нет</p>';
+          return;
+        }
+        let table = document.createElement('table');
+        table.className = 'product-table';
+        let thead = document.createElement('thead');
+        thead.innerHTML = `<tr>
+          <th>Название</th>
+          <th>Продавец</th>
+          <th>Цена</th>
+          <th>Дата</th>
+        </tr>`;
+        table.appendChild(thead);
+        let tbody = document.createElement('tbody');
+        snapshot.forEach(childSnapshot => {
+          const order = childSnapshot.val();
+          let date = new Date(order.date);
+          let row = document.createElement('tr');
+          row.innerHTML = `<td>${order.productName}</td>
+            <td>${order.sellerId}</td>
+            <td>${order.price} ₽</td>
+            <td>${date.toLocaleDateString('ru-RU')}</td>`;
+          tbody.appendChild(row);
+        });
+        table.appendChild(tbody);
+        container.appendChild(table);
+      });
+    }
+    
+    // Функции редактирования профиля и пополнения баланса
+    function editProfile() { alert('Редактирование профиля'); }
+    function topUpBalance() { alert('Пополнение баланса'); }
+    function logout() {
+      firebase.auth().signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    }
   </script>
 </body>
 </html>

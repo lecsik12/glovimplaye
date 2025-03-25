@@ -17,39 +17,68 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
-    /* Базовые стили */
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f2f2f2;
+    /* Общие стили, как на главной */
+    * {
+      box-sizing: border-box;
       margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #0e0e0e;
+      color: #ccc;
       padding: 20px;
-      color: #444;
+      min-height: 100vh;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
     }
     .container {
-      max-width: 960px;
+      max-width: 1200px;
       margin: 0 auto;
-      background: #fff;
+      padding: 0 20px;
+    }
+    
+    /* Шапка */
+    header {
+      background: #161616;
+      border-bottom: 1px solid #333;
+      padding: 15px 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 600;
+      color: #4fc3f7;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .logo:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Новый вертикальный порядок: сначала информация о товаре, затем форма заказа */
+    .checkout-container {
+      background: #1e1e1e;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       overflow: hidden;
-      display: flex;
-      flex-wrap: wrap;
-    }
-    /* Левая колонка – детали товара */
-    .product-details,
-    .checkout-section {
+      margin-top: 30px;
       padding: 30px;
-      flex: 1 1 400px;
     }
-    .product-details { border-right: 1px solid #e0e0e0; }
-    .product-details h2,
-    .checkout-section h2 {
-      margin-top: 0;
-      color: #ff7f50;
+    .product-section {
+      margin-bottom: 30px;
+    }
+    .product-section h2 {
       font-size: 24px;
-      border-bottom: 2px solid #ff7f50;
+      color: #4fc3f7;
+      border-bottom: 2px solid #4fc3f7;
       padding-bottom: 5px;
+      margin-bottom: 20px;
     }
     .product-img {
       width: 100%;
@@ -57,7 +86,19 @@
       object-fit: cover;
       border-radius: 8px;
       margin: 20px 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    .product-section h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .product-section p {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .order-summary {
+      font-size: 18px;
+      margin-top: 20px;
     }
     .seller-info {
       display: flex;
@@ -66,35 +107,50 @@
       cursor: pointer;
       transition: opacity 0.3s;
     }
-    .seller-info:hover { opacity: 0.8; }
+    .seller-info:hover {
+      opacity: 0.8;
+    }
     .seller-info img {
       width: 50px;
       height: 50px;
       border-radius: 50%;
       margin-right: 15px;
-      border: 2px solid #ff7f50;
+      border: 2px solid #4fc3f7;
     }
-    .order-summary { margin-top: 20px; font-size: 18px; }
-    .checkout-form p { margin-top: 10px; font-size: 16px; }
+    
+    .order-section h2 {
+      font-size: 24px;
+      color: #4fc3f7;
+      border-bottom: 2px solid #4fc3f7;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+    }
+    .checkout-form p {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
     .checkout-btn {
-      background: #ff7f50;
-      color: #fff;
+      background: #4fc3f7;
+      color: #0e0e0e;
       border: none;
       padding: 14px 30px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 18px;
-      margin-top: 30px;
+      margin-top: 20px;
       transition: background 0.3s, transform 0.3s;
     }
-    .checkout-btn:hover { background: #ff4500; transform: translateY(-2px); }
+    .checkout-btn:hover {
+      background: #80deea;
+      transform: translateY(-2px);
+    }
     
-    /* Нижняя панель (мобильная навигация) */
+    /* Нижняя навигация (мобильная) */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       width: 100%;
-      background: #333;
+      background: #161616;
       display: flex;
       justify-content: space-around;
       padding: 12px 0;
@@ -103,7 +159,7 @@
     }
     .bottom-nav a {
       text-decoration: none;
-      color: #fff;
+      color: #ccc;
       text-align: center;
       flex-grow: 1;
       font-size: 14px;
@@ -120,27 +176,30 @@
       margin-bottom: 2px;
     }
     @media (min-width: 768px) {
-      .bottom-nav { display: none; }
+      .bottom-nav {
+        display: none;
+      }
     }
     
     footer {
-      background: #333;
+      background: #161616;
       padding: 20px;
       text-align: center;
-      color: #ddd;
+      color: #aaa;
       margin-top: 30px;
       border-radius: 8px;
     }
     .social-links a {
       margin: 0 10px;
-      color: #ddd;
+      color: #aaa;
       font-size: 24px;
-      text-decoration: none;
       transition: color 0.3s;
     }
-    .social-links a:hover { color: #ff4500; }
+    .social-links a:hover {
+      color: #4fc3f7;
+    }
     
-    /* Модальные окна */
+    /* Модальные окна (без изменений) */
     .modal {
       display: none;
       position: fixed;
@@ -154,18 +213,19 @@
       align-items: center;
     }
     .modal-content {
-      background: #fff;
+      background: #1e1e1e;
       padding: 30px;
       border-radius: 8px;
       text-align: center;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
       animation: fadeIn 0.3s ease-in-out;
+      color: #ccc;
     }
     .modal h3 {
       margin-top: 0;
-      color: #ff7f50;
+      color: #4fc3f7;
       font-size: 22px;
     }
     .modal-buttons {
@@ -194,392 +254,380 @@
   </style>
 </head>
 <body>
-
-<div class="container">
-  <!-- Левая колонка: Детали товара -->
-  <div class="product-details">
-    <h2>Детали товара</h2>
-    <!-- Фото товара -->
-    <img id="productImg" class="product-img" src="placeholder.jpg" alt="Изображение товара">
-    <h3 id="productName">Название товара</h3>
-    <p id="productDescription">Описание товара...</p>
-    <p><strong>Цена:</strong> <span id="productPrice">0</span> ₽</p>
-    <div class="order-summary">
-      <p><strong>Итого к оплате:</strong> <span id="orderTotal">0</span> ₽</p>
+  <!-- Шапка -->
+  <header>
+    <div class="container">
+      <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
     </div>
-    <!-- Блок продавца (открытие модального окна с данными продавца) -->
-    <div class="seller-info" onclick="openSellerModal()">
-      <img id="sellerAvatar" src="default-avatar.png" alt="Продавец">
-      <div>
-        <p><strong>Продавец:</strong> <span id="sellerName">Неизвестно</span></p>
+  </header>
+  
+  <!-- Основной контейнер оформления заказа -->
+  <div class="container checkout-container">
+    <!-- Блок с информацией о товаре -->
+    <div class="product-section">
+      <h2>Детали товара</h2>
+      <img id="productImg" class="product-img" src="placeholder.jpg" alt="Изображение товара">
+      <h3 id="productName">Название товара</h3>
+      <p id="productDescription">Описание товара...</p>
+      <p><strong>Цена:</strong> <span id="productPrice">0</span> ₽</p>
+      <div class="order-summary">
+        <p><strong>Итого к оплате:</strong> <span id="orderTotal">0</span> ₽</p>
+      </div>
+      <!-- Блок продавца (при клике открывается модальное окно с данными продавца) -->
+      <div class="seller-info" onclick="openSellerModal()">
+        <img id="sellerAvatar" src="default-avatar.png" alt="Продавец">
+        <div>
+          <p><strong>Продавец:</strong> <span id="sellerName">Неизвестно</span></p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Блок оформления заказа -->
+    <div class="order-section">
+      <h2>Оформление заказа</h2>
+      <form id="checkoutForm" class="checkout-form">
+        <p>Оплата производится с баланса.</p>
+        <button type="submit" class="checkout-btn">Купить</button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Нижняя навигация (мобильная) -->
+  <div class="bottom-nav">
+    <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
+    <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
+    <a href="chat.html"><i class="fas fa-comments"></i><span>Чат</span></a>
+    <a href="profile.html" class="bottom-nav-profile">
+      <img src="default-avatar.png" alt="Avatar" class="avatar" />
+      <span>Профиль</span>
+    </a>
+  </div>
+  
+  <footer>
+    <div class="social-links">
+      <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+      <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+    </div>
+    <p>© 2025 GlovimPlaye. Все права защищены.</p>
+  </footer>
+  
+  <!-- Модальные окна остаются без изменений -->
+  <!-- Модальное окно подтверждения покупки -->
+  <div id="confirmationModal" class="modal">
+    <div class="modal-content">
+      <h3>Подтвердите покупку</h3>
+      <p>Вы действительно хотите купить <strong id="modalProductName">Название товара</strong> за <strong id="modalProductPrice">0</strong> ₽?</p>
+      <div class="modal-buttons">
+        <button class="btn confirm" onclick="confirmPurchase()">Подтвердить</button>
+        <button class="btn cancel" onclick="closeModal()">Отмена</button>
       </div>
     </div>
   </div>
   
-  <!-- Правая колонка: Оформление заказа -->
-  <div class="checkout-section">
-    <h2>Оформление заказа</h2>
-    <form id="checkoutForm" class="checkout-form">
-      <p>Оплата производится с баланса.</p>
-      <button type="submit" class="checkout-btn">Купить</button>
-    </form>
-  </div>
-</div>
-
-<!-- Нижняя панель (мобильная навигация) -->
-<div class="bottom-nav">
-  <a href="index.html">
-    <i class="fas fa-home"></i>
-    <span>Главная</span>
-  </a>
-  <a href="add.html">
-    <i class="fas fa-plus"></i>
-    <span>Продать</span>
-  </a>
-  <a href="settings.html">
-    <i class="fas fa-comments"></i>
-    <span>Чат</span>
-  </a>
-  <a href="profile.html" class="bottom-nav-profile">
-    <img src="default-avatar.png" alt="Avatar" class="avatar" />
-    <i class="fas fa-user"></i>
-    <span>Профиль</span>
-  </a>
-</div>
-
-<footer>
-  <div class="social-links">
-    <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-    <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-    <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-  </div>
-  <p>© 2025 GlovimPlaye. Все права защищены.</p>
-</footer>
-
-<!-- Модальное окно подтверждения покупки -->
-<div id="confirmationModal" class="modal">
-  <div class="modal-content">
-    <h3>Подтвердите покупку</h3>
-    <p>Вы действительно хотите купить <strong id="modalProductName">Название товара</strong> за <strong id="modalProductPrice">0</strong> ₽?</p>
-    <div class="modal-buttons">
-      <button class="btn confirm" onclick="confirmPurchase()">Подтвердить</button>
-      <button class="btn cancel" onclick="closeModal()">Отмена</button>
+  <!-- Модальное окно уведомления о недостатке средств -->
+  <div id="insufficientModal" class="modal">
+    <div class="modal-content">
+      <h3>Платеж не выполнен</h3>
+      <p>Недостаточно средств на балансе.</p>
+      <div class="modal-buttons">
+        <button class="btn confirm" onclick="goToTopUp()">Пополнить</button>
+        <button class="btn cancel" onclick="closeInsufficientModal()">Отмена</button>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- Модальное окно уведомления о недостатке средств -->
-<div id="insufficientModal" class="modal">
-  <div class="modal-content">
-    <h3>Платеж не выполнен</h3>
-    <p>Недостаточно средств на балансе.</p>
-    <div class="modal-buttons">
-      <button class="btn confirm" onclick="goToTopUp()">Пополнить</button>
-      <button class="btn cancel" onclick="closeInsufficientModal()">Отмена</button>
+  
+  <!-- Модальное окно с данными товара для покупателя -->
+  <div id="sensitiveDataModal" class="modal">
+    <div class="modal-content">
+      <h3>Данные товара</h3>
+      <p id="sensitiveDataContent"></p>
+      <div class="modal-buttons">
+        <button class="btn confirm" onclick="closeSensitiveModal()">Перейти в чат</button>
+      </div>
     </div>
   </div>
-</div>
-
-<!-- Модальное окно с данными товара для покупателя -->
-<div id="sensitiveDataModal" class="modal">
-  <div class="modal-content">
-    <h3>Данные товара</h3>
-    <p id="sensitiveDataContent"></p>
-    <div class="modal-buttons">
-      <button class="btn confirm" onclick="closeSensitiveModal()">Перейти в чат</button>
+  
+  <!-- Модальное окно просмотра аккаунта продавца -->
+  <div id="sellerModal" class="modal">
+    <div class="modal-content">
+      <h3>Аккаунт продавца</h3>
+      <img id="modalSellerAvatar" src="default-avatar.png" alt="Аватар продавца" style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
+      <p><strong id="modalSellerName">Неизвестно</strong></p>
+      <p id="modalSellerAbout"></p>
+      <div class="modal-buttons">
+        <button class="btn cancel" onclick="closeSellerModal()">Закрыть</button>
+      </div>
     </div>
   </div>
-</div>
+  
+  <script>
+    // Инициализация Firebase (замените на свои данные)
+    var firebaseConfig = {
+      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+      authDomain: "glovimplaye-b1023.firebaseapp.com",
+      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+      projectId: "glovimplaye-b1023",
+      storageBucket: "glovimplaye-b1023.firebasestorage.app",
+      messagingSenderId: "553440591519",
+      appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    };
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase инициализирован");
 
-<!-- Модальное окно просмотра аккаунта продавца -->
-<div id="sellerModal" class="modal">
-  <div class="modal-content">
-    <h3>Аккаунт продавца</h3>
-    <img id="modalSellerAvatar" src="default-avatar.png" alt="Аватар продавца" style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
-    <p><strong id="modalSellerName">Неизвестно</strong></p>
-    <p id="modalSellerAbout"></p>
-    <div class="modal-buttons">
-      <button class="btn cancel" onclick="closeSellerModal()">Закрыть</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  // Инициализация Firebase (замените на свои данные)
-  var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-    authDomain: "glovimplaye-b1023.firebaseapp.com",
-    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-    projectId: "glovimplaye-b1023",
-    storageBucket: "glovimplaye-b1023.firebasestorage.app",
-    messagingSenderId: "553440591519",
-    appId: "1:553440591519:web:b7be45a9253689f322acaa"
-  };
-  firebase.initializeApp(firebaseConfig);
-  console.log("Firebase инициализирован");
-
-  // Функция получения GET-параметра из URL
-  function getParameterByName(name, url = window.location.href) {
-    name = name.replace(/[\[\]]/g, '\\$&');
-    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-  }
-
-  // Проверка авторизации пользователя
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (!user) {
-      console.log("Пользователь не авторизован");
-      window.location.href = "login.html";
-    } else {
-      console.log("Авторизованный пользователь:", user.email);
-      loadProduct();
+    // Функция получения GET-параметра из URL
+    function getParameterByName(name, url = window.location.href) {
+      name = name.replace(/[\[\]]/g, '\\$&');
+      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+          results = regex.exec(url);
+      if (!results) return null;
+      if (!results[2]) return '';
+      return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
-  });
 
-  // Глобальные переменные
-  let currentSeller = null;
-  let currentProductName = "";
-  let currentProductPrice = "";
+    // Проверка авторизации пользователя
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) {
+        console.log("Пользователь не авторизован");
+        window.location.href = "login.html";
+      } else {
+        console.log("Авторизованный пользователь:", user.email);
+        loadProduct();
+      }
+    });
 
-  // Загрузка данных товара из Firebase
-  function loadProduct() {
-    const productId = getParameterByName('id');
-    if (!productId) {
-      alert("Товар не найден!");
-      window.location.href = "index.html";
-      return;
-    }
-    console.log("Product ID:", productId);
-    firebase.database().ref('products/' + productId).once('value')
-      .then(snapshot => {
-        if (!snapshot.exists()) {
-          alert("Товар не найден!");
-          window.location.href = "index.html";
-          return;
-        }
-        const product = snapshot.val();
-        console.log("Данные товара:", product);
+    // Глобальные переменные
+    let currentSeller = null;
+    let currentProductName = "";
+    let currentProductPrice = "";
 
-        currentProductName = product.name;
-        currentProductPrice = product.price;
-        document.getElementById("productName").innerText = currentProductName;
-        document.getElementById("productDescription").innerText = product.description || "Описание отсутствует";
-        document.getElementById("productPrice").innerText = currentProductPrice;
-        document.getElementById("orderTotal").innerText = currentProductPrice;
+    // Загрузка данных товара из Firebase
+    function loadProduct() {
+      const productId = getParameterByName('id');
+      if (!productId) {
+        alert("Товар не найден!");
+        window.location.href = "index.html";
+        return;
+      }
+      console.log("Product ID:", productId);
+      firebase.database().ref('products/' + productId).once('value')
+        .then(snapshot => {
+          if (!snapshot.exists()) {
+            alert("Товар не найден!");
+            window.location.href = "index.html";
+            return;
+          }
+          const product = snapshot.val();
+          console.log("Данные товара:", product);
+          currentProductName = product.name;
+          currentProductPrice = product.price;
+          document.getElementById("productName").innerText = currentProductName;
+          document.getElementById("productDescription").innerText = product.description || "Описание отсутствует";
+          document.getElementById("productPrice").innerText = currentProductPrice;
+          document.getElementById("orderTotal").innerText = currentProductPrice;
 
-        // Отображаем фото товара: сначала проверяем photoURLs (если имеется массив), затем photoURL и image
-        if (product.photoURLs && product.photoURLs.length > 0) {
-          document.getElementById("productImg").src = product.photoURLs[0];
-        } else if (product.photoURL) {
-          document.getElementById("productImg").src = product.photoURL;
-        } else if (product.image) {
-          document.getElementById("productImg").src = product.image;
-        } else {
-          document.getElementById("productImg").src = "placeholder.jpg";
-        }
-
-        if (!product.sellerId) {
-          alert("Ошибка: идентификатор продавца не найден.");
-          throw new Error("sellerId отсутствует");
-        }
-        currentSeller = product.sellerId;
-        // Загружаем данные продавца
-        return firebase.database().ref('users/' + currentSeller).once('value');
-      })
-      .then(snap => {
-        if (snap && snap.exists()) {
-          const sellerData = snap.val();
-          console.log("Данные продавца:", sellerData);
-          document.getElementById("sellerName").innerText = sellerData.nickname || "Неизвестно";
-          document.getElementById("sellerAvatar").src = sellerData.avatar || "default-avatar.png";
-          // Заполняем данные модального окна продавца
-          document.getElementById("modalSellerName").innerText = sellerData.nickname || "Неизвестно";
-          document.getElementById("modalSellerAvatar").src = sellerData.avatar || "default-avatar.png";
-          document.getElementById("modalSellerAbout").innerText = sellerData.about || "";
-        } else {
-          document.getElementById("sellerName").innerText = "Неизвестно";
-          document.getElementById("sellerAvatar").src = "default-avatar.png";
-        }
-      })
-      .catch(error => {
-        console.error("Ошибка при загрузке данных:", error);
-      });
-  }
-
-  // Функция дешифрования зашифрованных данных товара (если требуется)
-  function decryptData(encryptedData) {
-    const secretKey = "GlovimPlayeSecretKey";
-    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-  }
-
-  // Функция обработки платежа с баланса покупателя
-  function processPaymentWithBalance() {
-    return new Promise((resolve, reject) => {
-      const buyerId = firebase.auth().currentUser.uid;
-      firebase.database().ref('users/' + buyerId).once('value')
-        .then(snap => {
-          let buyerData = snap.val();
-          let balance = parseFloat(buyerData.balance) || 0;
-          let price = parseFloat(currentProductPrice) || 0;
-          if (balance < price) {
-            reject("Недостаточно средств на балансе");
+          if (product.photoURLs && product.photoURLs.length > 0) {
+            document.getElementById("productImg").src = product.photoURLs[0];
+          } else if (product.photoURL) {
+            document.getElementById("productImg").src = product.photoURL;
+          } else if (product.image) {
+            document.getElementById("productImg").src = product.image;
           } else {
-            let newBalance = balance - price;
-            firebase.database().ref('users/' + buyerId).update({ balance: newBalance })
-              .then(() => {
-                console.log("Баланс покупателя обновлён:", newBalance);
-                resolve();
-              })
-              .catch(err => reject(err));
+            document.getElementById("productImg").src = "placeholder.jpg";
+          }
+          if (!product.sellerId) {
+            alert("Ошибка: идентификатор продавца не найден.");
+            throw new Error("sellerId отсутствует");
+          }
+          currentSeller = product.sellerId;
+          return firebase.database().ref('users/' + currentSeller).once('value');
+        })
+        .then(snap => {
+          if (snap && snap.exists()) {
+            const sellerData = snap.val();
+            console.log("Данные продавца:", sellerData);
+            document.getElementById("sellerName").innerText = sellerData.nickname || "Неизвестно";
+            document.getElementById("sellerAvatar").src = sellerData.avatar || "default-avatar.png";
+            document.getElementById("modalSellerName").innerText = sellerData.nickname || "Неизвестно";
+            document.getElementById("modalSellerAvatar").src = sellerData.avatar || "default-avatar.png";
+            document.getElementById("modalSellerAbout").innerText = sellerData.about || "";
+          } else {
+            document.getElementById("sellerName").innerText = "Неизвестно";
+            document.getElementById("sellerAvatar").src = "default-avatar.png";
           }
         })
-        .catch(err => reject(err));
-    });
-  }
-
-  // Открытие модального окна подтверждения покупки
-  function openModal() {
-    document.getElementById("modalProductName").innerText = currentProductName;
-    document.getElementById("modalProductPrice").innerText = currentProductPrice;
-    document.getElementById("confirmationModal").style.display = "flex";
-  }
-  function closeModal() {
-    document.getElementById("confirmationModal").style.display = "none";
-  }
-
-  // Модальное окно для недостатка средств
-  function openInsufficientModal() {
-    document.getElementById("insufficientModal").style.display = "flex";
-  }
-  function closeInsufficientModal() {
-    document.getElementById("insufficientModal").style.display = "none";
-  }
-  function goToTopUp() {
-    window.location.href = "balance.html";
-  }
-
-  // Обработка оформления заказа
-  document.getElementById("checkoutForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    if (!currentSeller) {
-      alert("Ошибка: информация о продавце не загружена.");
-      return;
+        .catch(error => {
+          console.error("Ошибка при загрузке данных:", error);
+        });
     }
-    openModal();
-  });
 
-  // Подтверждение покупки
-  function confirmPurchase() {
-    closeModal();
-    processPaymentWithBalance()
-      .then(() => {
-        const productId = getParameterByName('id');
-        const orderData = {
-          productId: productId,
-          productName: currentProductName,
-          productPrice: currentProductPrice,
-          sellerId: currentSeller,
-          sellerName: document.getElementById("sellerName").innerText,
-          buyerId: firebase.auth().currentUser.uid,
-          paymentMethod: "balance",
-          quantity: 1,
-          status: "pending",
-          createdAt: firebase.database.ServerValue.TIMESTAMP
-        };
-        firebase.database().ref('orders').push(orderData)
-          .then(snapshot => {
-            const orderId = snapshot.key;
-            console.log("Заказ создан, orderId:", orderId);
-            let price = parseFloat(currentProductPrice);
-            let commission = price * 0.05;
-            let sellerPayment = price - commission;
-            // Обновляем баланс продавца
-            firebase.database().ref('users/' + currentSeller).once('value')
-              .then(snapSeller => {
-                let sellerData = snapSeller.val();
-                let sellerBalance = parseFloat(sellerData.balance) || 0;
-                sellerBalance += sellerPayment;
-                return firebase.database().ref('users/' + currentSeller).update({ balance: sellerBalance });
-              })
-              .then(() => {
-                // Обновляем баланс администратора (комиссия 5%)
-                firebase.database().ref('adminBalance').once('value')
-                  .then(snapAdmin => {
-                    let adminBalance = parseFloat(snapAdmin.val()) || 0;
-                    adminBalance += commission;
-                    return firebase.database().ref('adminBalance').set(adminBalance);
-                  })
-                  .then(() => {
-                    // Удаляем товар, так как он куплен
-                    firebase.database().ref('products/' + productId).remove()
-                      .then(() => {
-                        console.log("Товар удалён после покупки.");
-                        showSensitiveData();
-                      })
-                      .catch(err => {
-                        console.error("Ошибка при удалении товара:", err);
-                        alert("Ошибка при удалении товара: " + err.message);
-                      });
-                  });
-              })
-              .catch(error => {
-                console.error("Ошибка обновления балансов:", error);
-                alert("Ошибка обновления балансов: " + error.message);
-              });
+    // Функция дешифрования зашифрованных данных товара (если требуется)
+    function decryptData(encryptedData) {
+      const secretKey = "GlovimPlayeSecretKey";
+      const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    }
+
+    // Функция обработки платежа с баланса покупателя
+    function processPaymentWithBalance() {
+      return new Promise((resolve, reject) => {
+        const buyerId = firebase.auth().currentUser.uid;
+        firebase.database().ref('users/' + buyerId).once('value')
+          .then(snap => {
+            let buyerData = snap.val();
+            let balance = parseFloat(buyerData.balance) || 0;
+            let price = parseFloat(currentProductPrice) || 0;
+            if (balance < price) {
+              reject("Недостаточно средств на балансе");
+            } else {
+              let newBalance = balance - price;
+              firebase.database().ref('users/' + buyerId).update({ balance: newBalance })
+                .then(() => {
+                  console.log("Баланс покупателя обновлён:", newBalance);
+                  resolve();
+                })
+                .catch(err => reject(err));
+            }
           })
-          .catch(error => {
-            console.error("Ошибка оформления заказа:", error);
-            alert("Ошибка оформления заказа: " + error.message);
-          });
-      })
-      .catch(error => {
-        console.error("Платеж не выполнен:", error);
-        if (error === "Недостаточно средств на балансе") {
-          openInsufficientModal();
-        } else {
-          alert("Платеж не выполнен: " + error);
-        }
+          .catch(err => reject(err));
       });
-  }
+    }
 
-  // Функция показа зашифрованных данных товара для покупателя
-  function showSensitiveData() {
-    const productId = getParameterByName('id');
-    firebase.database().ref('products/' + productId).once('value')
-      .then(snapshot => {
-        const product = snapshot.val();
-        if (!product || !product.encryptedData) {
-          alert("Нет дополнительных данных для отображения.");
+    // Открытие модального окна подтверждения покупки
+    function openModal() {
+      document.getElementById("modalProductName").innerText = currentProductName;
+      document.getElementById("modalProductPrice").innerText = currentProductPrice;
+      document.getElementById("confirmationModal").style.display = "flex";
+    }
+    function closeModal() {
+      document.getElementById("confirmationModal").style.display = "none";
+    }
+
+    // Модальное окно для недостатка средств
+    function openInsufficientModal() {
+      document.getElementById("insufficientModal").style.display = "flex";
+    }
+    function closeInsufficientModal() {
+      document.getElementById("insufficientModal").style.display = "none";
+    }
+    function goToTopUp() {
+      window.location.href = "balance.html";
+    }
+
+    // Обработка оформления заказа
+    document.getElementById("checkoutForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      if (!currentSeller) {
+        alert("Ошибка: информация о продавце не загружена.");
+        return;
+      }
+      openModal();
+    });
+
+    // Подтверждение покупки
+    function confirmPurchase() {
+      closeModal();
+      processPaymentWithBalance()
+        .then(() => {
+          const productId = getParameterByName('id');
+          const orderData = {
+            productId: productId,
+            productName: currentProductName,
+            productPrice: currentProductPrice,
+            sellerId: currentSeller,
+            sellerName: document.getElementById("sellerName").innerText,
+            buyerId: firebase.auth().currentUser.uid,
+            paymentMethod: "balance",
+            quantity: 1,
+            status: "pending",
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+          };
+          firebase.database().ref('orders').push(orderData)
+            .then(snapshot => {
+              const orderId = snapshot.key;
+              console.log("Заказ создан, orderId:", orderId);
+              let price = parseFloat(currentProductPrice);
+              let commission = price * 0.05;
+              let sellerPayment = price - commission;
+              firebase.database().ref('users/' + currentSeller).once('value')
+                .then(snapSeller => {
+                  let sellerData = snapSeller.val();
+                  let sellerBalance = parseFloat(sellerData.balance) || 0;
+                  sellerBalance += sellerPayment;
+                  return firebase.database().ref('users/' + currentSeller).update({ balance: sellerBalance });
+                })
+                .then(() => {
+                  firebase.database().ref('adminBalance').once('value')
+                    .then(snapAdmin => {
+                      let adminBalance = parseFloat(snapAdmin.val()) || 0;
+                      adminBalance += commission;
+                      return firebase.database().ref('adminBalance').set(adminBalance);
+                    })
+                    .then(() => {
+                      firebase.database().ref('products/' + productId).remove()
+                        .then(() => {
+                          console.log("Товар удалён после покупки.");
+                          showSensitiveData();
+                        })
+                        .catch(err => {
+                          console.error("Ошибка при удалении товара:", err);
+                          alert("Ошибка при удалении товара: " + err.message);
+                        });
+                    });
+                })
+                .catch(error => {
+                  console.error("Ошибка обновления балансов:", error);
+                  alert("Ошибка обновления балансов: " + error.message);
+                });
+            })
+            .catch(error => {
+              console.error("Ошибка оформления заказа:", error);
+              alert("Ошибка оформления заказа: " + error.message);
+            });
+        })
+        .catch(error => {
+          console.error("Платеж не выполнен:", error);
+          if (error === "Недостаточно средств на балансе") {
+            openInsufficientModal();
+          } else {
+            alert("Платеж не выполнен: " + error);
+          }
+        });
+    }
+
+    // Функция показа зашифрованных данных товара для покупателя
+    function showSensitiveData() {
+      const productId = getParameterByName('id');
+      firebase.database().ref('products/' + productId).once('value')
+        .then(snapshot => {
+          const product = snapshot.val();
+          if (!product || !product.encryptedData) {
+            alert("Нет дополнительных данных для отображения.");
+            window.location.href = "chat.html";
+            return;
+          }
+          const sensitiveObj = decryptData(product.encryptedData);
+          document.getElementById("sensitiveDataContent").innerText = sensitiveObj.sensitiveData;
+          document.getElementById("sensitiveDataModal").style.display = "flex";
+        })
+        .catch(error => {
+          console.error("Ошибка при получении данных:", error);
+          alert("Ошибка при получении дополнительных данных.");
           window.location.href = "chat.html";
-          return;
-        }
-        const sensitiveObj = decryptData(product.encryptedData);
-        document.getElementById("sensitiveDataContent").innerText = sensitiveObj.sensitiveData;
-        document.getElementById("sensitiveDataModal").style.display = "flex";
-      })
-      .catch(error => {
-        console.error("Ошибка при получении данных:", error);
-        alert("Ошибка при получении дополнительных данных.");
-        window.location.href = "chat.html";
-      });
-  }
-  function closeSensitiveModal() {
-    document.getElementById("sensitiveDataModal").style.display = "none";
-    window.location.href = "chat.html";
-  }
+        });
+    }
+    function closeSensitiveModal() {
+      document.getElementById("sensitiveDataModal").style.display = "none";
+      window.location.href = "chat.html";
+    }
 
-  // Функции для модального окна аккаунта продавца
-  function openSellerModal() {
-    document.getElementById("sellerModal").style.display = "flex";
-  }
-  function closeSellerModal() {
-    document.getElementById("sellerModal").style.display = "none";
-  }
-</script>
-
+    // Функции для модального окна аккаунта продавца
+    function openSellerModal() {
+      document.getElementById("sellerModal").style.display = "flex";
+    }
+    function closeSellerModal() {
+      document.getElementById("sellerModal").style.display = "none";
+    }
+  </script>
 </body>
 </html>

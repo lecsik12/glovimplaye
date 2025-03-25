@@ -2,340 +2,638 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye | Профиль пользователя</title>
+  <title>GlovimPlaye | Главная</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
   
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   
-  <!-- Font Awesome для иконок -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  
   <style>
-    :root {
-      --bg-color: #181818;
-      --header-bg: #1f1f1f;
-      --accent-color: #ff7f50;
-      --accent-hover: #ff4500;
-      --text-color: #fff;
-      --card-bg: #252525;
-    }
-    
+    /* Общие стили */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
     body {
-      background: var(--bg-color);
-      color: var(--text-color);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Montserrat', sans-serif;
+      background: #0e0e0e;
+      color: #ccc;
       min-height: 100vh;
-      overflow-x: hidden;
+      line-height: 1.6;
+      padding-bottom: 70px; /* чтобы нижняя панель не перекрывала контент */
+      /* Отступ справа для sidebar на десктопе */
+      padding-right: 270px;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
     }
     
+    /* Шапка */
     header {
-      background: var(--header-bg);
-      padding: 20px 40px;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
+      background: #161616;
+      border-bottom: 1px solid #333;
+      padding: 15px 20px;
+      position: relative;
+      z-index: 2;
     }
-    
-    header .logo {
-      font-size: 32px;
-      font-weight: bold;
-      color: var(--accent-color);
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 600;
+      color: #4fc3f7;
       cursor: pointer;
       transition: transform 0.3s;
     }
-    
-    header .logo:hover {
+    .logo:hover {
       transform: scale(1.05);
     }
     
-    .profile-container {
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 20px;
-      animation: fadeInUp 0.6s ease-out;
-    }
-    
-    /* Блок информации о пользователе */
-    .user-info {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-    }
-    
-    .user-info .avatar {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      border: 5px solid var(--accent-color);
-      object-fit: cover;
-    }
-    
-    .user-info .details {
+    /* Поиск */
+    .search-bar {
       flex: 1;
-      min-width: 250px;
+      max-width: 400px;
+      margin: 10px 20px;
+      position: relative;
     }
-    
-    .user-info .details h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-    
-    .user-info .details p {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-    
-    .balance {
-      font-size: 22px;
-      font-weight: bold;
-      color: var(--accent-color);
-      margin: 15px 0;
-    }
-    
-    .payment-actions {
-      margin-top: 15px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    
-    .payment-actions button {
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      background: var(--accent-color);
-      color: var(--text-color);
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    
-    .payment-actions button:hover {
-      background: var(--accent-hover);
-      transform: translateY(-2px);
-    }
-    
-    /* Стили для кнопки сообщения */
-    .message-button {
-      margin-top: 15px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      background: var(--accent-color);
-      color: var(--text-color);
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    
-    .message-button:hover {
-      background: var(--accent-hover);
-      transform: translateY(-2px);
-    }
-    
-    /* Навигация по вкладкам (Отзывы / Товары) */
-    .tabs {
-      display: flex;
-      margin-top: 30px;
-      border-bottom: 2px solid #444;
-    }
-    
-    .tab {
-      flex: 1;
-      text-align: center;
-      padding: 10px 0;
-      cursor: pointer;
-      font-size: 18px;
-      color: var(--text-color);
-      transition: background 0.3s;
-    }
-    
-    .tab.active {
-      border-bottom: 4px solid var(--accent-color);
-      font-weight: bold;
-    }
-    
-    .tab-content {
-      margin-top: 20px;
-    }
-    
-    .tab-content section {
-      display: none;
-    }
-    
-    .tab-content section.active {
-      display: block;
-    }
-    
-    /* Стили для списка товаров */
-    .product-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-    }
-    
-    .product-card {
-      background: var(--card-bg);
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
-      text-align: center;
-      transition: transform 0.3s;
-    }
-    
-    .product-card:hover {
-      transform: translateY(-3px);
-    }
-    
-    .product-card img {
+    .search-bar input {
       width: 100%;
-      max-height: 150px;
-      object-fit: cover;
-      border-radius: 4px;
-      margin-bottom: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 50px;
+      background: #1e1e1e;
+      color: #ccc;
+      outline: none;
+      font-size: 15px;
     }
-    
-    .product-card h3 {
+    .search-bar input::placeholder {
+      color: #555;
+    }
+    .search-btn {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #4fc3f7;
       font-size: 18px;
-      margin-bottom: 5px;
-      color: var(--accent-color);
+      cursor: pointer;
+      outline: none;
     }
     
-    .product-card p {
-      font-size: 16px;
+    /* Блок с кнопками: чат, баланс, аватар */
+    .header-right {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
     }
-    
-    /* Стили для отзывов */
-    .reviews-list {
+    .nav-btn {
+      background: none;
+      border: none;
+      color: #4fc3f7;
+      font-size: 20px;
+      cursor: pointer;
+      transition: color 0.3s;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      align-items: center;
+    }
+    .nav-btn:hover {
+      color: #80deea;
+    }
+    .nav-btn span {
+      font-size: 12px;
+      margin-top: 3px;
+    }
+    .balance {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #4fc3f7;
+      font-size: 14px;
+    }
+    .balance i {
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+    .profile-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #4fc3f7;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .profile-avatar:hover {
+      transform: scale(1.05);
     }
     
-    .review-item {
-      background: var(--card-bg);
-      padding: 15px;
+    /* Результаты поиска */
+    .search-results {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e1e1e;
+      width: 100%;
+      max-width: 400px;
+      max-height: 300px;
+      overflow-y: auto;
       border-radius: 8px;
-      box-shadow: 0px 3px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+      display: none;
+      z-index: 10;
+    }
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .search-result-item:hover {
+      background: #262626;
+    }
+    .search-result-item img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-right: 15px;
+    }
+    .result-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .result-name {
+      font-weight: 600;
+      color: #fff;
+    }
+    .no-results {
+      padding: 10px 15px;
+      color: #888;
     }
     
-    .review-item h4 {
-      margin-bottom: 8px;
-      color: var(--accent-color);
+    /* Заголовок секции */
+    .section-title {
+      font-size: 20px;
+      margin: 30px 0 10px;
+      color: #4fc3f7;
     }
     
-    .review-item p {
-      font-size: 16px;
-      line-height: 1.4;
+    /* Горизонтальная прокрутка для категорий */
+    .horizontal-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scroll-behavior: smooth;
+      margin-bottom: 20px;
+    }
+    .horizontal-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+    .horizontal-scroll::-webkit-scrollbar-track {
+      background: #1e1e1e;
     }
     
-    /* Анимация появления */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Карточка игры/приложения */
+    .game-card {
+      width: 80px;
+      margin-right: 16px;
+      text-align: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .game-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+    .game-card img:hover {
+      transform: scale(1.05);
+    }
+    .game-card .game-name {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #ccc;
+      white-space: nowrap;
+    }
+    .new-badge {
+      display: inline-block;
+      background: #ff4500;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      margin-left: 5px;
+      vertical-align: middle;
     }
     
-    /* Нижняя панель для мобильной навигации */
+    /* Блок "О сайте" */
+    .about-section {
+      background: #161616;
+      padding: 30px 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    .about-section h2 {
+      color: #4fc3f7;
+      margin-bottom: 15px;
+    }
+    .about-section p {
+      color: #ccc;
+      line-height: 1.6;
+    }
+    
+    /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
+      display: none;
       position: fixed;
       bottom: 0;
-      width: 100%;
-      background: var(--header-bg);
-      display: flex;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #161616;
+      border-top: 1px solid #333;
+      align-items: center;
       justify-content: space-around;
-      padding: 12px 0;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
-      z-index: 20;
+      z-index: 100;
     }
-    
     .bottom-nav a {
-      color: var(--text-color);
-      text-decoration: none;
-      font-size: 14px;
+      color: #ccc;
+      font-size: 12px;
       text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-    
     .bottom-nav a i {
-      display: block;
       font-size: 22px;
+      margin-bottom: 3px;
+    }
+    .bottom-nav a:hover {
+      color: #4fc3f7;
+    }
+    .bottom-nav-profile img.avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #4fc3f7;
+      object-fit: cover;
       margin-bottom: 2px;
     }
     
-    @media (min-width: 768px) {
-      .bottom-nav { display: none; }
+    /* Правая боковая панель (админ-секция) — отображается только на десктопе */
+    .admin-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      background: #1e1e1e;
+      border-left: 1px solid #333;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .admin-sidebar .sidebar-logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: #4fc3f7;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .admin-sidebar h3 {
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .admin-account {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      background: #262626;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    .admin-account:hover {
+      background: #333;
+    }
+    .admin-account img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+    .admin-account .admin-name {
+      font-size: 14px;
+      color: #ccc;
+    }
+    .admin-role {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 3px;
+    }
+    
+    /* Футер */
+    footer {
+      background: #161616;
+      color: #777;
+      padding: 30px 20px;
+      margin-top: 20px;
+    }
+    footer .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+    }
+    footer h3, footer h4 {
+      color: #4fc3f7;
+      margin-bottom: 8px;
+    }
+    footer a {
+      color: #777;
+      font-size: 14px;
+    }
+    footer a:hover {
+      color: #fff;
+    }
+    footer p {
+      font-size: 13px;
+    }
+    .footer-btn {
+      background: #4fc3f7;
+      color: #121212;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .footer-btn:hover {
+      background: #80deea;
+    }
+    footer p.copyright {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+    
+    /* Адаптивные стили для мобильных устройств */
+    @media (max-width: 768px) {
+      body {
+        /* Убираем отступ справа */
+        padding-right: 20px;
+      }
+      .header-inner {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .search-bar {
+        width: 100%;
+        margin: 10px 0;
+      }
+      /* Скрываем блок с кнопками в хедере и окно админов на мобильных */
+      .header-right, .admin-sidebar {
+        display: none;
+      }
+      /* Показываем нижнюю навигацию */
+      .bottom-nav {
+        display: flex;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Шапка -->
   <header>
-    <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
-  </header>
-  
-  <main class="profile-container">
-    <!-- Информация о пользователе -->
-    <div class="user-info">
-      <img id="profileAvatar" class="avatar" src="default-avatar.png" alt="Аватар">
-      <div class="details">
-        <h1 id="profileNickname">Загрузка...</h1>
-        <p id="profileEmail">Загрузка...</p>
-        <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
-        <p class="balance">Баланс: <span id="balanceAmount">0</span> ₽</p>
-        <div class="payment-actions">
-          <button onclick="topUpBalance()">Пополнить (с баланса)</button>
-          <button onclick="topUpCrypto()">Пополнить (Cryptobot)</button>
+    <div class="container">
+      <div class="header-inner">
+        <!-- Логотип -->
+        <div class="logo" onclick="location.href='index.html'">GlovimPlaye</div>
+        <!-- Поиск -->
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
+          <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
-        <!-- Кнопка для написания сообщения -->
-        <button class="message-button" onclick="openChat()">Написать пользователю</button>
+        <!-- Блок с кнопками (чат, баланс, аватар) — отображается только на десктопе -->
+        <div class="header-right">
+          <button class="nav-btn" onclick="location.href='chat.html'">
+            <i class="fas fa-comment-dots"></i>
+            <span>Чат</span>
+          </button>
+          <div class="balance" id="headerBalance">
+            <i class="fas fa-wallet"></i>
+            <span>0₽</span>
+          </div>
+          <img id="headerProfileAvatar" class="profile-avatar" src="default-avatar.png" alt="Avatar" onclick="location.href='profile.html'">
+        </div>
       </div>
     </div>
-    
-    <!-- Вкладки: отзывы и товары -->
-    <div class="tabs">
-      <div class="tab active" data-tab="reviewsTab">Отзывы</div>
-      <div class="tab" data-tab="productsTab">Мои товары</div>
-    </div>
-    
-    <div class="tab-content">
-      <!-- Отзывы -->
-      <section id="reviewsTab" class="active">
-        <div class="reviews-list" id="reviewsList">
-          <p>Отзывов нет.</p>
-        </div>
-      </section>
-      <!-- Товары -->
-      <section id="productsTab">
-        <div class="product-list" id="productsList">
-          <p>Товаров нет.</p>
-        </div>
-      </section>
-    </div>
-  </main>
+  </header>
   
-  <!-- Нижняя навигация для мобильных -->
-  <div class="bottom-nav">
-    <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
-    <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
-    <a href="chat.html"><i class="fas fa-comments"></i><span>Чат</span></a>
-    <a href="profile.html"><img class="avatar" src="default-avatar.png" alt="Аватар" /><i class="fas fa-user"></i><span>Профиль</span></a>
+  <!-- Результаты поиска -->
+  <div class="search-results" id="search-results"></div>
+  
+  <!-- Основной контент -->
+  <div class="container">
+    <!-- Секция: Игры -->
+    <h2 class="section-title">Игры</h2>
+    <div class="horizontal-scroll">
+      <div class="game-card" onclick="location.href='csgo.html'">
+        <img src="images/csgo.jpg" alt="Counter-Strike">
+        <div class="game-name">Counter-Strike</div>
+      </div>
+      <div class="game-card" onclick="location.href='roblox.html'">
+        <img src="images/roblox.jpg" alt="Roblox">
+        <div class="game-name">Roblox</div>
+      </div>
+      <div class="game-card" onclick="location.href='minecraft.html'">
+        <img src="images/main.jpg" alt="Minecraft">
+        <div class="game-name">Minecraft</div>
+      </div>
+      <div class="game-card" onclick="location.href='fortnite.html'">
+        <img src="images/fortna.jpg" alt="Fortnite">
+        <div class="game-name">Fortnite</div>
+      </div>
+      <div class="game-card" onclick="location.href='dota2.html'">
+        <img src="images/dota.jpg" alt="Dota 2">
+        <div class="game-name">Dota 2</div>
+      </div>
+      <div class="game-card" onclick="location.href='rust.html'">
+        <img src="images/rust.png" alt="Rust">
+        <div class="game-name">Rust <span class="new-badge">Новое</span></div>
+      </div>
+    </div>
+
+    <!-- Секция: Мобильные игры -->
+    <h2 class="section-title">Мобильные игры</h2>
+    <div class="horizontal-scroll">
+      <div class="game-card" onclick="location.href='pubg-mobile.html'">
+        <img src="images/pabg mobael.jpg" alt="PUBG Mobile">
+        <div class="game-name">PUBG Mobile</div>
+      </div>
+      <div class="game-card" onclick="location.href='standoff2.html'">
+        <img src="images/standoff2.jpg" alt="Standoff 2">
+        <div class="game-name">Standoff 2</div>
+      </div>
+      <div class="game-card" onclick="location.href='callofduty.html'">
+        <img src="images/cal of duty.jpg" alt="Call of Duty">
+        <div class="game-name">Call of Duty</div>
+      </div>
+    </div>
+
+    <!-- Секция: Приложения -->
+    <h2 class="section-title">Приложения</h2>
+    <div class="horizontal-scroll">
+      <div class="game-card" onclick="location.href='discord.html'">
+        <img src="images/diccord.jpg" alt="Discord">
+        <div class="game-name">Discord</div>
+      </div>
+      <div class="game-card" onclick="location.href='spotify.html'">
+        <img src="images/spotifay.jpg" alt="Spotify">
+        <div class="game-name">Spotify</div>
+      </div>
+      <div class="game-card" onclick="location.href='telegram.html'">
+        <img src="images/telegram.jpg" alt="Telegram">
+        <div class="game-name">Telegram</div>
+      </div>
+      <div class="game-card" onclick="location.href='steam.html'">
+        <img src="images/steam.jpg" alt="Steam">
+        <div class="game-name">Steam</div>
+      </div>
+      <div class="game-card" onclick="location.href='tiktok.html'">
+        <img src="images/tiktik.jpg" alt="Tik Tok">
+        <div class="game-name">Tik Tok</div>
+      </div>
+      <div class="game-card" onclick="location.href='epic-gems.html'">
+        <img src="images/epgems.jpg" alt="Epic Gems">
+        <div class="game-name">Epic Gems</div>
+      </div>
+      <div class="game-card" onclick="location.href='playstation.html'">
+        <img src="images/Playstetion.png" alt="PlayStation">
+        <div class="game-name">PlayStation</div>
+      </div>
+    </div>
   </div>
   
+  <!-- Блок "О сайте" -->
+  <section class="about-section">
+    <div class="container" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px;">
+      <div style="flex: 1; min-width: 250px;">
+        <h2>О сайте</h2>
+        <p>
+          GlovimPlaye — это безопасная торговая площадка, где вы можете найти лучшие игры и приложения по низким ценам.
+          Здесь легко общаться, обмениваться опытом и получать качественную поддержку. Мы постоянно развиваемся, чтобы
+          предоставить вам лучший сервис.
+        </p>
+      </div>
+      <div style="flex: 1; min-width: 250px;">
+        <img src="images/about-image.jpg" alt="О сайте" style="width: 100%; border-radius: 8px;">
+      </div>
+    </div>
+  </section>
+  
+  <!-- Правая боковая панель (админ-секция) — отображается только на десктопе -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo" onclick="location.href='index.html'">GlovimPlaye</div>
+    <h3>Админы</h3>
+    <!-- Здесь динамически будут загружаться админы с ролями -->
+  </aside>
+  
+  <!-- Нижняя панель (мобильная навигация) -->
+  <div class="bottom-nav">
+    <a href="index.html">
+      <i class="fas fa-home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="add.html">
+      <i class="fas fa-plus"></i>
+      <span>Продать</span>
+    </a>
+    <a href="chat.html">
+      <i class="fas fa-comment-dots"></i>
+      <span>Чат</span>
+    </a>
+    <a href="profile.html" class="bottom-nav-profile">
+      <img src="default-avatar.png" alt="Avatar" class="avatar">
+      <span>Профиль</span>
+    </a>
+  </div>
+  
+  <!-- Футер -->
+  <footer>
+    <div class="container" style="align-items: center;">
+      <div style="max-width: 250px;">
+        <h3>GlovimPlaye</h3>
+        <p>Безопасная торговая площадка с низкими ценами</p>
+        <p>support@glovimplaye.com</p>
+      </div>
+      <div>
+        <h4>Способы оплаты</h4>
+        <p>💳 💸 🪙 🎮</p>
+      </div>
+      <div>
+        <h4>Информация</h4>
+        <p><a href="#">О компании</a></p>
+        <p><a href="#">Правила и гарантии</a></p>
+        <p><a href="#">Курсы валют</a></p>
+        <p><a href="#">Советы и гайды</a></p>
+      </div>
+      <div>
+        <h4>Наши соц.сети</h4>
+        <p><a href="https://t.me/" target="_blank">Telegram канал</a></p>
+        <p><a href="https://vk.com/" target="_blank">Группа ВКонтакте</a></p>
+        <p><a href="https://www.youtube.com/" target="_blank">YouTube канал</a></p>
+        <p><a href="https://discord.com/" target="_blank">Discord сервер</a></p>
+      </div>
+      <div>
+        <button class="footer-btn">Написать в техподдержку</button>
+      </div>
+    </div>
+    <p class="copyright">
+      © 2025 GlovimPlaye. Все права защищены.
+    </p>
+  </footer>
+  
   <script>
-    // Firebase конфигурация (замените на свои данные)
+    // Firebase-конфигурация
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -345,147 +643,198 @@
       messagingSenderId: "553440591519",
       appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
-    firebase.initializeApp(firebaseConfig);
+
+    // Инициализация Firebase, если ещё не инициализировано
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    // Устанавливаем постоянство сессии
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(function() {
+        console.log("Сессия установлена");
+        loadAdmins();
+      })
+      .catch(function(error) {
+        console.error("Ошибка установки сессии:", error);
+      });
+      
+    // Обновление данных пользователя в хедере (баланс, аватар)
+    function loadHeaderData(user) {
+      var userId = user.uid;
+      firebase.database().ref('users/' + userId).once('value')
+        .then(function(snapshot) {
+          var userData = snapshot.val();
+          if (userData) {
+            document.querySelector('#headerBalance span').innerText =
+              (userData.balance !== undefined ? userData.balance : 0) + '₽';
+            var avatarUrl = userData.avatar || user.photoURL || 'default-avatar.png';
+            document.getElementById('headerProfileAvatar').src = avatarUrl;
+          } else {
+            console.log("Данные пользователя не найдены");
+          }
+        })
+        .catch(function(error) {
+          console.error("Ошибка чтения данных пользователя:", error);
+        });
+    }
     
-    // Проверка авторизации
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        loadUserProfile(user);
-        loadUserProducts(user.uid);
-        loadUserReviews(user.uid);
+    // Обновление аватарки в нижней панели
+    function updateBottomNavAvatar(user) {
+      var avatarUrl = user.photoURL || 'default-avatar.png';
+      firebase.database().ref('users/' + user.uid).once('value')
+        .then(function(snapshot) {
+          var userData = snapshot.val();
+          if (userData && userData.avatar) {
+            avatarUrl = userData.avatar;
+          }
+          document.querySelector('.bottom-nav-profile img.avatar').src = avatarUrl;
+        })
+        .catch(function(error) {
+          console.error("Ошибка обновления аватарки в нижней панели:", error);
+        });
+    }
+    
+    // Загрузка администраторов с ролями
+    function loadAdmins() {
+      var adminsRef = firebase.database().ref('users');
+      adminsRef.orderByChild('role').startAt('admin').endAt('admin\uf8ff').once('value')
+        .then(function(snapshot) {
+          var sidebar = document.querySelector('.admin-sidebar');
+          sidebar.querySelectorAll('.admin-account').forEach(el => el.remove());
+          snapshot.forEach(function(childSnapshot) {
+            var adminData = childSnapshot.val();
+            var adminDiv = document.createElement('div');
+            adminDiv.classList.add('admin-account');
+            adminDiv.addEventListener('click', function() {
+              window.location.href = 'seller.html?uid=' + childSnapshot.key;
+            });
+            
+            // Аватар
+            var adminImg = document.createElement('img');
+            adminImg.src = adminData.avatar || 'default-avatar.png';
+            adminImg.alt = adminData.nickname || 'Admin';
+            adminDiv.appendChild(adminImg);
+            
+            // Имя администратора
+            var adminName = document.createElement('div');
+            adminName.classList.add('admin-name');
+            adminName.textContent = adminData.nickname || 'Admin';
+            adminDiv.appendChild(adminName);
+            
+            // Роль администратора (например, "Главный админ", "Дизайнер", "Поддержка")
+            var adminRole = document.createElement('div');
+            adminRole.classList.add('admin-role');
+            adminRole.textContent = adminData.roleLabel || adminData.role || 'Админ';
+            adminDiv.appendChild(adminRole);
+            
+            sidebar.appendChild(adminDiv);
+          });
+        })
+        .catch(function(error) {
+          console.error("Ошибка загрузки админов:", error);
+        });
+    }
+    
+    // Логика поиска
+    const items = [
+      { name: "Standoff 2", category: "Мобильные игры", link: "standoff2.html", image: "images/standoff2.jpg" },
+      { name: "Mobile Legends", category: "Мобильные игры", link: "mobile-legends.html", image: "images/mobile_legends.jpg" },
+      { name: "PUBG Mobile", category: "Мобильные игры", link: "pubg-mobile.html", image: "images/pubg_mobile.jpg" },
+      { name: "Brawl Stars", category: "Мобильные игры", link: "brawl-stars.html", image: "images/brawl_stars.jpg" },
+      { name: "Counter-Strike", category: "PC-игры", link: "csgo.html", image: "images/csgo.jpg" },
+      { name: "Dota 2", category: "PC-игры", link: "dota2.html", image: "images/dota.jpg" },
+      { name: "Call of Duty", category: "PC-игры", link: "callofduty.html", image: "images/cal of duty.jpg" },
+      { name: "Fortnite", category: "PC-игры", link: "fortnite.html", image: "images/fortna.jpg" },
+      { name: "GTA 5 Online", category: "PC-игры", link: "gta5.html", image: "images/gta.jpg" },
+      { name: "Minecraft", category: "PC-игры", link: "minecraft.html", image: "images/main.jpg" },
+      { name: "Rust", category: "PC-игры", link: "rust.html", image: "images/rust.png" },
+      { name: "Roblox", category: "Мобильные игры", link: "roblox.html", image: "images/roblox.jpg" },
+      { name: "PUBG", category: "PC-игры", link: "pubg.html", image: "images/pabg.png" },
+      { name: "Discord", category: "Приложения", link: "discord.html", image: "images/diccord.jpg" },
+      { name: "Epic Gems", category: "Приложения", link: "epic-gems.html", image: "images/epgems.jpg" },
+      { name: "PlayStation", category: "Приложения", link: "playstation.html", image: "images/Playstetion.png" },
+      { name: "Spotify", category: "Приложения", link: "spotify.html", image: "images/spotifay.jpg" },
+      { name: "Steam", category: "Приложения", link: "steam.html", image: "images/steam.jpg" },
+      { name: "Telegram", category: "Приложения", link: "telegram.html", image: "images/telegram.jpg" },
+      { name: "Tik Tok", category: "Приложения", link: "tiktok.html", image: "images/tiktik.jpg" }
+    ];
+    
+    const searchInput = document.querySelector('.search-input');
+    const searchButton = document.querySelector('.search-btn');
+    const searchResultsContainer = document.getElementById('search-results');
+    
+    function showSearchResults(query) {
+      searchResultsContainer.innerHTML = '';
+      if (!query) {
+        searchResultsContainer.style.display = 'none';
+        return;
+      }
+      const lowerQuery = query.toLowerCase();
+      const filteredItems = items.filter(item =>
+        item.name.toLowerCase().includes(lowerQuery) ||
+        item.category.toLowerCase().includes(lowerQuery)
+      );
+      if (filteredItems.length === 0) {
+        searchResultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
       } else {
-        window.location.href = "login.html";
+        filteredItems.forEach(item => {
+          const resultItem = document.createElement('div');
+          resultItem.classList.add('search-result-item');
+          
+          const imgElement = document.createElement('img');
+          imgElement.src = item.image;
+          imgElement.alt = item.name;
+          
+          const textElement = document.createElement('div');
+          textElement.classList.add('result-text');
+          
+          const nameElement = document.createElement('div');
+          nameElement.classList.add('result-name');
+          nameElement.textContent = item.name;
+          
+          const categoryElement = document.createElement('div');
+          categoryElement.textContent = item.category;
+          
+          textElement.appendChild(nameElement);
+          textElement.appendChild(categoryElement);
+          resultItem.appendChild(imgElement);
+          resultItem.appendChild(textElement);
+          
+          resultItem.addEventListener('click', () => {
+            window.location.href = item.link;
+          });
+          
+          searchResultsContainer.appendChild(resultItem);
+        });
+      }
+      searchResultsContainer.style.display = 'block';
+    }
+    
+    searchButton.addEventListener('click', () => {
+      const query = searchInput.value.trim();
+      showSearchResults(query);
+    });
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      showSearchResults(query);
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-bar') && !e.target.closest('#search-results')) {
+        searchResultsContainer.style.display = 'none';
       }
     });
     
-    // Загрузка профиля
-    function loadUserProfile(user) {
-      firebase.database().ref('users/' + user.uid).once('value').then(snapshot => {
-        const data = snapshot.val();
-        if (data) {
-          document.getElementById("profileNickname").innerText = data.nickname || "Без ника";
-          document.getElementById("profileEmail").innerText = user.email || "user@example.com";
-          document.getElementById("balanceAmount").innerText = data.balance !== undefined ? data.balance : "0";
-          if (data.createdAt) {
-            let date = new Date(data.createdAt);
-            document.getElementById("profileCreatedDate").innerText = date.toLocaleDateString('ru-RU');
-          } else {
-            document.getElementById("profileCreatedDate").innerText = "Неизвестно";
-          }
-          let avatarUrl = data.avatar || user.photoURL || "default-avatar.png";
-          document.getElementById("profileAvatar").src = avatarUrl;
-        }
-      });
-    }
-    
-    // Загрузка товаров пользователя
-    function loadUserProducts(userId) {
-      const productsRef = firebase.database().ref('products');
-      productsRef.orderByChild('sellerId').equalTo(userId).on('value', snapshot => {
-        const productsList = document.getElementById("productsList");
-        productsList.innerHTML = "";
-        if (!snapshot.exists()) {
-          productsList.innerHTML = "<p>Товаров нет.</p>";
-          return;
-        }
-        snapshot.forEach(childSnapshot => {
-          const product = childSnapshot.val();
-          const card = document.createElement("div");
-          card.className = "product-card";
-          card.innerHTML = `
-            <img src="${product.image || 'placeholder.jpg'}" alt="Изображение товара">
-            <h3>${product.name}</h3>
-            <p>${product.price} ₽</p>
-          `;
-          productsList.appendChild(card);
-        });
-      });
-    }
-    
-    // Загрузка отзывов пользователя (предполагается, что отзывы хранятся по uid продавца)
-    function loadUserReviews(userId) {
-      const reviewsRef = firebase.database().ref('reviews/' + userId);
-      reviewsRef.on('value', snapshot => {
-        const reviewsList = document.getElementById("reviewsList");
-        reviewsList.innerHTML = "";
-        if (!snapshot.exists()) {
-          reviewsList.innerHTML = "<p>Отзывов нет.</p>";
-          return;
-        }
-        snapshot.forEach(childSnapshot => {
-          const review = childSnapshot.val();
-          const reviewDiv = document.createElement("div");
-          reviewDiv.className = "review-item";
-          reviewDiv.innerHTML = `
-            <h4>${review.buyerName || "Пользователь"}</h4>
-            <p>${review.text}</p>
-          `;
-          reviewsList.appendChild(reviewDiv);
-        });
-      });
-    }
-    
-    // Функции пополнения баланса
-    function topUpBalance() {
-      let amount = prompt("Введите сумму для пополнения (₽):");
-      const numericAmount = parseFloat(amount);
-      if (isNaN(numericAmount) || numericAmount <= 0) {
-        alert("Пожалуйста, введите корректную сумму.");
-        return;
+    // Обработка авторизации: обновление хедера и нижней панели после входа
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        loadHeaderData(user);
+        updateBottomNavAvatar(user);
+      } else {
+        console.log("Пользователь не авторизован");
+        // При необходимости можно добавить редирект на страницу входа
+        // window.location.href = "login.html";
       }
-      const user = firebase.auth().currentUser;
-      if (!user) {
-        alert("Вы не авторизованы.");
-        return;
-      }
-      const userRef = firebase.database().ref('users/' + user.uid);
-      userRef.once('value').then(snapshot => {
-        const data = snapshot.val();
-        let currentBalance = parseFloat(data.balance) || 0;
-        let newBalance = currentBalance + numericAmount;
-        userRef.update({ balance: newBalance })
-          .then(() => {
-            alert("Баланс успешно пополнен!");
-            document.getElementById("balanceAmount").innerText = newBalance;
-          })
-          .catch(error => {
-            alert("Ошибка пополнения: " + error.message);
-          });
-      });
-    }
-    
-    function topUpCrypto() {
-      let amount = prompt("Введите сумму для пополнения (₽):");
-      const numericAmount = parseFloat(amount);
-      if (isNaN(numericAmount) || numericAmount <= 0) {
-        alert("Пожалуйста, введите корректную сумму.");
-        return;
-      }
-      // Открываем Cryptobot с передачей параметра суммы
-      let botUrl = `https://t.me/CryptoBot?start=send_${numericAmount}_RUB`;
-      window.open(botUrl, '_blank');
-    }
-    
-    // Функция открытия чата с пользователем
-    function openChat() {
-      const currentUser = firebase.auth().currentUser;
-      // Пытаемся получить id пользователя из URL
-      let profileUserId = new URLSearchParams(window.location.search).get('id');
-      // Если параметр отсутствует, используем id текущего пользователя
-      if (!profileUserId) {
-        profileUserId = currentUser.uid;
-      }
-      window.location.href = `chat.html?user=${profileUserId}`;
-    }
-    
-    // Переключение вкладок
-    document.querySelectorAll(".tab").forEach(tab => {
-      tab.addEventListener("click", function() {
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.querySelectorAll(".tab-content section").forEach(sec => sec.classList.remove("active"));
-        this.classList.add("active");
-        document.getElementById(this.getAttribute("data-tab")).classList.add("active");
-      });
     });
   </script>
 </body>

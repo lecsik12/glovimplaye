@@ -18,17 +18,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
+    /* Переменные в едином стиле (как на главной) */
     :root {
-      --bg-color: #181818;
-      --header-bg: #1f1f1f;
-      --accent-color: #ff7f50;
-      --accent-hover: #ff4500;
-      --text-color: #fff;
-      --card-bg: #252525;
-      --border-radius: 10px;
+      --bg-color: #0e0e0e;
+      --header-bg: #161616;
+      --accent-color: #4fc3f7;
+      --accent-hover: #80deea;
+      --text-color: #ccc;
+      --card-bg: #1e1e1e;
+      --border-radius: 8px;
     }
     
-    * {
+    /* Сброс стилей */
+    *, *::before, *::after {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
@@ -37,10 +39,10 @@
     body {
       background: var(--bg-color);
       color: var(--text-color);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Montserrat', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-      padding-bottom: 70px;
+      padding-bottom: 70px; /* для нижней навигации на мобильных */
     }
     
     a {
@@ -67,7 +69,6 @@
       cursor: pointer;
       transition: transform 0.3s;
     }
-    
     header .logo:hover {
       transform: scale(1.05);
     }
@@ -82,7 +83,6 @@
       gap: 10px;
       font-size: 16px;
     }
-    
     #headerUserInfo img {
       width: 40px;
       height: 40px;
@@ -91,33 +91,32 @@
       border: 2px solid var(--accent-color);
     }
     
-    /* Основной контейнер */
+    /* Основной контейнер профиля */
     .profile-container {
       max-width: 1000px;
       margin: 30px auto;
       padding: 20px;
-      animation: fadeInUp 0.6s ease-out;
-    }
-
-    /* ---------- Верхняя часть профиля (шапка профиля) ---------- */
-    .profile-header {
       background: var(--card-bg);
       border-radius: var(--border-radius);
+      animation: fadeInUp 0.6s ease-out;
+    }
+    
+    /* Верхняя часть профиля (шапка профиля) */
+    .profile-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       padding: 20px;
+      border-radius: var(--border-radius);
+      background: var(--card-bg);
       box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
       margin-bottom: 20px;
     }
-
-    /* Левая часть: аватар + инфо (ник, статистика) */
     .profile-left {
       display: flex;
       align-items: center;
       gap: 20px;
     }
-
     .avatar {
       width: 80px;
       height: 80px;
@@ -129,7 +128,6 @@
     .avatar:hover {
       transform: scale(1.05);
     }
-
     .user-info {
       display: flex;
       flex-direction: column;
@@ -147,8 +145,7 @@
       font-size: 12px;
       margin-left: 5px;
     }
-
-    /* Блок статистики (пример: Покупки, Подписчики, Рейтинг) */
+    
     .user-stats {
       display: flex;
       gap: 20px;
@@ -177,8 +174,8 @@
       font-weight: bold;
       color: var(--accent-color);
     }
-
-    /* Правая часть: кнопка "Сообщение" (или любые действия) */
+    
+    /* Правая часть шапки профиля */
     .profile-right button {
       padding: 10px 20px;
       border: none;
@@ -193,8 +190,8 @@
       background: var(--accent-hover);
       transform: translateY(-2px);
     }
-
-    /* ---------- Кнопки (доп. действия: загрузить аватар, редактировать и т.п.) ---------- */
+    
+    /* Кнопки действий */
     .profile-actions {
       display: flex;
       flex-wrap: wrap;
@@ -219,8 +216,8 @@
       background: var(--accent-hover);
       transform: translateY(-3px);
     }
-
-    /* Баланс + дата регистрации */
+    
+    /* Баланс и дата регистрации */
     .balance-info {
       text-align: center;
       margin: 10px 0;
@@ -229,15 +226,14 @@
       font-size: 26px;
       font-weight: bold;
       color: var(--accent-color);
-      text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-      background: rgba(255, 127, 80, 0.1);
+      background: rgba(79,195,247,0.1);
       padding: 10px 15px;
       border-radius: 8px;
       display: inline-block;
       margin-bottom: 10px;
     }
-
-    /* ---------- Навигация по профилю (вкладки "Лоты", "Отзывы" и т.д.) ---------- */
+    
+    /* Навигация по профилю */
     .profile-nav {
       background: var(--card-bg);
       border-radius: var(--border-radius);
@@ -260,18 +256,18 @@
       background: var(--accent-color);
       color: #fff;
     }
-
-    /* Пример блока контента вкладок */
+    
+    /* Контент вкладок */
     .tab-content {
       background: var(--card-bg);
       border-radius: var(--border-radius);
       box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
       padding: 20px;
-      min-height: 150px; /* чтобы не схлопывался */
+      min-height: 150px;
       margin-bottom: 20px;
     }
-
-    /* Пример таблиц заказов / товаров */
+    
+    /* Таблицы товаров */
     .product-table {
       width: 100%;
       border-collapse: collapse;
@@ -294,8 +290,8 @@
     .product-table tr:hover {
       background: #3a3a3a;
     }
-
-    /* Модальное окно для загрузки аватара (осталось как у вас) */
+    
+    /* Модальное окно для загрузки аватара */
     .modal {
       display: none;
       position: fixed;
@@ -351,7 +347,7 @@
       border: 3px solid var(--accent-color);
       object-fit: cover;
     }
-
+    
     /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
       position: fixed;
@@ -385,8 +381,8 @@
     @media (min-width: 768px) {
       .bottom-nav { display: none; }
     }
-
-    /* Футер */
+    
+    /* Footer */
     footer {
       background: var(--header-bg);
       text-align: center;
@@ -415,18 +411,16 @@
   </header>
   
   <main class="profile-container" id="profileContainer">
-    <!-- Верхняя часть профиля (аватар, ник, статистика, кнопка "Сообщение") -->
+    <!-- Верхняя часть профиля (шапка профиля) -->
     <div class="profile-header">
       <div class="profile-left">
         <!-- Аватар -->
         <img id="profileAvatar" src="default-avatar.png" alt="Avatar" class="avatar">
-        
-        <!-- Информация о пользователе (ник, статистика) -->
+        <!-- Информация о пользователе -->
         <div class="user-info">
           <div class="username" id="profileNickname">
             Загрузка...
           </div>
-          <!-- Пример статистики: покупки, подписчики, рейтинг -->
           <div class="user-stats" id="userStatsContainer">
             <div class="stat-item">
               <div class="stat-value" id="purchasesCount">0</div>
@@ -439,7 +433,6 @@
             <div class="stat-item">
               <div class="rating">
                 <div class="stars">
-                  <!-- Пять звёзд (пример) -->
                   <i class="fas fa-star"></i>
                   <i class="fas fa-star"></i>
                   <i class="fas fa-star"></i>
@@ -453,16 +446,13 @@
           </div>
         </div>
       </div>
-      
-      <!-- Правая часть: кнопка "Сообщение" (или любая другая) -->
+      <!-- Правая часть: кнопка "Сообщение" -->
       <div class="profile-right">
-        <button onclick="alert('Написать сообщение')">
-          Сообщение
-        </button>
+        <button onclick="alert('Написать сообщение')">Сообщение</button>
       </div>
     </div>
-
-    <!-- Кнопки действий (загрузить аватар, редактировать, пополнить баланс и т.п.) -->
+    
+    <!-- Кнопки действий -->
     <div class="profile-actions">
       <button onclick="openModal()">
         <i class="fas fa-cloud-upload-alt"></i> Загрузить аватарку
@@ -470,18 +460,12 @@
       <button onclick="editProfile()">
         <i class="fas fa-edit"></i> Редактировать профиль
       </button>
-      <button onclick="topUpBalance()">
-        <i class="fas fa-plus-circle"></i> Пополнить баланс
-      </button>
-      <button onclick="window.open('https://t.me/Glovimplaye_bot', '_blank')">
-        <i class="fab fa-telegram-plane"></i> Поддержка
-      </button>
       <button onclick="logout()">
         <i class="fas fa-sign-out-alt"></i> Выйти
       </button>
     </div>
-
-    <!-- Баланс + дата регистрации -->
+    
+    <!-- Баланс и дата регистрации -->
     <div class="balance-info">
       <p class="balance">
         Баланс: <span id="balanceAmount">0</span> ₽
@@ -489,8 +473,8 @@
       <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
       <p id="profileEmail">Загрузка...</p>
     </div>
-
-    <!-- Вкладки (демо: Лоты, Отзывы). Можно расширить или использовать "Продажи/Покупки" -->
+    
+    <!-- Навигация по профилю -->
     <div class="profile-nav">
       <div class="nav-item active" onclick="switchTab('lotsTab', this)">
         Лоты <span id="lotsCount">(0)</span>
@@ -499,8 +483,8 @@
         Отзывы <span id="reviewsCount">(0)</span>
       </div>
     </div>
-
-    <!-- Контент для вкладок -->
+    
+    <!-- Контент вкладок -->
     <div class="tab-content" id="lotsTab">
       <h2>Мои товары</h2>
       <table class="product-table">
@@ -512,28 +496,26 @@
           </tr>
         </thead>
         <tbody id="userProductsList">
-          <!-- Товары будут динамически добавляться сюда -->
+          <!-- Товары будут добавляться динамически -->
         </tbody>
       </table>
-
       <h2 style="margin-top:30px;">Заказы (Продажи)</h2>
       <div id="ordersContentSales">
-        <!-- Тут будет таблица продаж (см. ниже loadSales()) -->
+        <!-- Таблица продаж загрузится динамически -->
       </div>
     </div>
-
+    
     <div class="tab-content" id="reviewsTab" style="display:none;">
       <p>Здесь могут быть отзывы, комментарии и т.д.</p>
     </div>
     
-    <!-- Блок заказов (Покупки) - если хотите показывать отдельно -->
+    <!-- Блок заказов (Покупки) - скрыт по умолчанию -->
     <div class="profile-orders" style="display:none;">
       <h2>Заказы (Покупки)</h2>
       <div id="ordersContentPurchases">
-        <!-- Тут будет таблица покупок (см. ниже loadPurchases()) -->
+        <!-- Таблица покупок загрузится динамически -->
       </div>
     </div>
-
   </main>
   
   <!-- Модальное окно для загрузки аватара -->
@@ -604,12 +586,11 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
     
-    // Проверка авторизации
+    // Проверка авторизации и загрузка данных профиля
     firebase.auth().onAuthStateChanged(function(user) {
       console.log("Profile page, onAuthStateChanged:", user);
       if (user) {
         loadUserProfile(user);
-        // Загрузим продажи/покупки/товары
         loadSales();
         loadPurchases();
       } else {
@@ -624,8 +605,7 @@
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
         let userData = snapshot.val();
         if (!userData) return;
-
-        // Ник + бейдж
+    
         let nicknameText = userData.nickname || "Без ника";
         if (userData.role === "admin") {
           nicknameText += ' <span class="admin-badge">Admin</span>';
@@ -633,32 +613,24 @@
           nicknameText += ' <span class="admin-badge" style="background: #3498db;">Поддержка</span>';
         }
         document.getElementById('profileNickname').innerHTML = nicknameText;
-
-        // Баланс
+    
         document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
-
-        // Почта
         document.getElementById('profileEmail').innerText = user.email || "user@example.com";
-
-        // Дата регистрации
+    
         if (userData.createdAt) {
           let date = new Date(userData.createdAt);
           document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
         } else {
           document.getElementById('profileCreatedDate').innerText = "Неизвестно";
         }
-
-        // Аватар
+    
         let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
         document.getElementById('profileAvatar').src = avatarUrl;
-        
-        // Пример: количество покупок, подписчиков и рейтинг (если есть в userData)
-        // Если у вас нет таких полей, либо замените на нужные.
+    
         document.getElementById('purchasesCount').innerText = userData.purchasesCount || 0;
         document.getElementById('followersCount').innerText = userData.followersCount || 0;
         document.getElementById('ratingValue').innerText = userData.rating || 4.7;
-
-        // Обновляем данные в блоке хедера
+    
         updateHeaderUserInfo({
           nickname: userData.nickname || user.displayName,
           avatar: avatarUrl
@@ -666,7 +638,7 @@
       });
     }
     
-    // Обновление информации о пользователе в хедере (справа)
+    // Обновление информации о пользователе в хедере
     function updateHeaderUserInfo(data) {
       const headerUserInfo = document.getElementById('headerUserInfo');
       if (headerUserInfo) {
@@ -674,7 +646,7 @@
       }
     }
     
-    // Открытие/закрытие модалки загрузки аватара
+    // Открытие/закрытие модального окна загрузки аватара
     function openModal() {
       document.getElementById('avatarModal').style.display = "flex";
     }
@@ -734,24 +706,20 @@
       }
     });
     
-    // Пример переключения вкладок
+    // Переключение вкладок
     function switchTab(tabId, el) {
-      // Убираем класс active у всех .nav-item
       document.querySelectorAll('.profile-nav .nav-item').forEach(btn => {
         btn.classList.remove('active');
       });
-      // Добавляем активной
       el.classList.add('active');
-
-      // Прячем все .tab-content
+    
       document.getElementById('lotsTab').style.display = 'none';
       document.getElementById('reviewsTab').style.display = 'none';
-
-      // Показываем нужную
+    
       document.getElementById(tabId).style.display = 'block';
     }
-
-    // Загрузка продаж (sellerId = текущий user.uid)
+    
+    // Загрузка продаж (заказы, где текущий пользователь – продавец)
     function loadSales() {
       const ordersRef = firebase.database().ref('orders');
       const currentUser = firebase.auth().currentUser;
@@ -789,7 +757,7 @@
       });
     }
     
-    // Загрузка покупок (buyerId = текущий user.uid)
+    // Загрузка покупок (заказы, где текущий пользователь – покупатель)
     function loadPurchases() {
       const ordersRef = firebase.database().ref('orders');
       const currentUser = firebase.auth().currentUser;
@@ -826,12 +794,8 @@
         container.appendChild(table);
       });
     }
-
-    // Пример загрузки "Мои товары" (если у вас есть отдельная логика)
-    // В вашем коде это делалось в #userProductsList
-    // Оставляем как есть, если уже реализовано где-то ещё.
-
-    // Примеры функций редактирования профиля и пополнения баланса
+    
+    // Функции редактирования профиля и пополнения баланса
     function editProfile() { alert('Редактирование профиля'); }
     function topUpBalance() { alert('Пополнение баланса'); }
     function logout() {
@@ -842,4 +806,3 @@
   </script>
 </body>
 </html>
-
