@@ -407,12 +407,8 @@
         width: 100%;
         margin: 10px 0;
       }
-      /* Скрываем блок с кнопками в хедере на мобильных */
-      .header-right {
-        display: none;
-      }
-      /* Скрываем боковую панель с админами */
-      .admin-sidebar {
+      /* Скрываем блок с кнопками в хедере и окно админов на мобильных */
+      .header-right, .admin-sidebar {
         display: none;
       }
       /* Показываем нижнюю навигацию */
@@ -535,10 +531,10 @@
     </div>
   </div>
   
-  <!-- Правая боковая панель (админ-секция) для десктопа -->
+  <!-- Правая боковая панель (админ-секция) — отображается только на десктопе -->
   <aside class="admin-sidebar">
-    <div class="sidebar-logo" onclick="location.href='index.html'">GlovimPlaye</div>
-    <h3>Администраторы</h3>
+    <div class="sidebar-logo" onclick="location.href='index.html'"></div>
+    <h3>Админи</h3>
     <!-- Здесь динамически будут загружаться админы -->
   </aside>
   
@@ -641,6 +637,23 @@
         })
         .catch(function(error) {
           console.error("Ошибка чтения данных пользователя:", error);
+        });
+    }
+    
+    // Обновление аватарки в нижней панели
+    function updateBottomNavAvatar(user) {
+      var avatarUrl = user.photoURL || 'default-avatar.png';
+      // Если у пользователя в БД указан аватар, можно дополнительно его подгрузить
+      firebase.database().ref('users/' + user.uid).once('value')
+        .then(function(snapshot) {
+          var userData = snapshot.val();
+          if (userData && userData.avatar) {
+            avatarUrl = userData.avatar;
+          }
+          document.querySelector('.bottom-nav-profile img.avatar').src = avatarUrl;
+        })
+        .catch(function(error) {
+          console.error("Ошибка обновления аватарки в нижней панели:", error);
         });
     }
     
@@ -766,13 +779,14 @@
       }
     });
     
-    // Обработка авторизации: обновление хедера после входа
+    // Обработка авторизации: обновление хедера и нижней панели после входа
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         loadHeaderData(user);
+        updateBottomNavAvatar(user);
       } else {
         console.log("Пользователь не авторизован");
-        // Редирект можно добавить при необходимости:
+        // При необходимости можно добавить редирект на страницу входа
         // window.location.href = "login.html";
       }
     });
