@@ -297,7 +297,7 @@
       margin-bottom: 2px;
     }
     
-    /* Правая боковая панель (админ-секция) */
+    /* Правая боковая панель (админ-секция) — отображается только на десктопе */
     .admin-sidebar {
       position: fixed;
       top: 0;
@@ -407,8 +407,12 @@
         width: 100%;
         margin: 10px 0;
       }
+      /* Скрываем блок с кнопками в хедере на мобильных */
       .header-right {
-        /* Скрываем блок с кнопками в хедере на мобильных */
+        display: none;
+      }
+      /* Скрываем боковую панель с админами */
+      .admin-sidebar {
         display: none;
       }
       /* Показываем нижнюю навигацию */
@@ -430,7 +434,7 @@
           <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
           <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
-        <!-- Блок кнопок (чат, баланс, аватар) — отображается только на десктопе -->
+        <!-- Блок с кнопками (чат, баланс, аватар) — отображается только на десктопе -->
         <div class="header-right">
           <button class="nav-btn" onclick="location.href='chat.html'">
             <i class="fas fa-comment-dots"></i>
@@ -768,7 +772,8 @@
         loadHeaderData(user);
       } else {
         console.log("Пользователь не авторизован");
-        // Можно добавить редирект на страницу входа, если требуется
+        // Редирект можно добавить при необходимости:
+        // window.location.href = "login.html";
       }
     });
   </script>
