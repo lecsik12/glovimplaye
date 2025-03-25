@@ -2,554 +2,108 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye | Добавить товар</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <!-- Firebase v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-  
-  <!-- CryptoJS для шифрования -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-
-  <!-- Font Awesome для иконок -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
+  <title>Real-time Chat на Supabase</title>
   <style>
-    /* Общие стили */
-    * {
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box;
-    }
     body {
-      font-family: Arial, sans-serif;
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
-      background-blend-mode: multiply;
-      background-color: #2b2a2a;
-      color: #fff;
-      padding: 20px;
-      padding-bottom: 70px; /* чтобы контент не закрывался нижней навигацией */
+      font-family: sans-serif;
+      margin: 20px;
     }
-    header {
-      background: linear-gradient(135deg, #3a3a3a, #222);
-      padding: 20px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between; 
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-    .logo-button {
-      background: none;
-      border: none;
-      color: #ff7f50;
-      font-size: 32px;
-      font-weight: bold;
-      cursor: pointer;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-      transition: color 0.3s, transform 0.3s, text-shadow 0.3s;
-    }
-    .logo-button:hover {
-      color: #fff;
-      transform: scale(1.1);
-      text-shadow: 3px 3px 6px rgba(255, 127, 80, 0.8);
-    }
-    /* Верхняя навигация для ПК */
-    .top-nav {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    .top-nav a {
-      text-decoration: none;
-      color: #fff;
-      font-size: 16px;
-      transition: color 0.3s;
-    }
-    .top-nav a:hover {
-      color: #ff7f50;
-    }
-    .top-nav a i {
-      margin-right: 5px;
-    }
-    /* Блок с информацией о пользователе */
-    #userInfo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 16px;
-    }
-    /* Контейнер для формы */
-    .container {
-      background: rgba(48, 44, 44, 0.85);
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 700px;
-      margin: 0 auto;
-    }
-    .container h2 {
-      margin-bottom: 15px;
-      text-align: center;
-    }
-    form#addProductForm {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    form#addProductForm label {
-      font-size: 14px;
-    }
-    form#addProductForm input,
-    form#addProductForm select,
-    form#addProductForm textarea {
+    #chat-container {
+      border: 1px solid #ccc;
       padding: 10px;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
+      height: 300px;
+      overflow-y: scroll;
+      margin-bottom: 10px;
     }
-    form#addProductForm textarea {
-      resize: vertical;
-      min-height: 60px;
+    #chat-container li {
+      margin-bottom: 5px;
     }
-    form#addProductForm button {
-      padding: 10px 20px;
-      background: #ff7f50;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      color: #fff;
-      font-size: 16px;
-      transition: background 0.3s;
-    }
-    form#addProductForm button:hover {
-      background: #ff4500;
-    }
-    /* Футер */
-    footer {
-      background: rgba(71, 68, 68, 0.85);
-      padding: 20px;
-      text-align: center;
-      color: #fff;
-      margin-top: 30px;
-      border-radius: 8px;
-    }
-    .social-links a {
-      margin: 0 10px;
-      color: #fafbfb;
-      font-size: 24px;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    .social-links a:hover {
-      color: #ff4500;
-    }
-    /* Нижняя панель (мобильная навигация) */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #222;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 0;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
-      z-index: 100;
-    }
-    .bottom-nav a {
-      text-decoration: none;
-      color: #fff;
-      text-align: center;
-      flex: 1;
+    #chat-form input {
       padding: 5px;
-      font-size: 12px;
+      width: 80%;
     }
-    .bottom-nav a i {
-      display: block;
-      font-size: 24px;
-      margin-bottom: 4px;
-    }
-    /* Скрываем нижнюю навигацию на ПК */
-    @media (min-width: 768px) {
-      .bottom-nav {
-        display: none;
-      }
+    #chat-form button {
+      padding: 5px 10px;
     }
   </style>
 </head>
 <body>
-
-<!-- Хедер -->
-<header>
-  <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
-  <!-- Верхняя навигация для ПК -->
-  <nav class="top-nav">
-    <a href="add.html"><i class="fas fa-plus"></i>Продать</a>
-    <a href="settings.html"><i class="fas fa-comments"></i>Чат</a>
-    <a href="profile.html"><i class="fas fa-user"></i>Профиль</a>
-  </nav>
-  <!-- Блок синхронизации: отображает данные авторизованного пользователя -->
-  <div id="userInfo"></div>
-</header>
-
-<!-- Рекламный баннер -->
-<div class="ad-banner" style="background:#eee; padding:20px; text-align:center; margin-top:10px; color:#333;">
-  <h2>Специальная акция!</h2>
-  <p>Купите прямо сейчас и получите бонусы!</p>
-</div>
-
-<!-- Авторизация (если не залогинен) -->
-<div class="auth-container" id="authContainer" style="text-align:center; margin:50px 0;">
-  <button id="loginButton" class="login-btn" onclick="login()" 
-    style="background:#fff; color:#efedec; border:none; padding:12px 30px; font-size:18px; border-radius:8px; cursor:pointer;">
-      Войти через Google
-  </button>
-</div>
-
-<!-- Основной контент: Форма добавления товара -->
-<main>
-  <div class="container">
-    <h2>Добавить товар</h2>
-    <form id="addProductForm">
-      <label for="category">Категория</label>
-      <select id="category" required>
-        <option value="">-- Выберите категорию --</option>
-        <option value="csgo">CS:GO</option>
-        <option value="dota">Dota</option>
-        <option value="other">Другое</option>
-      </select>
-
-      <label for="subcategory">Подкатегория</label>
-      <select id="subcategory" required>
-        <option value="">-- Выберите подкатегорию --</option>
-        <option value="accounts">Аккаунты</option>
-        <option value="skins">Скины</option>
-        <option value="stars">Звезды</option>
-        <option value="donate">Донат</option>
-        <option value="services">Услуги</option>
-        <option value="items">Товары</option>
-      </select>
-
-      <label for="productName">Название</label>
-      <input type="text" id="productName" required />
-
-      <label for="publicDescription">Описание товара</label>
-      <textarea id="publicDescription" placeholder="Введите описание товара" required></textarea>
-
-      <label for="sensitiveData">Чувствительные данные товара (будут зашифрованы)</label>
-      <textarea id="sensitiveData" placeholder="Введите дополнительные данные товара" required></textarea>
-
-      <label for="price">Цена</label>
-      <input type="number" id="price" required />
-
-      <label for="stock">Наличие (шт.)</label>
-      <input type="number" id="stock" required />
-
-      <!-- Поле для загрузки фото товара (множественный выбор) -->
-      <label for="productPhoto">Фото товара (максимум 3 фото)</label>
-      <input type="file" id="productPhoto" accept="image/*" multiple />
-
-      <button type="submit">Добавить</button>
-    </form>
+  <h1>Чат в реальном времени</h1>
+  <div id="chat-container">
+    <ul id="messages"></ul>
   </div>
-</main>
+  <form id="chat-form">
+    <input type="text" id="message-input" placeholder="Введите сообщение..." autocomplete="off">
+    <button type="submit">Отправить</button>
+  </form>
 
-<!-- Нижняя панель (мобильная навигация) -->
-<div class="bottom-nav">
-  <a href="index.html">
-    <i class="fas fa-home"></i>
-    <span>Главная</span>
-  </a>
-  <a href="add.html">
-    <i class="fas fa-plus"></i>
-    <span>Продать</span>
-  </a>
-  <a href="chat.html">
-    <i class="fas fa-comments"></i>
-    <span>Чат</span>
-  </a>
-  <a href="profile.html" class="bottom-nav-profile">
-    <i class="fas fa-user"></i>
-    <span>Профиль</span>
-  </a>
-</div>
+  <!-- Подключаем библиотеку Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    // Замените на ваши данные проекта Supabase:
+    const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
 
-<!-- Футер -->
-<footer>
-  <div class="social-links">
-    <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-    <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-    <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-  </div>
-  <p>© 2025 GlovimPlaye. Все права защищены.</p>
-</footer>
+    // Инициализация клиента Supabase
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-<script>
-  // Firebase конфигурация (замените на свои данные!)
-  var firebaseConfig = {
-    apiKey: "AIzaSyAhn2H...your-data...",
-    authDomain: "glovimplaye-b1023.firebaseapp.com",
-    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-    projectId: "glovimplaye-b1023",
-    storageBucket: "glovimplaye-b1023.firebasestorage.app",
-    messagingSenderId: "553440591519",
-    appId: "1:553440591519:web:b7be45a9253689f322acaa"
-  };
-  firebase.initializeApp(firebaseConfig);
+    // Элементы DOM
+    const messagesList = document.getElementById('messages');
+    const chatForm = document.getElementById('chat-form');
+    const messageInput = document.getElementById('message-input');
 
-  // Инициализация Supabase (замените на свои данные!)
-  const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
-  const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-  var auth = firebase.auth();
-  var provider = new firebase.auth.GoogleAuthProvider();
-
-  // -------------------------------
-  // Загружаем профиль пользователя
-  // -------------------------------
-  function loadUserProfile(user) {
-    return firebase.database().ref('users/' + user.uid).once('value')
-      .then(snapshot => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          // Сохраним профиль в localStorage
-          localStorage.setItem("userProfile", JSON.stringify(data));
-        } else {
-          // Если нет записей в users/uid, удаляем userProfile
-          localStorage.removeItem("userProfile");
-        }
-      })
-      .catch(err => {
-        console.error("Ошибка при загрузке профиля:", err);
+    // Функция для загрузки уже существующих сообщений
+    async function loadMessages() {
+      const { data: messages, error } = await supabase
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (error) {
+        console.error('Ошибка загрузки сообщений:', error);
+        return;
+      }
+      messagesList.innerHTML = '';
+      messages.forEach(msg => {
+        const li = document.createElement('li');
+        li.textContent = msg.user + ': ' + msg.message;
+        messagesList.appendChild(li);
       });
-  }
-
-  // -------------------------------
-  // Авторизация при загрузке
-  // -------------------------------
-  document.addEventListener("DOMContentLoaded", async function(){
-    var savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      // Уже есть данные об авторизации
-      const userData = JSON.parse(savedUser);
-      updateProfile(userData);
-      // Пробуем загрузить профиль из /users/uid
-      await loadUserProfile(userData);
-    }
-  });
-
-  // Авторизация через Google
-  async function login() {
-    try {
-      const result = await auth.signInWithPopup(provider);
-      const user = result.user;
-      const userData = {
-        uid: user.uid,
-        photoURL: user.photoURL,
-        displayName: user.displayName,
-        email: user.email
-      };
-      localStorage.setItem("user", JSON.stringify(userData));
-      updateProfile(userData);
-      // Загрузка данных из /users/uid
-      await loadUserProfile(userData);
-    } catch (error) {
-      console.error("Ошибка входа:", error);
-    }
-  }
-
-  // Функция синхронизации аккаунта: скрывает блок авторизации и отображает данные пользователя
-  function updateProfile(user) {
-    // Скрываем блок авторизации
-    document.getElementById("authContainer").style.display = "none";
-    // Обновляем блок с информацией о пользователе в шапке
-    const userInfoDiv = document.getElementById("userInfo");
-    const userProfile = localStorage.getItem("userProfile")
-      ? JSON.parse(localStorage.getItem("userProfile"))
-      : { nickname: user.displayName, avatar: user.photoURL || "default-avatar.png" };
-    if (userInfoDiv) {
-      userInfoDiv.innerHTML = `<img src="${userProfile.avatar}" alt="avatar" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"> <span>${userProfile.nickname}</span>`;
-    }
-  }
-
-  // Переход на главную страницу
-  function goToHomePage() {
-    window.location.href = "index.html";
-  }
-
-  // -------------------------------
-  // Функции шифрования
-  // -------------------------------
-  function encryptData(data) {
-    const secretKey = "GlovimPlayeSecretKey"; // Пример, измените для продакшена
-    return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
-  }
-  function decryptData(encryptedData) {
-    const secretKey = "GlovimPlayeSecretKey";
-    const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
-    return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-  }
-
-  // -------------------------------
-  // Добавление товара
-  // -------------------------------
-  const addForm = document.getElementById('addProductForm');
-  addForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    // Проверяем, авторизован ли пользователь
-    const currentUser = JSON.parse(localStorage.getItem("user"));
-    if (!currentUser) {
-      alert("Для добавления товара необходимо войти в систему.");
-      return;
+      // Прокрутка вниз
+      messagesList.parentNode.scrollTop = messagesList.parentNode.scrollHeight;
     }
 
-    // Загружаем профиль из localStorage (если есть)
-    const userProfile = localStorage.getItem("userProfile")
-      ? JSON.parse(localStorage.getItem("userProfile"))
-      : null;
-
-    // Если в профиле есть nickname/avatar, используем их. Иначе fallback на displayName/photoURL
-    let sellerName = userProfile && userProfile.nickname
-      ? userProfile.nickname
-      : currentUser.displayName;
-    let sellerAvatar = userProfile && userProfile.avatar
-      ? userProfile.avatar
-      : (currentUser.photoURL || "default-avatar.png");
-
-    // Собираем данные формы
-    const category = document.getElementById('category').value;
-    const subcategory = document.getElementById('subcategory').value;
-    const name = document.getElementById('productName').value.trim();
-    const publicDescription = document.getElementById('publicDescription').value.trim();
-    const sensitiveData = document.getElementById('sensitiveData').value;
-    const price = parseFloat(document.getElementById('price').value);
-    const stock = parseInt(document.getElementById('stock').value);
-
-    // Валидация: цена не меньше 20 руб.
-    if (price < 20) {
-      alert("Цена не может быть меньше 20 рублей.");
-      return;
-    }
-    // Валидация: описание минимум 15 символов
-    if (publicDescription.length < 15) {
-      alert("Описание товара должно быть минимум 15 символов.");
-      return;
-    }
-    // Валидация: название минимум 5 символов
-    if (name.length < 5) {
-      alert("Название товара должно быть минимум 5 символов.");
-      return;
-    }
-
-    // Валидация фото: максимум 3 файла
-    const photoFiles = document.getElementById('productPhoto').files;
-    if (photoFiles.length > 3) {
-      alert("Можно загрузить максимум 3 фото товара.");
-      return;
-    }
-
-    // Загрузка фото (через Supabase)
-    let photoURLs = [];
-    for (const photoFile of photoFiles) {
-      const filePath = `${Date.now()}_${photoFile.name}`;
-      const { data, error } = await supabaseClient.storage
-        .from('products')
-        .upload(filePath, photoFile);
-      if (error) {
-        console.error("Ошибка загрузки фото товара:", error);
-        alert("Ошибка загрузки фото товара: " + error.message);
-        return;
-      }
-      // Получаем публичный URL загруженного фото
-      const { data: publicData } = supabaseClient.storage
-        .from('products')
-        .getPublicUrl(filePath);
-      if (publicData && publicData.publicUrl) {
-        photoURLs.push(publicData.publicUrl);
-      } else {
-        alert("Не удалось получить URL загруженного фото товара.");
-        return;
-      }
-    }
-
-    // Шифруем чувствительные данные
-    const sensitiveObject = { sensitiveData: sensitiveData };
-    const encryptedData = encryptData(sensitiveObject);
-
-    // Вычисляем комиссию в 5%
-    const commission = price * 0.05;
-
-    // Формируем объект товара с комиссией
-    const newProduct = {
-      category: category,
-      subcategory: subcategory,
-      name: name,
-      description: publicDescription,
-      encryptedData: encryptedData,
-      sellerName: sellerName,
-      sellerAvatar: sellerAvatar,
-      sellerId: currentUser.uid,
-      price: price,
-      commission: commission,
-      stock: stock,
-      photoURLs: photoURLs,
-      createdAt: firebase.database.ServerValue.TIMESTAMP
-    };
-
-    // Добавляем товар в базу Firebase
-    firebase.database().ref('products').push(newProduct, function(error) {
-      if (error) {
-        alert('Ошибка добавления товара: ' + error.message);
-      } else {
-        alert('Товар успешно добавлен!');
-        addForm.reset();
-        // Отправляем уведомление в Telegram (опционально)
-        sendTelegramNotification(newProduct);
-      }
-    });
-  });
-
-  // -------------------------------
-  // Уведомление в Telegram
-  // -------------------------------
-  function sendTelegramNotification(product) {
-    // Замените значения ниже на свои данные
-    const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
-    const TELEGRAM_CHAT_ID = "YOUR_TELEGRAM_CHAT_ID";
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    
-    const text = `Новый товар добавлен!\n\n` +
-                 `*Название:* ${product.name}\n` +
-                 `*Категория:* ${product.category}\n` +
-                 `*Цена:* ${product.price}\n` +
-                 `*Комиссия (5%):* ${product.commission}\n` +
-                 `*Продавец:* ${product.sellerName}`;
-                 
-    fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CHAT_ID,
-        text: text,
-        parse_mode: "Markdown"
+    // Подписка на новые сообщения
+    supabase
+      .from('messages')
+      .on('INSERT', payload => {
+        const msg = payload.new;
+        const li = document.createElement('li');
+        li.textContent = msg.user + ': ' + msg.message;
+        messagesList.appendChild(li);
+        // Прокрутка вниз при получении нового сообщения
+        messagesList.parentNode.scrollTop = messagesList.parentNode.scrollHeight;
       })
-    })
-    .then(response => response.json())
-    .then(data => console.log("Telegram уведомление отправлено", data))
-    .catch(error => console.error("Ошибка отправки в Telegram:", error));
-  }
-</script>
+      .subscribe();
 
+    // Обработка отправки сообщения
+    chatForm.addEventListener('submit', async e => {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      if (message === '') return;
+      // Для простоты зададим пользователя как "Anonymous"
+      const user = "Anonymous";
+      const { error } = await supabase
+        .from('messages')
+        .insert([{ user, message }]);
+      if (error) {
+        console.error('Ошибка отправки сообщения:', error);
+      }
+      messageInput.value = '';
+    });
+
+    // Первоначальная загрузка сообщений
+    loadMessages();
+  </script>
 </body>
 </html>

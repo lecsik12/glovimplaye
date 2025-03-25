@@ -5,1026 +5,584 @@
   <title>GlovimPlaye | Главная</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-  <!-- Font Awesome для иконок -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  
   <style>
-  /* =============================
-   БАЗОВЫЕ СТИЛИ И СБРОС
-============================= */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+    /* Общие стили */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #0e0e0e;
+      color: #ccc;
+      min-height: 100vh;
+      line-height: 1.6;
+      padding-bottom: 70px; /* чтобы нижняя панель не перекрывала контент */
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    /* Шапка */
+    header {
+      background: #161616;
+      border-bottom: 1px solid #333;
+      padding: 15px 0;
+      position: relative;
+      z-index: 2;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 600;
+      color: #4fc3f7;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .logo:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Поиск */
+    .search-bar {
+      flex: 1;
+      max-width: 400px;
+      margin: 0 20px;
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 50px;
+      background: #1e1e1e;
+      color: #ccc;
+      outline: none;
+      font-size: 15px;
+    }
+    .search-bar input::placeholder {
+      color: #555;
+    }
+    .search-btn {
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #4fc3f7;
+      font-size: 18px;
+      cursor: pointer;
+      outline: none;
+    }
+    
+    /* Правый блок меню (чат, баланс, аватар) */
+    .header-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .nav-btn {
+      background: none;
+      border: none;
+      color: #4fc3f7;
+      font-size: 20px;
+      cursor: pointer;
+      transition: color 0.3s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .nav-btn:hover {
+      color: #80deea;
+    }
+    .nav-btn span {
+      font-size: 12px;
+      margin-top: 3px;
+    }
+    .balance {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #4fc3f7;
+      font-size: 14px;
+    }
+    .balance i {
+      font-size: 18px;
+      margin-bottom: 2px;
+    }
+    .profile-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #4fc3f7;
+      object-fit: cover;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    .profile-avatar:hover {
+      transform: scale(1.05);
+    }
+    
+    /* Результаты поиска */
+    .search-results {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e1e1e;
+      width: 100%;
+      max-width: 400px;
+      max-height: 300px;
+      overflow-y: auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.8);
+      display: none;
+      z-index: 10;
+    }
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .search-result-item:hover {
+      background: #262626;
+    }
+    .search-result-item img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-right: 15px;
+    }
+    .result-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .result-name {
+      font-weight: 600;
+      color: #fff;
+    }
+    .no-results {
+      padding: 10px 15px;
+      color: #888;
+    }
+    
+    /* Заголовок секции */
+    .section-title {
+      font-size: 20px;
+      margin: 30px 0 10px;
+      color: #4fc3f7;
+    }
 
-body {
-  font-family: Arial, sans-serif;
-  background: 
-    linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,1) 100%),
-    url('images/photo_2025-02-22_08-29-19.jpg') no-repeat center top;
-  background-size: cover;
-  color: #fff;
-  min-height: 100vh;
-  padding-bottom: 60px; /* Отступ под нижнюю панель (на мобильных) */
-}
+    /* Горизонтальная прокрутка для категорий */
+    .horizontal-scroll {
+      display: flex;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      scroll-behavior: smooth;
+      margin-bottom: 20px;
+    }
+    .horizontal-scroll::-webkit-scrollbar {
+      height: 6px;
+    }
+    .horizontal-scroll::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 4px;
+    }
+    .horizontal-scroll::-webkit-scrollbar-track {
+      background: #1e1e1e;
+    }
+    
+    /* Карточка игры/приложения */
+    .game-card {
+      width: 80px;
+      margin-right: 16px;
+      text-align: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .game-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+    .game-card img:hover {
+      transform: scale(1.05);
+    }
+    .game-card .game-name {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #ccc;
+      white-space: nowrap;
+    }
+    .new-badge {
+      display: inline-block;
+      background: #ff4500;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
 
-/* Технические классы */
-.desktop-only { display: block; }
-.mobile-only { display: none; }
-
-/* =============================
-   НАВИГАЦИЯ И ШАПКА
-============================= */
-
-/* Основная навигационная панель */
-.navbar {
-  display: flex;
-  justify-content: center; /* Центрирование содержимого по горизонтали */
-  align-items: center;     /* Центрирование содержимого по вертикали */
-  height: 60px;            /* Высота навигационной панели */
-  background-color: #333;
-}
-
-.navbar-left {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.logo-button {
-  background: none;
-  border: none;
-  color: #ff7f50; /* Оранжевый акцент */
-  font-size: 22px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: color 0.3s, transform 0.3s;
-}
-.logo-button:hover {
-  color: #ff4500;
-  transform: scale(1.05);
-}
-
-/* По умолчанию скрываем нижнюю панель */
-.bottom-nav desktop-only {
-  display: none;
-}
-
-/* Отображение только на ПК (ширина экрана 769px и более) */
-@media (min-width: 769px) {
-  .bottom-nav {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #fff;
-    padding: 10px 0;
-    border-top: 1px solid #ccc;
-  }
-  
-  .bottom-nav a {
-    color: #000;
-    text-decoration: none;
-    font-size: 14px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .bottom-nav a .avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    margin-bottom: 5px;
-  }
-  
-  .bottom-nav i {
-    font-size: 18px;
-  }
-}
-
-
-
-/* Header с поиском */
-.header {
-  position: relative;
-  width: 100%;
-  padding: 10px 20px;
-  background-color: #333;
-}
-
-.header-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 5px 0;
-}
-
-.search-container {
-  display: flex;
-  max-width: 400px;
-  width: 100%;
-  border: 2px solid rgba(255,255,255,0.2);
-  border-radius: 30px;
-  overflow: hidden;
-  background-color: #222;
-}
-.search-input {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: none;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  outline: none;
-}
-.search-input::placeholder {
-  color: rgba(255,255,255,0.6);
-}
-.search-btn {
-  padding: 8px 15px;
-  font-size: 14px;
-  background: #ff7f50;
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.search-btn:hover {
-  background: #ff4500;
-}
-
-/* Список результатов поиска */
-.search-results {
-  position: absolute;
-  background-color: #333;
-  width: 400px;
-  max-height: 300px;
-  overflow-y: auto;
-  margin-top: 5px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  display: none;
-  z-index: 9999;
-}
-.search-result-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 12px;
-  border-bottom: 1px solid #444;
-  color: #fff;
-  cursor: pointer;
-}
-.search-result-item:hover {
-  background-color: #444;
-}
-.search-result-item img {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-right: 10px;
-}
-.result-text {
-  display: flex;
-  flex-direction: column;
-}
-.result-name {
-  font-weight: bold;
-}
-.no-results {
-  padding: 8px 12px;
-  color: #aaa;
-}
-
-/* Верхнее меню (иконки, ссылки) */
-.top-nav ul {
-  list-style: none;
-  display: flex;
-  align-items: center;
-}
-.top-nav li {
-  margin-left: 20px;
-}
-.top-nav a {
-  color: #ece7e7;
-  text-decoration: none;
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: color 0.3s;
-}
-.top-nav a:hover {
-  color: #ff0000;
-}
-.top-nav i {
-  font-size: 20px;
-  margin-bottom: 5px;
-}
-
-.nav-menu {
-  display: flex;
-  gap: 15px;
-}
-.nav-menu a {
-  color: #ccc;
-  text-decoration: none;
-  font-size: 16px;
-  transition: color 0.3s;
-}
-.nav-menu a:hover {
-  color: #fff;
-}
-
-.hamburger-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  color: #ff7f50;
-  font-size: 24px;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-.hamburger-btn:hover {
-  color: #ff4500;
-}
-
-/* Блок профиля (верхний правый угол для десктопа) */
-.navbar-right {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-}
-.profile {
-  position: relative;
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  object-fit: cover;
-  transition: transform 0.3s;
-}
-.avatar:hover {
-  transform: scale(1.1);
-}
-.profile-menu {
-  display: none;
-  position: absolute;
-  top: 50px;
-  right: 0;
-  background: #f9f8f8;
-  color: #333;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-  overflow: hidden;
-  z-index: 10;
-  padding: 10px;
-}
-.profile-menu.active,
-.profile:hover .profile-menu {
-  display: block;
-}
-.profile-menu a {
-  display: block;
-  padding: 10px 15px;
-  text-decoration: none;
-  color: #333;
-  transition: background 0.3s;
-}
-.profile-menu a:hover {
-  background: #f6f4f4;
-}
-.logout {
-  color: red;
-  font-weight: bold;
-}
-
-/* Дополнительные иконки */
-.icon-btn {
-  background: none;
-  border: none;
-  color: #f1ebe9;
-  font-size: 18px;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-.icon-btn:hover {
-  color: #ff4500;
-}
-
-/* =============================
-   Мобильное меню (гамбургер)
-============================= */
-.mobile-menu {
-  display: none;
-  position: absolute;
-  top: 60px;
-  left: 0;
-  right: 0;
-  background: #1f1f1f;
-  flex-direction: column;
-  align-items: center;
-  z-index: 999;
-}
-.mobile-menu a {
-  color: #fff;
-  padding: 10px;
-  text-decoration: none;
-  width: 100%;
-  text-align: center;
-  border-bottom: 1px solid #333;
-}
-.mobile-menu a:hover {
-  background: #2b2b2b;
-}
-.mobile-menu.active {
-  display: flex;
-}
-
-/* Нижняя панель (только для мобильных) */
-.bottom-nav {
-  display: none;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  background: #1e1e1e;
-  align-items: center;
-  justify-content: space-around;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
-  z-index: 999;
-}
-.bottom-nav a {
-  text-decoration: none;
-  color: #ccc;
-  font-size: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.bottom-nav a i {
-  font-size: 20px;
-  margin-bottom: 2px;
-}
-.bottom-nav a:hover {
-  color: #fff;
-}
-/* Кнопка профиля в нижней панели */
-.bottom-nav-profile {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  color: #ccc;
-  font-size: 12px;
-  cursor: pointer;
-}
-.bottom-nav-profile img.avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 2px solid #fff;
-  object-fit: cover;
-  margin-bottom: 2px;
-  /* По умолчанию скрываем аватар до логина, если нужно */
-  display: none;
-}
-
-/* =============================
-   КАРТОЧКИ, РЕКЛАМА, КАТЕГОРИИ
-============================= */
-.cards-container {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-}
-.card {
-  background: #fef1c7;
-  padding: 70px;
-  border-radius: 25px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  width: 500px;
-  text-align: center;
-}
-.card:nth-child(2) {
-  background: #eef0eb;
-}
-.card-icon {
-  width: 80px;
-  margin-bottom: 10px;
-}
-button {
-  background: #f8f6f3;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-/* Реклама */
-.advertisement {
-  margin: 30px auto;
-  max-width: 50px;
-  text-align: center;
-}
-.advertisement img {
-  width: 10%;
-  max-height: 20px;
-  object-fit: cover;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
-/* Категории */
-.categories-section {
-  padding: 10px;
-  max-width: 1000px;
-  margin: 10px auto;
-  background-color: #2e2d2d;
-  border-radius: 8px;
-}
-.categories-section h2 {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 10px;
-  text-align: left;
-  color: #fff;
-}
-.categories-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-  gap: 10px;
-  margin-bottom: 10px;
-  justify-items: start;
-}
-.category-card {
-  width: 80px;
-  text-align: center;
-  text-decoration: none;
-  color: #fff;
-  transition: transform 0.2s ease;
-}
-.category-card:hover {
-  transform: translateY(-2px);
-}
-.category-card img {
-  width: 60px;
-  height: 60px;
-  border-radius: 6px;
-  object-fit: cover;
-  margin-bottom: 5px;
-}
-.category-card .subcategory {
-  font-size: 10px;
-  font-weight: 600;
-  color: #ccc;
-}
-.show-all-link {
-  text-align: left;
-}
-.show-all-link a {
-  display: inline-flex;
-  align-items: center;
-  font-size: 14px;
-  font-weight: 600;
-  color: #ff7f50;
-  text-decoration: none;
-  padding: 6px 10px;
-  border: 2px solid #ff7f50;
-  border-radius: 6px;
-  transition: background 0.3s, color 0.3s;
-}
-.show-all-link a i {
-  margin-right: 5px;
-}
-.show-all-link a:hover {
-  background: #ff7f50;
-  color: #000;
-}
-
-/* =============================
-   ФУТЕР
-============================= */
-footer {
-  background: #1f1f1f;
-  padding: 20px;
-  text-align: center;
-  color: #fff;
-  margin-top: 30px;
-}
-.social-links a {
-  margin: 0 10px;
-  color: #fafbfb;
-  font-size: 24px;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-.social-links a:hover {
-  color: #ff4500;
-}
-
-/* =============================
-   МОДАЛЬНОЕ ОКНО
-============================= */
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 100;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.6);
-}
-.modal-content {
-  background: #fff;
-  margin: 10% auto;
-  padding: 20px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  animation: fadeIn 0.5s;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.modal-close {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  font-size: 24px;
-  cursor: pointer;
-  color: #333;
-}
-.profile-details {
-  text-align: center;
-}
-.profile-details img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 3px solid #ff7f50;
-}
-.profile-details h2 {
-  margin: 10px 0 5px;
-  color: #ff7f50;
-}
-.profile-details p {
-  color: #666;
-  margin: 0;
-}
-.edit-btn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background: #ff7f50;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.edit-btn:hover {
-  background: #ff4500;
-}
-
-/* =============================
-   АДАПТАЦИЯ (до 768px)
-============================= */
-@media (max-width: 768px) {
-  /* Скрываем профиль в верхнем правом углу */
-  .navbar-right {
-    display: none;
-  }
-  /* Показываем нижнюю панель */
-  .bottom-nav {
-    display: flex;
-  }
-  .mobile-only { display: inline-block !important; }
-  .desktop-only { display: none !important; }
-  .logo-button,
-  .hamburger-btn { font-size: 22px; }
-  .search-desktop {
-    max-width: 250px;
-    padding: 4px 8px;
-  }
-  .search-desktop input { font-size: 12px; }
-  .search-desktop button {
-    font-size: 12px;
-    padding: 4px 8px;
-  }
-  .avatar {
-    width: 35px;
-    height: 35px;
-  }
-}
-
-/* =============================
-   АДАПТАЦИЯ (до 480px)
-============================= */
-@media (max-width: 480px) {
-  body { padding-bottom: 70px; }
-  .modal-content {
-    margin: 20% auto;
-    padding: 15px;
-  }
-  .profile-details img {
-    width: 80px;
-    height: 80px;
-  }
-  .profile-details h2 { font-size: 18px; }
-  .profile-details p,
-  .edit-btn { font-size: 14px; }
-  .edit-btn { padding: 8px 15px; }
-  .search-input-overlay {
-    font-size: 14px;
-    padding: 8px 35px 8px 10px;
-  }
-  .search-results li {
-    padding: 8px 10px;
-    font-size: 14px;
-  }
-  .close-overlay-btn {
-    font-size: 220px;
-    top: 100px;
-    left: 15px;
-  }
-  .category-card { width: 70px; }
-  .category-card img {
-    width: 50px;
-    height: 50px;
-  }
-  .category-card .subcategory { font-size: 10px; }
-}
-
-
- </style>
+    /* Нижняя панель (мобильные) */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #161616;
+      border-top: 1px solid #333;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 100;
+    }
+    .bottom-nav a {
+      color: #ccc;
+      font-size: 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a i {
+      font-size: 22px;
+      margin-bottom: 3px;
+    }
+    .bottom-nav a:hover {
+      color: #4fc3f7;
+    }
+    .bottom-nav-profile img.avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #4fc3f7;
+      object-fit: cover;
+      margin-bottom: 2px;
+    }
+    
+    @media (max-width: 768px) {
+      .header-inner {
+        flex-direction: column;
+        gap: 10px;
+      }
+      .search-bar {
+        margin: 10px 0;
+      }
+      .bottom-nav {
+        display: flex;
+      }
+    }
+    
+    /* Футер */
+    footer {
+      background: #161616;
+      color: #777;
+      padding: 30px 0;
+      margin-top: 20px;
+    }
+    footer .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+    }
+    footer h3, footer h4 {
+      color: #4fc3f7;
+      margin-bottom: 8px;
+    }
+    footer a {
+      color: #777;
+      font-size: 14px;
+    }
+    footer a:hover {
+      color: #fff;
+    }
+    footer p {
+      font-size: 13px;
+    }
+    .footer-btn {
+      background: #4fc3f7;
+      color: #121212;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .footer-btn:hover {
+      background: #80deea;
+    }
+    footer p.copyright {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- ======= Хедер ======= -->
-<header>
-  <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
+  <!-- Шапка -->
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <!-- Логотип -->
+        <div class="logo" onclick="location.href='index.html'">GlovimPlaye</div>
+        <!-- Поиск -->
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
+          <button class="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        <!-- Меню: чат (иконка fa-comment-dots), баланс и аватар профиля -->
+        <div class="header-right">
+          <button class="nav-btn" onclick="location.href='chat.html'">
+            <i class="fas fa-comment-dots"></i>
+            <span>Чат</span>
+          </button>
+          <!-- Баланс (обновляется из Firebase) -->
+          <div class="balance" id="headerBalance">
+            <i class="fas fa-wallet"></i>
+            <span>0₽</span>
+          </div>
+          <!-- Аватар профиля (переход в профиль) -->
+          <img id="headerProfileAvatar" class="profile-avatar" src="default-avatar.png" alt="Avatar" onclick="location.href='profile.html'">
+        </div>
+      </div>
+    </div>
+  </header>
   
-  <!-- Шапка с поиском -->
-<div class="header-center">
-  <div class="search-container">
-    <input
-      type="text"
-      class="search-input"
-      placeholder="Поиск игр и приложений..."
-    />
-    <button class="search-btn">Поиск</button>
-  </div>
-</div>
-    <!-- Блок, куда будет выводиться список результатов -->
-<div class="search-results" id="search-results"></div>
+  <!-- Результаты поиска -->
+  <div class="search-results" id="search-results"></div>
+  
+  <!-- Основной контент (пример горизонтальных блоков категорий) -->
+  <div class="container">
+    <!-- Секция: Игры -->
+    <h2 class="section-title">Игры</h2>
+    <div class="horizontal-scroll">
+      <div class="game-card" onclick="location.href='csgo.html'">
+        <img src="images/csgo.jpg" alt="Counter-Strike">
+        <div class="game-name">Counter-Strike</div>
+      </div>
+      <div class="game-card" onclick="location.href='roblox.html'">
+        <img src="images/roblox.jpg" alt="Roblox">
+        <div class="game-name">Roblox</div>
+      </div>
+      <div class="game-card" onclick="location.href='minecraft.html'">
+        <img src="images/main.jpg" alt="Minecraft">
+        <div class="game-name">Minecraft</div>
+      </div>
+      <div class="game-card" onclick="location.href='fortnite.html'">
+        <img src="images/fortna.jpg" alt="Fortnite">
+        <div class="game-name">Fortnite</div>
+      </div>
+      <div class="game-card" onclick="location.href='dota2.html'">
+        <img src="images/dota.jpg" alt="Dota 2">
+        <div class="game-name">Dota 2</div>
+      </div>
+      <div class="game-card" onclick="location.href='rust.html'">
+        <img src="images/rust.png" alt="Rust">
+        <div class="game-name">Rust <span class="new-badge">Новое</span></div>
+      </div>
+    </div>
 
-    <!-- Кнопка «гамбургер» (видна только на телефоне) -->
-    <button class="icon-btn hamburger-btn mobile-only" onclick="toggleMobileMenu()">
-      <i class="fas fa-bars"></i>
-    </button>
-  </div>
+    <!-- Секция: Мобильные игры -->
+    <h2 class="section-title">Мобильные игры</h2>
+    <div class="horizontal-scroll">
+      <div class="game-card" onclick="location.href='pubg-mobile.html'">
+        <img src="images/pabg mobael.jpg" alt="PUBG Mobile">
+        <div class="game-name">PUBG Mobile</div>
+      </div>
+      <div class="game-card" onclick="location.href='standoff2.html'">
+        <img src="images/standoff2.jpg" alt="Standoff 2">
+        <div class="game-name">Standoff 2</div>
+      </div>
+      <div class="game-card" onclick="location.href='callofduty.html'">
+        <img src="images/cal of duty.jpg" alt="Call of Duty">
+        <div class="game-name">Call of Duty</div>
+      </div>
+    </div>
 
-
-<!-- Нижняя панель (только для ПК) -->
-<div class="bottom-nav desktop-only">
-  <a href="index.html">
-    <i class="fas fa-home"></i>
-    <span>Главная</span>
-  </a>
-  <a href="search.html">
-    <i class="fas fa-plus"></i>
-    <span>Продать</span>
-  </a>
-  <a href="settings.html">
-    <i class="fas fa-comments"></i>
-    <span>Чат</span>
-  </a>
-  <!-- Кнопка профиля -->
-  <a href="profile.html" class="bottom-nav-profile">
-    <img src="default-avatar.png" alt="Avatar" class="avatar" />
-    <i class="fas fa-user"></i>
-    <span>Профиль</span>
-  </a>
-</div>
-
-
-<!-- Нижняя панель (только для мобильных) -->
-<div class="bottom-nav">
-  <a href="index.html">
-    <i class="fas fa-home"></i>
-    <span>Главная</span>
-  </a>
-  <a href="add.html">
-    <i class="fas fa-plus"></i>
-    <span>Продать</span>
-  </a>
-  <a href="settings.html">
-    <i class="fas fa-comments"></i>
-    <span>Чат</span>
-  </a>
-  <!-- Кнопка профиля -->
-  <a href="profile.html" class="bottom-nav-profile">
-    <img src="default-avatar.png" alt="Avatar" class="avatar" />
-    <i class="fas fa-user"></i>
-    <span>Профиль</span>
-  </a>
- 
-</div>
-
-
-
-
-
-
-
-<!-- Пример секции категорий (Игры) -->
-<div class="categories-section">
-  <h2> 🎮Игры</h2>
-  <div class="categories-container">
-    <a href="" class="category-card small">
-      <img src="images/cal of duty.jpg" alt="Игра 1" />
-      <div class="subcategory">Call of Duty</div>
-    </a>
-    <a href="csgo.html" class="category-card small">
-      <img src="images/csgo.jpg" alt="Игра 2" />
-      <div class="subcategory">Counter-Strike</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/dota.jpg" alt="Игра 3" />
-      <div class="subcategory">Dota 2</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/ea.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">EA Sports</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/fortna.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Fortnite</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/gta.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">GTA 5 Online</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/main.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Minecraft</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/pabg mobael.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">PUBG Mobile</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/roblox.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Roblox</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/rust.png" alt="Мобильная игра 1">
-      <div class="subcategory">Rust</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/standoff2.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Standoff 2</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/pabg.png" alt="Мобильная игра 1">
-      <div class="subcategory">PUBG</div>
-    </a>
-  </div>
-  <div class="show-all-link">
-    <a href="all-games.html">
-      <i class="fas fa-chevron-down"></i> Показать все игры
-    </a>
-  </div>
-  </div>
-</div>
-
-<!-- Пример секции категорий (Приложения) -->
-<div class="categories-section">
-  <h2>🛠️Приложения</h2>
-  <div class="categories-container">
-    <a href="games.html" class="category-card small">
-      <img src="images/diccord.jpg" alt="Приложение 1" />
-      <div class="subcategory">Discord</div>
-    </a>
-    <a href="apps.html" class="category-card small">
-      <img src="images/epgems.jpg" alt="Приложение 2" />
-      <div class="subcategory">Epic Gems</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/Playstetion.png" alt="Мобильная игра 1">
-     <div class="subcategory">PlayStation</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/spotifay.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Spotify</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/steam.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Steam</div>
-    </a>
-    <a href="index.html" class="category-card small"><img src="images/telegram.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Telegram</div>
-    </a><a href="index.html" class="category-card small">
-      <img src="images/tiktik.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Tik Tok</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/Playstetion.png" alt="Мобильная игра 1">
-     <div class="subcategory">PlayStation</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/spotifay.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Spotify</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/steam.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Steam</div>
-    </a>
-    <a href="index.html" class="category-card small"><img src="images/telegram.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Telegram</div>
-    </a><a href="index.html" class="category-card small">
-      <img src="images/tiktik.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Tik Tok</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/Playstetion.png" alt="Мобильная игра 1">
-     <div class="subcategory">PlayStation</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/spotifay.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Spotify</div>
-    </a>
-    <a href="index.html" class="category-card small">
-      <img src="images/steam.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Steam</div>
-    </a>
-    <a href="index.html" class="category-card small"><img src="images/telegram.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Telegram</div>
-    </a><a href="index.html" class="category-card small">
-      <img src="images/tiktik.jpg" alt="Мобильная игра 1">
-      <div class="subcategory">Tik Tok</div>
-    </a>
-  </div>
- 
-  </div>
-</div>
-</div>
-
-
-
-
+    <!-- Секция: Приложения -->
+    <h2 class="section-title">Приложения</h2>
+    <div class="horizontal-scroll">
+      <div class="game-card" onclick="location.href='discord.html'">
+        <img src="images/diccord.jpg" alt="Discord">
+        <div class="game-name">Discord</div>
+      </div>
+      <div class="game-card" onclick="location.href='spotify.html'">
+        <img src="images/spotifay.jpg" alt="Spotify">
+        <div class="game-name">Spotify</div>
+      </div>
+      <div class="game-card" onclick="location.href='telegram.html'">
+        <img src="images/telegram.jpg" alt="Telegram">
+        <div class="game-name">Telegram</div>
+      </div>
+      <div class="game-card" onclick="location.href='steam.html'">
+        <img src="images/steam.jpg" alt="Steam">
+        <div class="game-name">Steam</div>
+      </div>
+    <div class="game-card" onclick="location.href='tiktok.html'">
+        <img src="images/tiktik.jpg" alt="Tik Tok">
+        <div class="game-name">Tik Tok</div>
+    </div>
+    <div class="game-card" onclick="location.href='epic-gems.html'">
+        <img src="images/epgems.jpg" alt="Epic Gems">
+        <div class="game-name">Epic Gems</div>
+    </div>
+    <div class="game-card" onclick="location.href='playstation.html'">
+        <img src="images/Playstetion.png" alt="PlayStation">
+        <div class="game-name">PlayStation</div>
+    </div>
     
-    
-
-
-
-<!-- Футер -->
-<footer style="background-color: #1f1f1f; color: #bdbdbd; padding: 20px 0; font-family: Arial, sans-serif;">
-  <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; max-width: 1200px; margin: 0 auto;">
-    <div style="text-align: center;">
-      <h3 style="color: #4caf50;"> GlovimPlaye</h3>
-      <p>GlovimPlaye - безопасная торговая площадка с низкими ценами</p>
-      <p>support@glovimplaye.com</p>
-    </div>
-
-    <div style="text-align: center;">
-      <h4>Способы оплаты</h4>
-      <p>💳 💸 🪙 🎮</p>
-    </div>
-
-    <div style="text-align: center;">
-      <h4>Информация</h4>
-      <p><a href="#" style="color: #bdbdbd; text-decoration: none;">О компании</a></p>
-      <p><a href="#" style="color: #bdbdbd; text-decoration: none;">Правила и гарантии</a></p>
-      <p><a href="#" style="color: #bdbdbd; text-decoration: none;">Курсы валют</a></p>
-      <p><a href="#" style="color: #bdbdbd; text-decoration: none;">Советы и гайды</a></p>
-    </div>
-
-    <div style="text-align: center;">
-      <h4>Наши соц.сети</h4>
-      <a href="https://t.me/" target="_blank" style="color: #bdbdbd; text-decoration: none;">Telegram канал</a><br>
-      <a href="https://vk.com/" target="_blank" style="color: #bdbdbd; text-decoration: none;">Группа ВКонтакте</a><br>
-      <a href="https://www.youtube.com/" target="_blank" style="color: #bdbdbd; text-decoration: none;">YouTube канал</a><br>
-      <a href="https://discord.com/" target="_blank" style="color: #bdbdbd; text-decoration: none;">Discord сервер</a>
     </div>
   </div>
-
-  <div style="text-align: center; margin-top: 10px;">
-    <button style="background-color: #4caf50; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px;">Написать в техподдержку</button>
+  
+  <!-- Нижняя панель (для мобильных) -->
+  <div class="bottom-nav">
+    <a href="index.html">
+      <i class="fas fa-home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="add.html">
+      <i class="fas fa-plus"></i>
+      <span>Продать</span>
+    </a>
+    <a href="chat.html">
+      <i class="fas fa-comment-dots"></i>
+      <span>Чат</span>
+    </a>
+    <a href="profile.html" class="bottom-nav-profile">
+      <img src="default-avatar.png" alt="Avatar" class="avatar">
+      <span>Профиль</span>
+    </a>
   </div>
-
-  <p style="text-align: center; margin-top: 20px;">© 2025 GlovimPlaye. Все права защищены.</p>
-</footer>
-
-
-
-
-
-<script>
-  /* ---------- Firebase конфиг (пример) ---------- */
-  var firebaseConfig = {
-    apiKey: "AIzaSy...",
-    authDomain: "glovimplaye-b1023.firebaseapp.com",
-    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-    projectId: "glovimplaye-b1023",
-    storageBucket: "glovimplaye-b1023.firebasestorage.app",
-    messagingSenderId: "553440591519",
-    appId: "1:553440591519:web:b7be45a9253689f322acaa"
-  };
- 
-
-  // Оверлей поиска
-  function openSearchOverlay() {
-    document.getElementById('searchOverlay').classList.add('active');
-    document.getElementById('searchOverlayInput').focus();
-  }
-  function closeSearchOverlay() {
-    document.getElementById('searchOverlay').classList.remove('active');
-    document.getElementById('searchOverlayInput').value = '';
-    document.getElementById('searchResults').innerHTML = '';
-  }
-  function closeOverlayByClick(event) {
-    const overlay = document.getElementById('searchOverlay');
-    const wrapper = document.querySelector('.search-wrapper');
-    if (event.target === overlay && !wrapper.contains(event.target)) {
-      closeSearchOverlay();
-    }
-  }
-
-  // Моковые данные для поиска
-  const mockData = [
-    { icon: 'fa-gamepad', text: 'Аккаунты GTA 5' },
-    { icon: 'fa-shield-alt', text: 'Среднее звание CS:GO Gold' },
-    { icon: 'fa-user-secret', text: 'Аккаунты Fortnite' },
-    { icon: 'fa-hat-wizard', text: 'Warcraft III' },
-    { icon: 'fa-bomb', text: 'Rainbow Six Siege' },
-    { icon: 'fa-scroll', text: 'World of Warcraft' },
-    { icon: 'fa-skull-crossbones', text: 'Call of Duty' },
-    { icon: 'fa-ghost', text: 'Phasmophobia' },
-    { icon: 'fa-dungeon', text: 'Roblox Robux' }
-  ];
-
-  function updateSearchResults() {
-    const query = document.getElementById('searchOverlayInput').value.trim().toLowerCase();
-    const resultsContainer = document.getElementById('searchResults');
-    resultsContainer.innerHTML = '';
-
-    if (!query) return;
-
-    const filtered = mockData.filter(item =>
-      item.text.toLowerCase().includes(query)
-    );
-
-    if (filtered.length === 0) {
-      resultsContainer.innerHTML = '<li><i class="fas fa-exclamation-triangle"></i> Ничего не найдено</li>';
-      return;
-    }
-
-    filtered.forEach(item => {
-      const li = document.createElement('li');
-      li.innerHTML = `<i class="fas ${item.icon}"></i> ${item.text}`;
-      li.onclick = () => {
-        alert('Вы выбрали: ' + item.text);
-        closeSearchOverlay();
-      };
-      resultsContainer.appendChild(li);
-    });
-  }
-</script>
-
-<script>
-  function toggleMobileMenu() {
-    const menu = document.getElementById('mobileMenu');
-    menu.classList.toggle('active');
-  }
-  </script>
-
+  
+  <!-- Футер -->
+  <footer>
+    <div class="container" style="align-items: center;">
+      <div style="max-width: 250px;">
+        <h3>GlovimPlaye</h3>
+        <p>Безопасная торговая площадка с низкими ценами</p>
+        <p>support@glovimplaye.com</p>
+      </div>
+      <div>
+        <h4>Способы оплаты</h4>
+        <p>💳 💸 🪙 🎮</p>
+      </div>
+      <div>
+        <h4>Информация</h4>
+        <p><a href="#">О компании</a></p>
+        <p><a href="#">Правила и гарантии</a></p>
+        <p><a href="#">Курсы валют</a></p>
+        <p><a href="#">Советы и гайды</a></p>
+      </div>
+      <div>
+        <h4>Наши соц.сети</h4>
+        <p><a href="https://t.me/" target="_blank">Telegram канал</a></p>
+        <p><a href="https://vk.com/" target="_blank">Группа ВКонтакте</a></p>
+        <p><a href="https://www.youtube.com/" target="_blank">YouTube канал</a></p>
+        <p><a href="https://discord.com/" target="_blank">Discord сервер</a></p>
+      </div>
+      <div>
+        <button class="footer-btn">Написать в техподдержку</button>
+      </div>
+    </div>
+    <p class="copyright">
+      © 2025 GlovimPlaye. Все права защищены.
+    </p>
+  </footer>
+  
   <script>
-    // Расширили массив: теперь у каждого элемента есть image
+    // Инициализация Firebase – замените данные своим проектом
+    var firebaseConfig = {
+        apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+        authDomain: "glovimplaye-b1023.firebaseapp.com",
+        databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+        projectId: "glovimplaye-b1023",
+        storageBucket: "glovimplaye-b1023.firebasestorage.app",
+        messagingSenderId: "553440591519",
+        appId: "1:553440591519:web:b7be45a9253689f322acaa"
+      };
+    firebase.initializeApp(firebaseConfig);
+    
+    // Устанавливаем постоянство сессии (LOCAL)
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(function() {
+        console.log("Сессия установлена");
+      })
+      .catch(function(error) {
+        console.error("Ошибка установки сессии:", error);
+      });
+    
+    // Слушаем изменения авторизации
+    firebase.auth().onAuthStateChanged(function(user) {
+      console.log("onAuthStateChanged:", user);
+      if (user) {
+        loadHeaderData(user);
+      } else {
+        console.log("Пользователь не авторизован");
+        // Можно установить дефолтные данные или перенаправить на страницу входа
+      }
+    });
+    
+    // Функция загрузки данных пользователя для шапки
+    function loadHeaderData(user) {
+      var userId = user.uid;
+      firebase.database().ref('users/' + userId).once('value')
+        .then(function(snapshot) {
+          var userData = snapshot.val();
+          console.log("User data:", userData);
+          if (userData) {
+            // Обновляем баланс
+            document.querySelector('#headerBalance span').innerText =
+              (userData.balance !== undefined ? userData.balance : 0) + '₽';
+            // Обновляем аватар
+            var avatarUrl = userData.avatar || user.photoURL || 'default-avatar.png';
+            document.getElementById('headerProfileAvatar').src = avatarUrl;
+          } else {
+            console.log("Данные пользователя не найдены в базе");
+          }
+        })
+        .catch(function(error) {
+          console.error("Ошибка чтения базы:", error);
+        });
+    }
+    
+    // Пример логики поиска (если требуется)
     const items = [
-      {
+    {
         name: "Standoff 2",
         category: "Мобильные игры",
         link: "standoff2.html",
@@ -1145,100 +703,71 @@ footer {
         image: "images/tiktik.jpg"
       },
     ];
-  
+    
     const searchInput = document.querySelector('.search-input');
     const searchButton = document.querySelector('.search-btn');
     const searchResultsContainer = document.getElementById('search-results');
-  
-    // Функция для фильтрации и отображения результатов
+    
     function showSearchResults(query) {
-      // Очищаем контейнер результатов
       searchResultsContainer.innerHTML = '';
-  
-      // Если строка пустая — скрываем блок результатов и выходим
       if (!query) {
         searchResultsContainer.style.display = 'none';
         return;
       }
-  
-      // Приводим запрос к нижнему регистру
       const lowerQuery = query.toLowerCase();
-  
-      // Фильтруем данные
       const filteredItems = items.filter(item =>
         item.name.toLowerCase().includes(lowerQuery) ||
         item.category.toLowerCase().includes(lowerQuery)
       );
-  
-      // Если ничего не найдено — выводим сообщение
       if (filteredItems.length === 0) {
         searchResultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
       } else {
-        // Иначе рендерим список
         filteredItems.forEach(item => {
-          // Родительский блок результата
           const resultItem = document.createElement('div');
           resultItem.classList.add('search-result-item');
-  
-          // Картинка
+          
           const imgElement = document.createElement('img');
           imgElement.src = item.image;
           imgElement.alt = item.name;
-  
-          // Текстовый блок
+          
           const textElement = document.createElement('div');
           textElement.classList.add('result-text');
-  
-          // Название (жирным)
+          
           const nameElement = document.createElement('div');
           nameElement.classList.add('result-name');
           nameElement.textContent = item.name;
-  
-          // Категория
+          
           const categoryElement = document.createElement('div');
           categoryElement.textContent = item.category;
-  
-          // Добавляем в дерево
+          
           textElement.appendChild(nameElement);
           textElement.appendChild(categoryElement);
-  
           resultItem.appendChild(imgElement);
           resultItem.appendChild(textElement);
-  
-          // При клике — переход по ссылке
+          
           resultItem.addEventListener('click', () => {
             window.location.href = item.link;
           });
-  
-          // Добавляем результат в контейнер
+          
           searchResultsContainer.appendChild(resultItem);
         });
       }
-  
-      // Показываем контейнер
       searchResultsContainer.style.display = 'block';
     }
-  
-    // Событие при нажатии кнопки
+    
     searchButton.addEventListener('click', () => {
       const query = searchInput.value.trim();
       showSearchResults(query);
     });
-  
-    // «Живой» поиск при вводе (можно убрать, если нужно только по кнопке)
     searchInput.addEventListener('input', () => {
       const query = searchInput.value.trim();
       showSearchResults(query);
     });
-  
-    // Если кликнуть вне области поиска — скрыть результаты
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('.search-container') && !e.target.closest('#search-results')) {
+      if (!e.target.closest('.search-bar') && !e.target.closest('#search-results')) {
         searchResultsContainer.style.display = 'none';
       }
     });
   </script>
-  
-  
 </body>
 </html>

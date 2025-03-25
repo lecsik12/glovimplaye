@@ -91,85 +91,118 @@
       border: 2px solid var(--accent-color);
     }
     
-    /* Профиль */
+    /* Основной контейнер */
     .profile-container {
       max-width: 1000px;
       margin: 30px auto;
       padding: 20px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
       animation: fadeInUp 0.6s ease-out;
     }
-    
-    .profile-info {
+
+    /* ---------- Верхняя часть профиля (шапка профиля) ---------- */
+    .profile-header {
       background: var(--card-bg);
-      padding: 30px;
       border-radius: var(--border-radius);
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
       display: flex;
-      flex-direction: column;
       align-items: center;
-      text-align: center;
-    }
-    
-    .profile-info img {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      border: 5px solid var(--accent-color);
-      object-fit: cover;
+      justify-content: space-between;
+      padding: 20px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
       margin-bottom: 20px;
+    }
+
+    /* Левая часть: аватар + инфо (ник, статистика) */
+    .profile-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--accent-color);
       transition: transform 0.3s;
     }
-    
-    .profile-info img:hover {
+    .avatar:hover {
       transform: scale(1.05);
     }
-    
-    .profile-info h1 {
-      font-size: 28px;
-      margin-bottom: 10px;
+
+    .user-info {
       display: flex;
-      align-items: center;
-      gap: 10px;
+      flex-direction: column;
+      gap: 6px;
     }
-    
+    .username {
+      font-size: 22px;
+      font-weight: bold;
+    }
     .admin-badge {
       background: red;
       color: #fff;
-      padding: 5px 10px;
+      padding: 3px 8px;
       border-radius: 5px;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+
+    /* Блок статистики (пример: Покупки, Подписчики, Рейтинг) */
+    .user-stats {
+      display: flex;
+      gap: 20px;
+      margin-top: 5px;
       font-size: 14px;
     }
-    
-    .profile-info p {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-    
-    .balance {
-      font-size: 26px;
-      font-weight: bold;
-      margin: 15px 0;
-      color: var(--accent-color);
-      text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-      background: rgba(255, 127, 80, 0.1);
-      padding: 10px 15px;
-      border-radius: 8px;
-      display: inline-block;
-    }
-    
-    .profile-actions {
-      margin-top: 20px;
-      width: 100%;
+    .stat-item {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      align-items: center;
     }
-    
+    .stat-value {
+      font-weight: bold;
+      font-size: 18px;
+      color: var(--accent-color);
+    }
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .stars i {
+      color: gold;
+    }
+    .rating-value {
+      font-weight: bold;
+      color: var(--accent-color);
+    }
+
+    /* Правая часть: кнопка "Сообщение" (или любые действия) */
+    .profile-right button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--border-radius);
+      background: var(--accent-color);
+      color: var(--text-color);
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .profile-right button:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+    }
+
+    /* ---------- Кнопки (доп. действия: загрузить аватар, редактировать и т.п.) ---------- */
+    .profile-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
     .profile-actions button {
-      width: 100%;
+      flex: 1 1 180px;
       padding: 12px;
       border: none;
       border-radius: 6px;
@@ -182,13 +215,87 @@
       align-items: center;
       justify-content: center;
     }
-    
     .profile-actions button:hover {
       background: var(--accent-hover);
       transform: translateY(-3px);
     }
-    
-    /* Модальное окно для загрузки аватара */
+
+    /* Баланс + дата регистрации */
+    .balance-info {
+      text-align: center;
+      margin: 10px 0;
+    }
+    .balance {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--accent-color);
+      text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+      background: rgba(255, 127, 80, 0.1);
+      padding: 10px 15px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    /* ---------- Навигация по профилю (вкладки "Лоты", "Отзывы" и т.д.) ---------- */
+    .profile-nav {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      display: flex;
+      gap: 20px;
+      padding: 10px 20px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
+    }
+    .nav-item {
+      cursor: pointer;
+      padding: 8px 15px;
+      border-radius: 6px;
+      transition: background 0.3s;
+    }
+    .nav-item:hover {
+      background: #333;
+    }
+    .nav-item.active {
+      background: var(--accent-color);
+      color: #fff;
+    }
+
+    /* Пример блока контента вкладок */
+    .tab-content {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      padding: 20px;
+      min-height: 150px; /* чтобы не схлопывался */
+      margin-bottom: 20px;
+    }
+
+    /* Пример таблиц заказов / товаров */
+    .product-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
+      margin-top: 15px;
+    }
+    .product-table th,
+    .product-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #444;
+    }
+    .product-table th {
+      background: #333;
+      font-weight: bold;
+    }
+    .product-table tr:hover {
+      background: #3a3a3a;
+    }
+
+    /* Модальное окно для загрузки аватара (осталось как у вас) */
     .modal {
       display: none;
       position: fixed;
@@ -202,7 +309,6 @@
       align-items: center;
       justify-content: center;
     }
-    
     .modal-content {
       background: var(--card-bg);
       border-radius: var(--border-radius);
@@ -212,7 +318,6 @@
       text-align: center;
       position: relative;
     }
-    
     .close-modal {
       position: absolute;
       right: 15px;
@@ -220,7 +325,6 @@
       font-size: 24px;
       cursor: pointer;
     }
-    
     .custom-file-upload {
       display: inline-block;
       padding: 10px 20px;
@@ -231,19 +335,15 @@
       transition: background 0.3s;
       margin-bottom: 15px;
     }
-    
     .custom-file-upload:hover {
       background: var(--accent-hover);
     }
-    
     .modal input[type="file"] {
       display: none;
     }
-    
     .upload-preview {
       margin-top: 15px;
     }
-    
     .upload-preview img {
       width: 100px;
       height: 100px;
@@ -251,77 +351,7 @@
       border: 3px solid var(--accent-color);
       object-fit: cover;
     }
-    
-    /* Раздел заказов */
-    .profile-orders {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: var(--border-radius);
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-      animation: fadeInUp 0.6s ease-out;
-    }
-    
-    .profile-orders h2 {
-      margin-bottom: 15px;
-    }
-    
-    .orders-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-    
-    .orders-tabs button {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      background: var(--accent-color);
-      color: var(--text-color);
-      transition: background 0.3s;
-    }
-    
-    .orders-tabs button.active {
-      background: var(--accent-hover);
-    }
-    
-    .orders-content p {
-      text-align: center;
-      padding: 15px;
-    }
-    
-    .product-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-    }
-    
-    .product-table th,
-    .product-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #444;
-    }
-    
-    .product-table th {
-      background: #333;
-      font-weight: bold;
-    }
-    
-    .product-table tr:hover {
-      background: #3a3a3a;
-    }
-    
-    .product-name {
-      color: var(--accent-color);
-      font-weight: bold;
-    }
-    
+
     /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
       position: fixed;
@@ -334,7 +364,6 @@
       box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
       z-index: 20;
     }
-    
     .bottom-nav a {
       text-decoration: none;
       color: var(--text-color);
@@ -342,24 +371,21 @@
       flex-grow: 1;
       font-size: 14px;
     }
-    
     .bottom-nav a i {
       display: block;
       font-size: 22px;
       margin-bottom: 2px;
     }
-    
     .bottom-nav-profile img.avatar {
       width: 24px;
       height: 24px;
       border-radius: 50%;
       margin-bottom: 2px;
     }
-    
     @media (min-width: 768px) {
       .bottom-nav { display: none; }
     }
-    
+
     /* Футер */
     footer {
       background: var(--header-bg);
@@ -389,50 +415,94 @@
   </header>
   
   <main class="profile-container" id="profileContainer">
-    <!-- Информация о профиле -->
-    <div class="profile-info">
-      <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
-      <h1 id="profileNickname">Загрузка...</h1>
-      <p id="profileEmail">Загрузка...</p>
+    <!-- Верхняя часть профиля (аватар, ник, статистика, кнопка "Сообщение") -->
+    <div class="profile-header">
+      <div class="profile-left">
+        <!-- Аватар -->
+        <img id="profileAvatar" src="default-avatar.png" alt="Avatar" class="avatar">
+        
+        <!-- Информация о пользователе (ник, статистика) -->
+        <div class="user-info">
+          <div class="username" id="profileNickname">
+            Загрузка...
+          </div>
+          <!-- Пример статистики: покупки, подписчики, рейтинг -->
+          <div class="user-stats" id="userStatsContainer">
+            <div class="stat-item">
+              <div class="stat-value" id="purchasesCount">0</div>
+              <div>Покупки</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="followersCount">0</div>
+              <div>Подписчики</div>
+            </div>
+            <div class="stat-item">
+              <div class="rating">
+                <div class="stars">
+                  <!-- Пять звёзд (пример) -->
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star-half-alt"></i>
+                </div>
+                <span class="rating-value" id="ratingValue">4.7</span>
+              </div>
+              <div>Рейтинг</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Правая часть: кнопка "Сообщение" (или любая другая) -->
+      <div class="profile-right">
+        <button onclick="alert('Написать сообщение')">
+          Сообщение
+        </button>
+      </div>
+    </div>
+
+    <!-- Кнопки действий (загрузить аватар, редактировать, пополнить баланс и т.п.) -->
+    <div class="profile-actions">
+      <button onclick="openModal()">
+        <i class="fas fa-cloud-upload-alt"></i> Загрузить аватарку
+      </button>
+      <button onclick="editProfile()">
+        <i class="fas fa-edit"></i> Редактировать профиль
+      </button>
+      <button onclick="topUpBalance()">
+        <i class="fas fa-plus-circle"></i> Пополнить баланс
+      </button>
+      <button onclick="window.open('https://t.me/Glovimplaye_bot', '_blank')">
+        <i class="fab fa-telegram-plane"></i> Поддержка
+      </button>
+      <button onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Выйти
+      </button>
+    </div>
+
+    <!-- Баланс + дата регистрации -->
+    <div class="balance-info">
       <p class="balance">
         Баланс: <span id="balanceAmount">0</span> ₽
       </p>
       <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
-      
-      <div class="profile-actions">
-        <button onclick="openModal()">
-          <i class="fas fa-cloud-upload-alt"></i> Загрузить аватарку
-        </button>
-        <button onclick="editProfile()">
-          <i class="fas fa-edit"></i> Редактировать профиль
-        </button>
-        <button onclick="topUpBalance()">
-          <i class="fas fa-plus-circle"></i> Пополнить баланс через CryptoBot
-        </button>
-        <button onclick="window.open('https://t.me/Glovimplaye_bot', '_blank')">
-          <i class="fab fa-telegram-plane"></i> Написать в поддержку
-        </button>
-        <button onclick="logout()">
-          <i class="fas fa-sign-out-alt"></i> Выйти
-        </button>
+      <p id="profileEmail">Загрузка...</p>
+    </div>
+
+    <!-- Вкладки (демо: Лоты, Отзывы). Можно расширить или использовать "Продажи/Покупки" -->
+    <div class="profile-nav">
+      <div class="nav-item active" onclick="switchTab('lotsTab', this)">
+        Лоты <span id="lotsCount">(0)</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('reviewsTab', this)">
+        Отзывы <span id="reviewsCount">(0)</span>
       </div>
     </div>
-    
-    <!-- Блок заказов -->
-    <div class="profile-orders">
-      <h2>Заказы</h2>
-      <div class="orders-tabs">
-        <button id="salesTab" class="active" onclick="showSales()">Продажи</button>
-        <button id="purchasesTab" onclick="showPurchases()">Покупки</button>
-      </div>
-      <div class="orders-content" id="ordersContent">
-        <p>Загрузка данных...</p>
-      </div>
-    </div>
-    
-    <!-- Блок товаров -->
-    <div class="profile-products">
-      <h2 style="margin-bottom:15px;">Мои товары</h2>
+
+    <!-- Контент для вкладок -->
+    <div class="tab-content" id="lotsTab">
+      <h2>Мои товары</h2>
       <table class="product-table">
         <thead>
           <tr>
@@ -445,7 +515,25 @@
           <!-- Товары будут динамически добавляться сюда -->
         </tbody>
       </table>
+
+      <h2 style="margin-top:30px;">Заказы (Продажи)</h2>
+      <div id="ordersContentSales">
+        <!-- Тут будет таблица продаж (см. ниже loadSales()) -->
+      </div>
     </div>
+
+    <div class="tab-content" id="reviewsTab" style="display:none;">
+      <p>Здесь могут быть отзывы, комментарии и т.д.</p>
+    </div>
+    
+    <!-- Блок заказов (Покупки) - если хотите показывать отдельно -->
+    <div class="profile-orders" style="display:none;">
+      <h2>Заказы (Покупки)</h2>
+      <div id="ordersContentPurchases">
+        <!-- Тут будет таблица покупок (см. ниже loadPurchases()) -->
+      </div>
+    </div>
+
   </main>
   
   <!-- Модальное окно для загрузки аватара -->
@@ -490,7 +578,7 @@
   </footer>
   
   <script>
-    // Установка Firebase-конфигурации (замените на свои данные)
+    // Инициализация Firebase
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -521,7 +609,9 @@
       console.log("Profile page, onAuthStateChanged:", user);
       if (user) {
         loadUserProfile(user);
-        // Здесь можно добавить дополнительную логику (например, загрузку товаров или заказов)
+        // Загрузим продажи/покупки/товары
+        loadSales();
+        loadPurchases();
       } else {
         console.log("Пользователь не найден, перенаправление на login.html");
         window.location.href = "login.html";
@@ -534,7 +624,8 @@
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
         let userData = snapshot.val();
         if (!userData) return;
-        // Формирование строки с никнеймом и бейджем (если требуется)
+
+        // Ник + бейдж
         let nicknameText = userData.nickname || "Без ника";
         if (userData.role === "admin") {
           nicknameText += ' <span class="admin-badge">Admin</span>';
@@ -542,17 +633,31 @@
           nicknameText += ' <span class="admin-badge" style="background: #3498db;">Поддержка</span>';
         }
         document.getElementById('profileNickname').innerHTML = nicknameText;
+
+        // Баланс
         document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
+
+        // Почта
         document.getElementById('profileEmail').innerText = user.email || "user@example.com";
+
+        // Дата регистрации
         if (userData.createdAt) {
           let date = new Date(userData.createdAt);
           document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
         } else {
           document.getElementById('profileCreatedDate').innerText = "Неизвестно";
         }
+
+        // Аватар
         let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
         document.getElementById('profileAvatar').src = avatarUrl;
         
+        // Пример: количество покупок, подписчиков и рейтинг (если есть в userData)
+        // Если у вас нет таких полей, либо замените на нужные.
+        document.getElementById('purchasesCount').innerText = userData.purchasesCount || 0;
+        document.getElementById('followersCount').innerText = userData.followersCount || 0;
+        document.getElementById('ratingValue').innerText = userData.rating || 4.7;
+
         // Обновляем данные в блоке хедера
         updateHeaderUserInfo({
           nickname: userData.nickname || user.displayName,
@@ -561,7 +666,7 @@
       });
     }
     
-    // Обновление информации о пользователе в хедере
+    // Обновление информации о пользователе в хедере (справа)
     function updateHeaderUserInfo(data) {
       const headerUserInfo = document.getElementById('headerUserInfo');
       if (headerUserInfo) {
@@ -569,7 +674,7 @@
       }
     }
     
-    // Функции открытия/закрытия модального окна для загрузки аватара
+    // Открытие/закрытие модалки загрузки аватара
     function openModal() {
       document.getElementById('avatarModal').style.display = "flex";
     }
@@ -629,28 +734,33 @@
       }
     });
     
-    // Функции для работы с заказами
-    function showSales() {
-      document.getElementById('salesTab').classList.add('active');
-      document.getElementById('purchasesTab').classList.remove('active');
-      loadSales();
+    // Пример переключения вкладок
+    function switchTab(tabId, el) {
+      // Убираем класс active у всех .nav-item
+      document.querySelectorAll('.profile-nav .nav-item').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      // Добавляем активной
+      el.classList.add('active');
+
+      // Прячем все .tab-content
+      document.getElementById('lotsTab').style.display = 'none';
+      document.getElementById('reviewsTab').style.display = 'none';
+
+      // Показываем нужную
+      document.getElementById(tabId).style.display = 'block';
     }
-    
-    function showPurchases() {
-      document.getElementById('purchasesTab').classList.add('active');
-      document.getElementById('salesTab').classList.remove('active');
-      loadPurchases();
-    }
-    
+
+    // Загрузка продаж (sellerId = текущий user.uid)
     function loadSales() {
       const ordersRef = firebase.database().ref('orders');
       const currentUser = firebase.auth().currentUser;
       if (!currentUser) return;
       ordersRef.orderByChild('sellerId').equalTo(currentUser.uid).on('value', snapshot => {
-        const ordersContent = document.getElementById('ordersContent');
-        ordersContent.innerHTML = "";
+        const container = document.getElementById('ordersContentSales');
+        container.innerHTML = "";
         if (!snapshot.exists()) {
-          ordersContent.innerHTML = '<p>Продаж нет</p>';
+          container.innerHTML = '<p>Продаж нет</p>';
           return;
         }
         let table = document.createElement('table');
@@ -675,19 +785,20 @@
           tbody.appendChild(row);
         });
         table.appendChild(tbody);
-        ordersContent.appendChild(table);
+        container.appendChild(table);
       });
     }
     
+    // Загрузка покупок (buyerId = текущий user.uid)
     function loadPurchases() {
       const ordersRef = firebase.database().ref('orders');
       const currentUser = firebase.auth().currentUser;
       if (!currentUser) return;
       ordersRef.orderByChild('buyerId').equalTo(currentUser.uid).on('value', snapshot => {
-        const ordersContent = document.getElementById('ordersContent');
-        ordersContent.innerHTML = "";
+        const container = document.getElementById('ordersContentPurchases');
+        container.innerHTML = "";
         if (!snapshot.exists()) {
-          ordersContent.innerHTML = '<p>Покупок нет</p>';
+          container.innerHTML = '<p>Покупок нет</p>';
           return;
         }
         let table = document.createElement('table');
@@ -712,11 +823,15 @@
           tbody.appendChild(row);
         });
         table.appendChild(tbody);
-        ordersContent.appendChild(table);
+        container.appendChild(table);
       });
     }
-    
-    // Примеры функций редактирования профиля и пополнения баланса (реализуйте по необходимости)
+
+    // Пример загрузки "Мои товары" (если у вас есть отдельная логика)
+    // В вашем коде это делалось в #userProductsList
+    // Оставляем как есть, если уже реализовано где-то ещё.
+
+    // Примеры функций редактирования профиля и пополнения баланса
     function editProfile() { alert('Редактирование профиля'); }
     function topUpBalance() { alert('Пополнение баланса'); }
     function logout() {
@@ -727,3 +842,4 @@
   </script>
 </body>
 </html>
+
