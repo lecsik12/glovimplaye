@@ -31,7 +31,7 @@
       min-height: 100vh;
       line-height: 1.6;
       padding-bottom: 70px; /* чтобы нижняя панель не перекрывала контент */
-      /* Отступ справа для sidebar */
+      /* Отступ справа для sidebar на десктопе */
       padding-right: 270px;
     }
     a {
@@ -48,7 +48,7 @@
     header {
       background: #161616;
       border-bottom: 1px solid #333;
-      padding: 15px 0;
+      padding: 15px 20px;
       position: relative;
       z-index: 2;
     }
@@ -56,6 +56,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
     }
     .logo {
       font-size: 28px;
@@ -72,7 +73,7 @@
     .search-bar {
       flex: 1;
       max-width: 400px;
-      margin: 0 20px;
+      margin: 10px 20px;
       position: relative;
     }
     .search-bar input {
@@ -104,8 +105,9 @@
     /* Правый блок меню (чат, баланс, аватар) */
     .header-right {
       display: flex;
-      gap: 20px;
+      gap: 15px;
       align-items: center;
+      flex-wrap: wrap;
     }
     .nav-btn {
       background: none;
@@ -203,7 +205,7 @@
       color: #4fc3f7;
     }
     
-    /* Горизонтальная прокрутка для категорий */
+    /* Горизонтальная прокрутка */
     .horizontal-scroll {
       display: flex;
       overflow-x: auto;
@@ -222,7 +224,7 @@
       background: #1e1e1e;
     }
     
-    /* Карточка игры/приложения */
+    /* Карточки */
     .game-card {
       width: 80px;
       margin-right: 16px;
@@ -257,7 +259,7 @@
       vertical-align: middle;
     }
     
-    /* Нижняя панель (мобильные) */
+    /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
       display: none;
       position: fixed;
@@ -293,71 +295,6 @@
       border: 2px solid #4fc3f7;
       object-fit: cover;
       margin-bottom: 2px;
-    }
-    
-    @media (max-width: 768px) {
-      .header-inner {
-        flex-direction: column;
-        gap: 10px;
-      }
-      .search-bar {
-        margin: 10px 0;
-      }
-      .bottom-nav {
-        display: flex;
-      }
-      /* Скрываем sidebar на мобильных устройствах */
-      .admin-sidebar {
-        display: none;
-      }
-      body {
-        padding-right: 20px;
-      }
-    }
-    
-    /* Футер */
-    footer {
-      background: #161616;
-      color: #777;
-      padding: 30px 0;
-      margin-top: 20px;
-    }
-    footer .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      gap: 20px;
-    }
-    footer h3, footer h4 {
-      color: #4fc3f7;
-      margin-bottom: 8px;
-    }
-    footer a {
-      color: #777;
-      font-size: 14px;
-    }
-    footer a:hover {
-      color: #fff;
-    }
-    footer p {
-      font-size: 13px;
-    }
-    .footer-btn {
-      background: #4fc3f7;
-      color: #121212;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .footer-btn:hover {
-      background: #80deea;
-    }
-    footer p.copyright {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 13px;
     }
     
     /* Правая боковая панель (админ-секция) */
@@ -408,6 +345,79 @@
     .admin-account .admin-name {
       font-size: 14px;
       color: #ccc;
+    }
+    
+    /* Футер */
+    footer {
+      background: #161616;
+      color: #777;
+      padding: 30px 20px;
+      margin-top: 20px;
+    }
+    footer .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 20px;
+    }
+    footer h3, footer h4 {
+      color: #4fc3f7;
+      margin-bottom: 8px;
+    }
+    footer a {
+      color: #777;
+      font-size: 14px;
+    }
+    footer a:hover {
+      color: #fff;
+    }
+    footer p {
+      font-size: 13px;
+    }
+    .footer-btn {
+      background: #4fc3f7;
+      color: #121212;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .footer-btn:hover {
+      background: #80deea;
+    }
+    footer p.copyright {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+    }
+    
+    /* Адаптивные стили для мобильных устройств */
+    @media (max-width: 768px) {
+      body {
+        /* Убираем отступ справа */
+        padding-right: 20px;
+      }
+      .header-inner {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .search-bar {
+        width: 100%;
+        margin: 10px 0;
+      }
+      .header-right {
+        justify-content: center;
+      }
+      /* Скрываем правую панель с админами */
+      .admin-sidebar {
+        display: none;
+      }
+      /* Показываем нижнюю навигацию */
+      .bottom-nav {
+        display: flex;
+      }
     }
   </style>
 </head>
@@ -524,14 +534,14 @@
     </div>
   </div>
   
-  <!-- Правая боковая панель (админ-секция) -->
+  <!-- Правая боковая панель (админ-секция) для десктопа -->
   <aside class="admin-sidebar">
     <div class="sidebar-logo" onclick="location.href='index.html'">GlovimPlaye</div>
     <h3>Администраторы</h3>
     <!-- Здесь динамически будут загружаться админы -->
   </aside>
   
-  <!-- Нижняя панель (для мобильных) -->
+  <!-- Нижняя панель (мобильная навигация) -->
   <div class="bottom-nav">
     <a href="index.html">
       <i class="fas fa-home"></i>
@@ -598,7 +608,7 @@
       appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
 
-    // Инициализация Firebase только если не инициализировано ранее
+    // Инициализация Firebase, если ещё не инициализировано
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
@@ -607,24 +617,21 @@
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       .then(function() {
         console.log("Сессия установлена");
-        // После установки сессии загружаем админов
         loadAdmins();
       })
       .catch(function(error) {
         console.error("Ошибка установки сессии:", error);
       });
       
-    // Функция обновления данных в хедере (баланс, аватар, ник)
+    // Обновление данных пользователя в хедере (баланс, аватар)
     function loadHeaderData(user) {
       var userId = user.uid;
       firebase.database().ref('users/' + userId).once('value')
         .then(function(snapshot) {
           var userData = snapshot.val();
           if (userData) {
-            // Обновляем баланс
             document.querySelector('#headerBalance span').innerText =
               (userData.balance !== undefined ? userData.balance : 0) + '₽';
-            // Обновляем аватар
             var avatarUrl = userData.avatar || user.photoURL || 'default-avatar.png';
             document.getElementById('headerProfileAvatar').src = avatarUrl;
           } else {
@@ -636,21 +643,18 @@
         });
     }
     
-    // Функция загрузки администраторов
+    // Загрузка администраторов
     function loadAdmins() {
       var adminsRef = firebase.database().ref('users');
-      // Фильтрация по полю role = "admin"
       adminsRef.orderByChild('role').equalTo('admin').once('value')
         .then(function(snapshot) {
           var sidebar = document.querySelector('.admin-sidebar');
-          // Очищаем предыдущие элементы (если есть)
           sidebar.querySelectorAll('.admin-account').forEach(el => el.remove());
           snapshot.forEach(function(childSnapshot) {
             var adminData = childSnapshot.val();
             var adminDiv = document.createElement('div');
             adminDiv.classList.add('admin-account');
             adminDiv.addEventListener('click', function() {
-              // Переход на страницу профиля администратора с передачей uid
               window.location.href = 'admin-profile.html?uid=' + childSnapshot.key;
             });
             
@@ -672,7 +676,7 @@
         });
     }
     
-    // Логика поиска игр/приложений
+    // Логика поиска
     const items = [
       { name: "Standoff 2", category: "Мобильные игры", link: "standoff2.html", image: "images/standoff2.jpg" },
       { name: "Mobile Legends", category: "Мобильные игры", link: "mobile-legends.html", image: "images/mobile_legends.jpg" },
@@ -761,14 +765,12 @@
       }
     });
     
-    // Обработка авторизации: загрузка данных пользователя и обновление хедера
+    // Обработка авторизации: обновление хедера после входа
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         loadHeaderData(user);
       } else {
         console.log("Пользователь не авторизован");
-        // Можно перенаправить на страницу входа
-        // window.location.href = "login.html";
       }
     });
   </script>
