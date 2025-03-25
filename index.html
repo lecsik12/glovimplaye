@@ -102,7 +102,7 @@
       outline: none;
     }
     
-    /* Правый блок меню (чат, баланс, аватар) */
+    /* Блок с кнопками: чат, баланс, аватар */
     .header-right {
       display: flex;
       gap: 15px;
@@ -205,7 +205,7 @@
       color: #4fc3f7;
     }
     
-    /* Горизонтальная прокрутка */
+    /* Горизонтальная прокрутка для категорий */
     .horizontal-scroll {
       display: flex;
       overflow-x: auto;
@@ -224,7 +224,7 @@
       background: #1e1e1e;
     }
     
-    /* Карточки */
+    /* Карточка игры/приложения */
     .game-card {
       width: 80px;
       margin-right: 16px;
@@ -408,10 +408,7 @@
         margin: 10px 0;
       }
       .header-right {
-        justify-content: center;
-      }
-      /* Скрываем правую панель с админами */
-      .admin-sidebar {
+        /* Скрываем блок с кнопками в хедере на мобильных */
         display: none;
       }
       /* Показываем нижнюю навигацию */
@@ -433,7 +430,7 @@
           <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
           <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
-        <!-- Меню: чат, баланс и аватар профиля -->
+        <!-- Блок кнопок (чат, баланс, аватар) — отображается только на десктопе -->
         <div class="header-right">
           <button class="nav-btn" onclick="location.href='chat.html'">
             <i class="fas fa-comment-dots"></i>
@@ -771,6 +768,7 @@
         loadHeaderData(user);
       } else {
         console.log("Пользователь не авторизован");
+        // Можно добавить редирект на страницу входа, если требуется
       }
     });
   </script>
