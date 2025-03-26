@@ -33,6 +33,7 @@
       padding-bottom: 70px; /* чтобы нижняя панель не перекрывала контент */
       /* Отступ справа для sidebar на десктопе */
       padding-right: 270px;
+      transition: background 0.3s, color 0.3s;
     }
     a {
       text-decoration: none;
@@ -51,6 +52,7 @@
       padding: 15px 20px;
       position: relative;
       z-index: 2;
+      transition: background 0.3s, border-color 0.3s;
     }
     .header-inner {
       display: flex;
@@ -63,7 +65,7 @@
       font-weight: 600;
       color: #4fc3f7;
       cursor: pointer;
-      transition: transform 0.3s;
+      transition: transform 0.3s, color 0.3s;
     }
     .logo:hover {
       transform: scale(1.05);
@@ -85,6 +87,7 @@
       color: #ccc;
       outline: none;
       font-size: 15px;
+      transition: background 0.3s, color 0.3s;
     }
     .search-bar input::placeholder {
       color: #555;
@@ -102,14 +105,14 @@
       outline: none;
     }
     
-    /* Блок с кнопками: чат, баланс, аватар */
+    /* Блок с кнопками: чат, баланс, аватар, тема */
     .header-right {
       display: flex;
       gap: 15px;
       align-items: center;
       flex-wrap: wrap;
     }
-    .nav-btn {
+    .nav-btn, .theme-toggle-btn {
       background: none;
       border: none;
       color: #4fc3f7;
@@ -120,10 +123,10 @@
       flex-direction: column;
       align-items: center;
     }
-    .nav-btn:hover {
+    .nav-btn:hover, .theme-toggle-btn:hover {
       color: #80deea;
     }
-    .nav-btn span {
+    .nav-btn span, .theme-toggle-btn span {
       font-size: 12px;
       margin-top: 3px;
     }
@@ -324,6 +327,7 @@
       border-left: 1px solid #333;
       padding: 20px;
       overflow-y: auto;
+      transition: background 0.3s, border-color 0.3s;
     }
     .admin-sidebar .sidebar-logo {
       font-size: 24px;
@@ -375,6 +379,7 @@
       color: #777;
       padding: 30px 20px;
       margin-top: 20px;
+      transition: background 0.3s, color 0.3s;
     }
     footer .container {
       display: flex;
@@ -438,6 +443,41 @@
         display: flex;
       }
     }
+    
+    /* Стили для светлой темы */
+    body.light-mode {
+      background: #ffffff;
+      color: #333;
+      padding-bottom: 70px;
+    }
+    body.light-mode header {
+      background: #f8f8f8;
+      border-bottom: 1px solid #ddd;
+    }
+    body.light-mode .logo {
+      color: #007acc;
+    }
+    body.light-mode .search-bar input {
+      background: #fff;
+      color: #333;
+    }
+    body.light-mode .search-bar input::placeholder {
+      color: #999;
+    }
+    body.light-mode .header-right, 
+    body.light-mode .nav-btn, 
+    body.light-mode .theme-toggle-btn, 
+    body.light-mode .balance {
+      color: #007acc;
+    }
+    body.light-mode .admin-sidebar {
+      background: #f0f0f0;
+      border-left: 1px solid #ddd;
+    }
+    body.light-mode footer {
+      background: #f8f8f8;
+      color: #555;
+    }
   </style>
 </head>
 <body>
@@ -452,7 +492,7 @@
           <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
           <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
-        <!-- Блок с кнопками (чат, баланс, аватар) — отображается только на десктопе -->
+        <!-- Блок с кнопками (чат, баланс, аватар, переключение темы) — отображается только на десктопе -->
         <div class="header-right">
           <button class="nav-btn" onclick="location.href='chat.html'">
             <i class="fas fa-comment-dots"></i>
@@ -463,6 +503,11 @@
             <span>0₽</span>
           </div>
           <img id="headerProfileAvatar" class="profile-avatar" src="default-avatar.png" alt="Avatar" onclick="location.href='profile.html'">
+          <!-- Кнопка переключения темы -->
+          <button class="theme-toggle-btn" id="themeToggle">
+            <i class="fas fa-adjust"></i>
+            <span>Светлая тема</span>
+          </button>
         </div>
       </div>
     </div>
@@ -835,6 +880,25 @@
         // При необходимости можно добавить редирект на страницу входа
         // window.location.href = "login.html";
       }
+    });
+    
+    // Логика переключения темы
+    const themeToggleBtn = document.getElementById('themeToggle');
+    function setTheme(theme) {
+      if(theme === 'light'){
+        document.body.classList.add('light-mode');
+        themeToggleBtn.querySelector('span').textContent = 'Темная тема';
+      } else {
+        document.body.classList.remove('light-mode');
+        themeToggleBtn.querySelector('span').textContent = 'Светлая тема';
+      }
+      localStorage.setItem('theme', theme);
+    }
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(currentTheme);
+    themeToggleBtn.addEventListener('click', () => {
+      const newTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
+      setTheme(newTheme);
     });
   </script>
 </body>
