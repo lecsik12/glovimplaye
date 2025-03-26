@@ -33,6 +33,7 @@
       padding-bottom: 70px; /* чтобы нижняя панель не перекрывала контент */
       /* Отступ справа для sidebar на десктопе */
       padding-right: 270px;
+      transition: background 0.3s, color 0.3s;
     }
     a {
       text-decoration: none;
@@ -51,6 +52,7 @@
       padding: 15px 20px;
       position: relative;
       z-index: 2;
+      transition: background 0.3s, border-color 0.3s;
     }
     .header-inner {
       display: flex;
@@ -63,7 +65,7 @@
       font-weight: 600;
       color: #4fc3f7;
       cursor: pointer;
-      transition: transform 0.3s;
+      transition: transform 0.3s, color 0.3s;
     }
     .logo:hover {
       transform: scale(1.05);
@@ -85,6 +87,7 @@
       color: #ccc;
       outline: none;
       font-size: 15px;
+      transition: background 0.3s, color 0.3s;
     }
     .search-bar input::placeholder {
       color: #555;
@@ -102,14 +105,14 @@
       outline: none;
     }
     
-    /* Блок с кнопками: чат, баланс, аватар */
+    /* Блок с кнопками: чат, баланс, аватар, тема */
     .header-right {
       display: flex;
       gap: 15px;
       align-items: center;
       flex-wrap: wrap;
     }
-    .nav-btn {
+    .nav-btn, .theme-toggle-btn {
       background: none;
       border: none;
       color: #4fc3f7;
@@ -120,10 +123,10 @@
       flex-direction: column;
       align-items: center;
     }
-    .nav-btn:hover {
+    .nav-btn:hover, .theme-toggle-btn:hover {
       color: #80deea;
     }
-    .nav-btn span {
+    .nav-btn span, .theme-toggle-btn span {
       font-size: 12px;
       margin-top: 3px;
     }
@@ -259,21 +262,20 @@
       vertical-align: middle;
     }
     
-    /* Рекламный баннер на главной */
-    .main-banner {
-      margin: 10px;
-      border: 1px solid #333;
-      border-radius: 3x;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.3s;
+    /* Блок "О сайте" */
+    .about-section {
+      background: #161616;
+      padding: 30px 20px;
+      margin: 20px 0;
+      border-radius: 8px;
     }
-    .main-banner img {
-      width: 10%;
-      display: block;
+    .about-section h2 {
+      color: #4fc3f7;
+      margin-bottom: 15px;
     }
-    .main-banner:hover {
-      transform: scale(1.02);
+    .about-section p {
+      color: #ccc;
+      line-height: 1.6;
     }
     
     /* Нижняя панель (мобильная навигация) */
@@ -314,7 +316,7 @@
       margin-bottom: 2px;
     }
     
-    /* Правая боковая панель (только для ПК) */
+    /* Правая боковая панель (админ-секция) — отображается только на десктопе */
     .admin-sidebar {
       position: fixed;
       top: 0;
@@ -325,6 +327,7 @@
       border-left: 1px solid #333;
       padding: 20px;
       overflow-y: auto;
+      transition: background 0.3s, border-color 0.3s;
     }
     .admin-sidebar .sidebar-logo {
       font-size: 24px;
@@ -334,10 +337,15 @@
       margin-bottom: 20px;
       cursor: pointer;
     }
-    /* Секция админов */
+    .admin-sidebar h3 {
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
     .admin-account {
       display: flex;
-      align-items: center;
+      flex-direction: column;
+      align-items: flex-start;
       margin-bottom: 15px;
       background: #262626;
       padding: 10px;
@@ -359,24 +367,10 @@
       font-size: 14px;
       color: #ccc;
     }
-    
-    /* Адаптивные стили для ПК/мобильных */
-    .desktop-only {
-      display: inline-block;
-    }
-    @media (max-width: 768px) {
-      .desktop-only {
-        display: none; /* скрываем на мобильных */
-      }
-      .admin-sidebar {
-        display: none; /* скрываем правую панель на мобильных */
-      }
-      body {
-        padding-right: 20px; /* убираем отступ под sidebar */
-      }
-      .bottom-nav {
-        display: flex; /* показываем нижнюю панель навигации на мобильных */
-      }
+    .admin-role {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 3px;
     }
     
     /* Футер */
@@ -385,6 +379,7 @@
       color: #777;
       padding: 30px 20px;
       margin-top: 20px;
+      transition: background 0.3s, color 0.3s;
     }
     footer .container {
       display: flex;
@@ -423,19 +418,65 @@
       margin-top: 20px;
       font-size: 13px;
     }
-    /* Стили для соц.сетей в футере с иконками */
-    .social-links {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
+    
+    /* Адаптивные стили для мобильных устройств */
+    @media (max-width: 768px) {
+      body {
+        /* Убираем отступ справа */
+        padding-right: 20px;
+      }
+      .header-inner {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+      }
+      .search-bar {
+        width: 100%;
+        margin: 10px 0;
+      }
+      /* Скрываем блок с кнопками в хедере и окно админов на мобильных */
+      .header-right, .admin-sidebar {
+        display: none;
+      }
+      /* Показываем нижнюю навигацию */
+      .bottom-nav {
+        display: flex;
+      }
     }
-    .social-links a {
-      color: #777;
-      font-size: 20px;
-      transition: color 0.3s;
+    
+    /* Стили для светлой темы */
+    body.light-mode {
+      background: #ffffff;
+      color: #333;
+      padding-bottom: 70px;
     }
-    .social-links a:hover {
-      color: #4fc3f7;
+    body.light-mode header {
+      background: #f8f8f8;
+      border-bottom: 1px solid #ddd;
+    }
+    body.light-mode .logo {
+      color: #007acc;
+    }
+    body.light-mode .search-bar input {
+      background: #fff;
+      color: #333;
+    }
+    body.light-mode .search-bar input::placeholder {
+      color: #999;
+    }
+    body.light-mode .header-right, 
+    body.light-mode .nav-btn, 
+    body.light-mode .theme-toggle-btn, 
+    body.light-mode .balance {
+      color: #007acc;
+    }
+    body.light-mode .admin-sidebar {
+      background: #f0f0f0;
+      border-left: 1px solid #ddd;
+    }
+    body.light-mode footer {
+      background: #f8f8f8;
+      color: #555;
     }
   </style>
 </head>
@@ -446,14 +487,12 @@
       <div class="header-inner">
         <!-- Логотип -->
         <div class="logo" onclick="location.href='index.html'">GlovimPlaye</div>
-        
         <!-- Поиск -->
         <div class="search-bar">
           <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
           <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
-        
-        <!-- Блок с кнопками (чат, баланс, аватар) — отображается только на десктопе -->
+        <!-- Блок с кнопками (чат, баланс, аватар, переключение темы) — отображается только на десктопе -->
         <div class="header-right">
           <button class="nav-btn" onclick="location.href='chat.html'">
             <i class="fas fa-comment-dots"></i>
@@ -464,6 +503,11 @@
             <span>0₽</span>
           </div>
           <img id="headerProfileAvatar" class="profile-avatar" src="default-avatar.png" alt="Avatar" onclick="location.href='profile.html'">
+          <!-- Кнопка переключения темы -->
+          <button class="theme-toggle-btn" id="themeToggle">
+            <i class="fas fa-adjust"></i>
+            <span>Светлая тема</span>
+          </button>
         </div>
       </div>
     </div>
@@ -474,11 +518,6 @@
   
   <!-- Основной контент -->
   <div class="container">
-    <!-- Рекламный баннер на главной странице -->
-    <div class="main-banner" onclick="window.location.href='https://example.com/promo'">
-      <img src="images/avatar.png"Рекламный баннер">
-    </div>
-    
     <!-- Секция: Игры -->
     <h2 class="section-title">Игры</h2>
     <div class="horizontal-scroll">
@@ -559,17 +598,28 @@
     </div>
   </div>
   
-  <!-- Правая боковая панель (только для ПК) -->
+  <!-- Блок "О сайте" -->
+  <section class="about-section">
+    <div class="container" style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px;">
+      <div style="flex: 1; min-width: 250px;">
+        <h2>О сайте</h2>
+        <p>
+          GlovimPlaye — это безопасная торговая площадка, где вы можете найти лучшие игры и приложения по низким ценам.
+          Здесь легко общаться, обмениваться опытом и получать качественную поддержку. Мы постоянно развиваемся, чтобы
+          предоставить вам лучший сервис.
+        </p>
+      </div>
+      <div style="flex: 1; min-width: 250px;">
+        <img src="images/about-image.jpg" alt="О сайте" style="width: 100%; border-radius: 8px;">
+      </div>
+    </div>
+  </section>
+  
+  <!-- Правая боковая панель (админ-секция) — отображается только на десктопе -->
   <aside class="admin-sidebar">
-    <div class="sidebar-logo" onclick="location.href='index.html'">
-      GlovimPlaye
-    </div>
-    <!-- Секция администраторов -->
-    <h3>Админи</h3>
-    <div id="adminList">
-      <!-- Здесь динамически будут загружаться админы из Firebase -->
-    </div>
-    <!-- Здесь могут быть другие блоки (например, покупки или продажи) -->
+    <div class="sidebar-logo" onclick="location.href='index.html'">GlovimPlaye</div>
+    <h3>Админы</h3>
+    <!-- Здесь динамически будут загружаться админы с ролями -->
   </aside>
   
   <!-- Нижняя панель (мобильная навигация) -->
@@ -613,12 +663,10 @@
       </div>
       <div>
         <h4>Наши соц.сети</h4>
-        <div class="social-links">
-          <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-          <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-          <a href="https://telegram.org/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-          <a href="https://vk.com/" target="_blank" title="ВКонтакте"><i class="fab fa-vk"></i></a>
-        </div>
+        <p><a href="https://t.me/" target="_blank">Telegram канал</a></p>
+        <p><a href="https://vk.com/" target="_blank">Группа ВКонтакте</a></p>
+        <p><a href="https://www.youtube.com/" target="_blank">YouTube канал</a></p>
+        <p><a href="https://discord.com/" target="_blank">Discord сервер</a></p>
       </div>
       <div>
         <button class="footer-btn">Написать в техподдержку</button>
@@ -629,7 +677,6 @@
     </p>
   </footer>
   
-  <!-- Скрипты Firebase и логика страницы -->
   <script>
     // Firebase-конфигурация
     var firebaseConfig = {
@@ -651,6 +698,7 @@
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       .then(function() {
         console.log("Сессия установлена");
+        loadAdmins();
       })
       .catch(function(error) {
         console.error("Ошибка установки сессии:", error);
@@ -689,6 +737,47 @@
         })
         .catch(function(error) {
           console.error("Ошибка обновления аватарки в нижней панели:", error);
+        });
+    }
+    
+    // Загрузка администраторов с ролями
+    function loadAdmins() {
+      var adminsRef = firebase.database().ref('users');
+      adminsRef.orderByChild('role').startAt('admin').endAt('admin\uf8ff').once('value')
+        .then(function(snapshot) {
+          var sidebar = document.querySelector('.admin-sidebar');
+          sidebar.querySelectorAll('.admin-account').forEach(el => el.remove());
+          snapshot.forEach(function(childSnapshot) {
+            var adminData = childSnapshot.val();
+            var adminDiv = document.createElement('div');
+            adminDiv.classList.add('admin-account');
+            adminDiv.addEventListener('click', function() {
+              window.location.href ='admin-seller.html?uid=' + childSnapshot.key;
+            });
+            
+            // Аватар
+            var adminImg = document.createElement('img');
+            adminImg.src = adminData.avatar || 'default-avatar.png';
+            adminImg.alt = adminData.nickname || 'Admin';
+            adminDiv.appendChild(adminImg);
+            
+            // Имя администратора
+            var adminName = document.createElement('div');
+            adminName.classList.add('admin-name');
+            adminName.textContent = adminData.nickname || 'Admin';
+            adminDiv.appendChild(adminName);
+            
+            // Роль администратора (например, "Главный админ", "Дизайнер", "Поддержка")
+            var adminRole = document.createElement('div');
+            adminRole.classList.add('admin-role');
+            adminRole.textContent = adminData.roleLabel || adminData.role || 'Админ';
+            adminDiv.appendChild(adminRole);
+            
+            sidebar.appendChild(adminDiv);
+          });
+        })
+        .catch(function(error) {
+          console.error("Ошибка загрузки админов:", error);
         });
     }
     
@@ -791,6 +880,25 @@
         // При необходимости можно добавить редирект на страницу входа
         // window.location.href = "login.html";
       }
+    });
+    
+    // Логика переключения темы
+    const themeToggleBtn = document.getElementById('themeToggle');
+    function setTheme(theme) {
+      if(theme === 'light'){
+        document.body.classList.add('light-mode');
+        themeToggleBtn.querySelector('span').textContent = 'Темная тема';
+      } else {
+        document.body.classList.remove('light-mode');
+        themeToggleBtn.querySelector('span').textContent = 'Светлая тема';
+      }
+      localStorage.setItem('theme', theme);
+    }
+    const currentTheme = localStorage.getItem('theme') || 'dark';
+    setTheme(currentTheme);
+    themeToggleBtn.addEventListener('click', () => {
+      const newTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
+      setTheme(newTheme);
     });
   </script>
 </body>
