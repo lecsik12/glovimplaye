@@ -31,8 +31,7 @@
       min-height: 100vh;
       line-height: 1.6;
       padding-bottom: 70px; /* чтобы нижняя панель не перекрывала контент */
-      /* Отступ справа для sidebar на десктопе */
-      padding-right: 270px;
+      padding-right: 270px; /* отступ для sidebar на десктопе */
       transition: background 0.3s, color 0.3s;
     }
     a {
@@ -45,23 +44,29 @@
       padding: 0 20px;
     }
     
-    /* Шапка */
+    /* Верхний хедер */
     header {
       background: #161616;
       border-bottom: 1px solid #333;
-      padding: 15px 20px;
+      padding: 10px 20px; /* уменьшенные отступы */
       position: relative;
-      z-index: 2;
+      z-index: 3;
       transition: background 0.3s, border-color 0.3s;
     }
     .header-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+    }
+    /* Левая часть: логотип */
+    .header-left {
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
     }
     .logo {
-      font-size: 28px;
+      font-size: 26px; /* немного уменьшён размер */
       font-weight: 600;
       color: #4fc3f7;
       cursor: pointer;
@@ -73,14 +78,14 @@
     
     /* Поиск */
     .search-bar {
-      flex: 1;
-      max-width: 400px;
-      margin: 10px 20px;
+      flex: 1 1 auto;
+      max-width: 500px;
+      margin: 0 20px;
       position: relative;
     }
     .search-bar input {
       width: 100%;
-      padding: 10px 15px;
+      padding: 8px 15px;
       border: none;
       border-radius: 50px;
       background: #1e1e1e;
@@ -94,7 +99,7 @@
     }
     .search-btn {
       position: absolute;
-      right: 5px;
+      right: 8px;
       top: 50%;
       transform: translateY(-50%);
       background: none;
@@ -105,12 +110,12 @@
       outline: none;
     }
     
-    /* Блок с кнопками: чат, баланс, аватар, тема */
+    /* Правая часть для десктопа */
     .header-right {
       display: flex;
-      gap: 15px;
       align-items: center;
-      flex-wrap: wrap;
+      gap: 10px;
+      flex: 0 0 auto;
     }
     .nav-btn, .theme-toggle-btn {
       background: none;
@@ -152,6 +157,125 @@
     }
     .profile-avatar:hover {
       transform: scale(1.05);
+    }
+    
+    /* Кнопка гамбургера для мобильных */
+    .hamburger-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: #4fc3f7;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .hamburger-btn span {
+      font-size: 14px;
+      margin-left: 5px;
+    }
+    
+    /* Нижняя панель (мобильная навигация) */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #161616;
+      border-top: 1px solid #333;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 2;
+    }
+    .bottom-nav a {
+      color: #ccc;
+      font-size: 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a i {
+      font-size: 22px;
+      margin-bottom: 3px;
+    }
+    .bottom-nav a:hover {
+      color: #4fc3f7;
+    }
+    .bottom-nav-profile img.avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #4fc3f7;
+      object-fit: cover;
+      margin-bottom: 2px;
+    }
+    
+    /* Боковая панель (админ-секция) */
+    .admin-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      background: #1e1e1e;
+      border-left: 1px solid #333;
+      padding: 20px;
+      overflow-y: auto;
+      transition: transform 0.3s ease, background 0.3s;
+      z-index: 4;
+    }
+    /* Для мобильных скрываем панель */
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        transform: translateX(100%);
+      }
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+    }
+    .admin-sidebar .sidebar-logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: #4fc3f7;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+    }
+    .admin-sidebar h3 {
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .admin-account {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      background: #262626;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    .admin-account:hover {
+      background: #333;
+    }
+    .admin-account img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+    .admin-account .admin-name {
+      font-size: 14px;
+      color: #ccc;
+    }
+    .admin-role {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 3px;
     }
     
     /* Результаты поиска */
@@ -278,101 +402,6 @@
       line-height: 1.6;
     }
     
-    /* Нижняя панель (мобильная навигация) */
-    .bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: #161616;
-      border-top: 1px solid #333;
-      align-items: center;
-      justify-content: space-around;
-      z-index: 100;
-    }
-    .bottom-nav a {
-      color: #ccc;
-      font-size: 12px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .bottom-nav a i {
-      font-size: 22px;
-      margin-bottom: 3px;
-    }
-    .bottom-nav a:hover {
-      color: #4fc3f7;
-    }
-    .bottom-nav-profile img.avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px solid #4fc3f7;
-      object-fit: cover;
-      margin-bottom: 2px;
-    }
-    
-    /* Правая боковая панель (админ-секция) — отображается только на десктопе */
-    .admin-sidebar {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 250px;
-      height: 100%;
-      background: #1e1e1e;
-      border-left: 1px solid #333;
-      padding: 20px;
-      overflow-y: auto;
-      transition: background 0.3s, border-color 0.3s;
-    }
-    .admin-sidebar .sidebar-logo {
-      font-size: 24px;
-      font-weight: 600;
-      color: #4fc3f7;
-      text-align: center;
-      margin-bottom: 20px;
-      cursor: pointer;
-    }
-    .admin-sidebar h3 {
-      font-size: 18px;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-    .admin-account {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 15px;
-      background: #262626;
-      padding: 10px;
-      border-radius: 8px;
-      transition: background 0.3s;
-      cursor: pointer;
-    }
-    .admin-account:hover {
-      background: #333;
-    }
-    .admin-account img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
-      object-fit: cover;
-    }
-    .admin-account .admin-name {
-      font-size: 14px;
-      color: #ccc;
-    }
-    .admin-role {
-      font-size: 12px;
-      color: #aaa;
-      margin-top: 3px;
-    }
-    
     /* Футер */
     footer {
       background: #161616;
@@ -422,23 +451,25 @@
     /* Адаптивные стили для мобильных устройств */
     @media (max-width: 768px) {
       body {
-        /* Убираем отступ справа */
         padding-right: 20px;
       }
       .header-inner {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        justify-content: space-between;
       }
       .search-bar {
-        width: 100%;
         margin: 10px 0;
+        flex: 1;
       }
-      /* Скрываем блок с кнопками в хедере и окно админов на мобильных */
-      .header-right, .admin-sidebar {
+      /* Скрываем десктопный блок с кнопками */
+      .header-right {
         display: none;
       }
-      /* Показываем нижнюю навигацию */
+      /* Отображаем кнопку гамбургера */
+      .hamburger-btn {
+        display: flex;
+        align-items: center;
+      }
+      /* Показываем нижнюю панель навигации */
       .bottom-nav {
         display: flex;
       }
@@ -448,7 +479,6 @@
     body.light-mode {
       background: #ffffff;
       color: #333;
-      padding-bottom: 70px;
     }
     body.light-mode header {
       background: #f8f8f8;
@@ -481,18 +511,20 @@
   </style>
 </head>
 <body>
-  <!-- Шапка -->
+  <!-- Шапер -->
   <header>
     <div class="container">
       <div class="header-inner">
-        <!-- Логотип -->
-        <div class="logo" onclick="location.href='index.html'">GlovimPlaye</div>
+        <!-- Левая часть: логотип -->
+        <div class="header-left">
+          <div class="logo" onclick="location.href='index.html'">GlovimPlaye</div>
+        </div>
         <!-- Поиск -->
         <div class="search-bar">
           <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
           <button class="search-btn"><i class="fas fa-search"></i></button>
         </div>
-        <!-- Блок с кнопками (чат, баланс, аватар, переключение темы) — отображается только на десктопе -->
+        <!-- Правая часть для десктопа -->
         <div class="header-right">
           <button class="nav-btn" onclick="location.href='chat.html'">
             <i class="fas fa-comment-dots"></i>
@@ -503,12 +535,15 @@
             <span>0₽</span>
           </div>
           <img id="headerProfileAvatar" class="profile-avatar" src="default-avatar.png" alt="Avatar" onclick="location.href='profile.html'">
-          <!-- Кнопка переключения темы -->
           <button class="theme-toggle-btn" id="themeToggle">
             <i class="fas fa-adjust"></i>
             <span>Светлая тема</span>
           </button>
         </div>
+        <!-- Кнопка гамбургера для мобильной версии -->
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <i class="fas fa-bars"></i> <span>Меню</span>
+        </button>
       </div>
     </div>
   </header>
@@ -546,7 +581,7 @@
         <div class="game-name">Rust <span class="new-badge">Новое</span></div>
       </div>
     </div>
-
+    
     <!-- Секция: Мобильные игры -->
     <h2 class="section-title">Мобильные игры</h2>
     <div class="horizontal-scroll">
@@ -563,7 +598,7 @@
         <div class="game-name">Call of Duty</div>
       </div>
     </div>
-
+    
     <!-- Секция: Приложения -->
     <h2 class="section-title">Приложения</h2>
     <div class="horizontal-scroll">
@@ -610,13 +645,13 @@
         </p>
       </div>
       <div style="flex: 1; min-width: 250px;">
-        <img src="images/avatar.png"О сайте" style="width: 100%; border-radius: 8px;">
+        <img src="images/about-image.jpg" alt="О сайте" style="width: 100%; border-radius: 8px;">
       </div>
     </div>
   </section>
   
-  <!-- Правая боковая панель (админ-секция) — отображается только на десктопе -->
-  <aside class="admin-sidebar">
+  <!-- Боковая панель (админ-секция) -->
+  <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-logo" onclick="location.href='index.html'">GlovimPlaye</div>
     <h3>Админы</h3>
     <!-- Здесь динамически будут загружаться админы с ролями -->
@@ -678,7 +713,7 @@
   </footer>
   
   <script>
-    // Firebase-конфигурация
+    // Firebase-конфигурация и инициализация
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -688,13 +723,10 @@
       messagingSenderId: "553440591519",
       appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
-
-    // Инициализация Firebase, если ещё не инициализировано
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-
-    // Устанавливаем постоянство сессии
+    
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       .then(function() {
         console.log("Сессия установлена");
@@ -704,7 +736,6 @@
         console.error("Ошибка установки сессии:", error);
       });
       
-    // Обновление данных пользователя в хедере (баланс, аватар)
     function loadHeaderData(user) {
       var userId = user.uid;
       firebase.database().ref('users/' + userId).once('value')
@@ -724,7 +755,6 @@
         });
     }
     
-    // Обновление аватарки в нижней панели
     function updateBottomNavAvatar(user) {
       var avatarUrl = user.photoURL || 'default-avatar.png';
       firebase.database().ref('users/' + user.uid).once('value')
@@ -740,7 +770,6 @@
         });
     }
     
-    // Загрузка администраторов с ролями
     function loadAdmins() {
       var adminsRef = firebase.database().ref('users');
       adminsRef.orderByChild('role').startAt('admin').endAt('admin\uf8ff').once('value')
@@ -755,19 +784,16 @@
               window.location.href ='admin-seller.html?uid=' + childSnapshot.key;
             });
             
-            // Аватар
             var adminImg = document.createElement('img');
             adminImg.src = adminData.avatar || 'default-avatar.png';
             adminImg.alt = adminData.nickname || 'Admin';
             adminDiv.appendChild(adminImg);
             
-            // Имя администратора
             var adminName = document.createElement('div');
             adminName.classList.add('admin-name');
             adminName.textContent = adminData.nickname || 'Admin';
             adminDiv.appendChild(adminName);
             
-            // Роль администратора (например, "Главный админ", "Дизайнер", "Поддержка")
             var adminRole = document.createElement('div');
             adminRole.classList.add('admin-role');
             adminRole.textContent = adminData.roleLabel || adminData.role || 'Админ';
@@ -781,9 +807,8 @@
         });
     }
     
-    // Логика поиска
     const items = [
-      { name: "Standoff 2", category: "Мобильные игры", link: "standoff2.html", image: "images/standoff2.jpg" },
+      { name: "Standoff 2", category: "Мобильные игры", link: "standoff2.html", image: "images/csgo.jpg" },
       { name: "Mobile Legends", category: "Мобильные игры", link: "mobile-legends.html", image: "images/mobile_legends.jpg" },
       { name: "PUBG Mobile", category: "Мобильные игры", link: "pubg-mobile.html", image: "images/pubg_mobile.jpg" },
       { name: "Brawl Stars", category: "Мобильные игры", link: "brawl-stars.html", image: "images/brawl_stars.jpg" },
@@ -870,19 +895,16 @@
       }
     });
     
-    // Обработка авторизации: обновление хедера и нижней панели после входа
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         loadHeaderData(user);
         updateBottomNavAvatar(user);
       } else {
         console.log("Пользователь не авторизован");
-        // При необходимости можно добавить редирект на страницу входа
-        // window.location.href = "login.html";
       }
     });
     
-    // Логика переключения темы
+    // Переключение темы
     const themeToggleBtn = document.getElementById('themeToggle');
     function setTheme(theme) {
       if(theme === 'light'){
@@ -899,6 +921,13 @@
     themeToggleBtn.addEventListener('click', () => {
       const newTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
       setTheme(newTheme);
+    });
+    
+    // Обработчик для кнопки гамбургера: открытие/закрытие боковой панели (админ-секции)
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const adminSidebar = document.getElementById('adminSidebar');
+    hamburgerBtn.addEventListener('click', () => {
+      adminSidebar.classList.toggle('open');
     });
   </script>
 </body>
