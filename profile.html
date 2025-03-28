@@ -18,7 +18,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
-    /* Переменные в едином стиле (как на главной) */
     :root {
       --bg-color: #0e0e0e;
       --header-bg: #161616;
@@ -27,6 +26,7 @@
       --text-color: #ccc;
       --card-bg: #1e1e1e;
       --border-radius: 8px;
+      --btn-gradient: linear-gradient(45deg, #4fc3f7, #80deea);
     }
     
     /* Сброс стилей */
@@ -42,7 +42,9 @@
       font-family: 'Montserrat', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-      padding-bottom: 70px; /* для нижней навигации на мобильных */
+      padding-bottom: 70px;
+      background-size: cover;
+      background-position: center;
     }
     
     a {
@@ -50,20 +52,20 @@
       color: inherit;
     }
     
-    /* Header */
+    /* Верхний хедер – логотип и кнопка гамбургера */
     header {
       background: var(--header-bg);
-      padding: 20px 40px;
-      text-align: center;
+      padding: 15px 20px;
       position: sticky;
       top: 0;
       z-index: 20;
       box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
-      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    
     header .logo {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: bold;
       color: var(--accent-color);
       cursor: pointer;
@@ -73,22 +75,13 @@
       transform: scale(1.05);
     }
     
-    /* Блок для данных пользователя в хедере */
-    #headerUserInfo {
-      position: absolute;
-      right: 40px;
-      top: 20px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 16px;
-    }
-    #headerUserInfo img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--accent-color);
+    /* Кнопка гамбургера */
+    .hamburger-btn {
+      background: none;
+      border: none;
+      color: var(--accent-color);
+      font-size: 24px;
+      cursor: pointer;
     }
     
     /* Основной контейнер профиля */
@@ -99,199 +92,66 @@
       background: var(--card-bg);
       border-radius: var(--border-radius);
       animation: fadeInUp 0.6s ease-out;
+      position: relative;
+      z-index: 1;
     }
     
-    /* Верхняя часть профиля (шапка профиля) */
+    /* Верхняя информация: аватар и никнейм */
     .profile-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      border-radius: var(--border-radius);
-      background: var(--card-bg);
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-      margin-bottom: 20px;
-    }
-    .profile-left {
       display: flex;
       align-items: center;
       gap: 20px;
+      margin-bottom: 20px;
     }
-    .avatar {
+    .profile-header img {
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      object-fit: cover;
       border: 4px solid var(--accent-color);
-      transition: transform 0.3s;
+      object-fit: cover;
     }
-    .avatar:hover {
-      transform: scale(1.05);
-    }
-    .user-info {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .username {
+    .profile-header .nickname {
       font-size: 22px;
       font-weight: bold;
     }
-    .admin-badge {
-      background: red;
-      color: #fff;
-      padding: 3px 8px;
-      border-radius: 5px;
-      font-size: 12px;
-      margin-left: 5px;
-    }
     
-    .user-stats {
+    /* Информационный блок */
+    .profile-info {
+      background: #222;
+      padding: 20px;
+      border-radius: var(--border-radius);
       display: flex;
+      flex-wrap: wrap;
       gap: 20px;
-      margin-top: 5px;
-      font-size: 14px;
+      align-items: center;
+      justify-content: space-around;
+      font-size: 16px;
     }
-    .stat-item {
+    /* Красивый баланс в виде кнопки */
+    .balance-btn {
+      background: var(--btn-gradient);
+      padding: 15px 25px;
+      border: none;
+      border-radius: var(--border-radius);
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+      transition: box-shadow 0.3s;
+    }
+    .balance-btn:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .info-item {
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-    .stat-value {
+    .info-item span {
       font-weight: bold;
-      font-size: 18px;
-      color: var(--accent-color);
-    }
-    .rating {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .stars i {
-      color: gold;
-    }
-    .rating-value {
-      font-weight: bold;
-      color: var(--accent-color);
+      margin-top: 5px;
     }
     
-    /* Правая часть шапки профиля */
-    .profile-right button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: var(--border-radius);
-      background: var(--accent-color);
-      color: var(--text-color);
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-    }
-    .profile-right button:hover {
-      background: var(--accent-hover);
-      transform: translateY(-2px);
-    }
-    
-    /* Кнопки действий */
-    .profile-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .profile-actions button {
-      flex: 1 1 180px;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
-      background: var(--accent-color);
-      color: var(--text-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .profile-actions button:hover {
-      background: var(--accent-hover);
-      transform: translateY(-3px);
-    }
-    
-    /* Баланс и дата регистрации */
-    .balance-info {
-      text-align: center;
-      margin: 10px 0;
-    }
-    .balance {
-      font-size: 26px;
-      font-weight: bold;
-      color: var(--accent-color);
-      background: rgba(79,195,247,0.1);
-      padding: 10px 15px;
-      border-radius: 8px;
-      display: inline-block;
-      margin-bottom: 10px;
-    }
-    
-    /* Навигация по профилю */
-    .profile-nav {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      display: flex;
-      gap: 20px;
-      padding: 10px 20px;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-      margin-bottom: 20px;
-    }
-    .nav-item {
-      cursor: pointer;
-      padding: 8px 15px;
-      border-radius: 6px;
-      transition: background 0.3s;
-    }
-    .nav-item:hover {
-      background: #333;
-    }
-    .nav-item.active {
-      background: var(--accent-color);
-      color: #fff;
-    }
-    
-    /* Контент вкладок */
-    .tab-content {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-      padding: 20px;
-      min-height: 150px;
-      margin-bottom: 20px;
-    }
-    
-    /* Таблицы товаров */
-    .product-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-      margin-top: 15px;
-    }
-    .product-table th,
-    .product-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #444;
-    }
-    .product-table th {
-      background: #333;
-      font-weight: bold;
-    }
-    .product-table tr:hover {
-      background: #3a3a3a;
-    }
-    
-    /* Модальное окно для загрузки аватара */
+    /* Модальные окна (для загрузки аватара и фона) */
     .modal {
       display: none;
       position: fixed;
@@ -343,7 +203,7 @@
     .upload-preview img {
       width: 100px;
       height: 100px;
-      border-radius: 50%;
+      border-radius: 6px;
       border: 3px solid var(--accent-color);
       object-fit: cover;
     }
@@ -372,14 +232,41 @@
       font-size: 22px;
       margin-bottom: 2px;
     }
-    .bottom-nav-profile img.avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      margin-bottom: 2px;
-    }
     @media (min-width: 768px) {
       .bottom-nav { display: none; }
+    }
+    
+    /* Боковая панель (гамбургер-меню) */
+    .hamburger-menu {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      background: var(--card-bg);
+      box-shadow: -4px 0 10px rgba(0,0,0,0.6);
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 30;
+      padding: 20px;
+    }
+    .hamburger-menu.open {
+      transform: translateX(0);
+    }
+    .hamburger-menu h3 {
+      margin-bottom: 20px;
+      color: var(--accent-color);
+      text-align: center;
+    }
+    .menu-item {
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 16px;
+    }
+    .menu-item:hover {
+      background: #222;
     }
     
     /* Footer */
@@ -393,135 +280,61 @@
     
     /* Анимация появления */
     @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
+  <!-- Верхний хедер -->
   <header>
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
-    <div id="headerUserInfo"></div>
+    <button class="hamburger-btn" id="hamburgerBtn">
+      <i class="fas fa-bars"></i>
+    </button>
   </header>
   
+  <!-- Боковая панель (гамбургер-меню) -->
+  <aside class="hamburger-menu" id="hamburgerMenu">
+    <h3>Меню</h3>
+    <!-- Платные функции загрузки -->
+    <div class="menu-item" onclick="payAndUploadAvatar()">Загрузить аватар (100₽)</div>
+    <div class="menu-item" onclick="payAndUploadBackground()">Загрузить фон (100₽)</div>
+    <div class="menu-item" onclick="editProfile()">Редактировать профиль</div>
+    <div class="menu-item" onclick="logout()">Выйти</div>
+  </aside>
+  
+  <!-- Основной контейнер профиля -->
   <main class="profile-container" id="profileContainer">
-    <!-- Верхняя часть профиля (шапка профиля) -->
+    <!-- Верхняя информация: аватар и никнейм -->
     <div class="profile-header">
-      <div class="profile-left">
-        <!-- Аватар -->
-        <img id="profileAvatar" src="default-avatar.png" alt="Avatar" class="avatar">
-        <!-- Информация о пользователе -->
-        <div class="user-info">
-          <div class="username" id="profileNickname">
-            Загрузка...
-          </div>
-          <div class="user-stats" id="userStatsContainer">
-            <div class="stat-item">
-              <div class="stat-value" id="purchasesCount">0</div>
-              <div>Покупки</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-value" id="followersCount">0</div>
-              <div>Подписчики</div>
-            </div>
-            <div class="stat-item">
-              <div class="rating">
-                <div class="stars">
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star"></i>
-                  <i class="fas fa-star-half-alt"></i>
-                </div>
-                <span class="rating-value" id="ratingValue">4.7</span>
-              </div>
-              <div>Рейтинг</div>
-            </div>
-          </div>
-        </div>
+      <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
+      <div class="nickname" id="profileNickname">Загрузка...</div>
+    </div>
+    
+    <!-- Информационный блок -->
+    <div class="profile-info">
+      <div class="info-item">
+        <!-- Баланс как красивая кнопка -->
+        <button class="balance-btn" onclick="alert('Ваш баланс: ' + document.getElementById('balanceAmount').innerText + ' ₽')">
+          <i class="fas fa-wallet"></i> <span id="balanceAmountDisplay">0</span> ₽
+        </button>
       </div>
-      <!-- Правая часть: кнопка "Сообщение" -->
-      <div class="profile-right">
-        <button onclick="alert('Написать сообщение')">Сообщение</button>
+      <div class="info-item">
+        <p>Рейтинг:</p>
+        <span id="ratingDisplay">4.7</span> (0 отзывов)
       </div>
-    </div>
-    
-    <!-- Кнопки действий -->
-    <div class="profile-actions">
-      <button onclick="openModal()">
-        <i class="fas fa-cloud-upload-alt"></i> Загрузить аватарку
-      </button>
-      <button onclick="editProfile()">
-        <i class="fas fa-edit"></i> Редактировать профиль
-      </button>
-      <button onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> Выйти
-      </button>
-    </div>
-    
-    <!-- Баланс и дата регистрации -->
-    <div class="balance-info">
-      <p class="balance">
-        Баланс: <span id="balanceAmount">0</span> ₽
-      </p>
-      <p>Дата регистрации: <span id="profileCreatedDate">--</span></p>
-      <p id="profileEmail">Загрузка...</p>
-    </div>
-    
-    <!-- Навигация по профилю -->
-    <div class="profile-nav">
-      <div class="nav-item active" onclick="switchTab('lotsTab', this)">
-        Лоты <span id="lotsCount">(0)</span>
-      </div>
-      <div class="nav-item" onclick="switchTab('reviewsTab', this)">
-        Отзывы <span id="reviewsCount">(0)</span>
-      </div>
-    </div>
-    
-    <!-- Контент вкладок -->
-    <div class="tab-content" id="lotsTab">
-      <h2>Мои товары</h2>
-      <table class="product-table">
-        <thead>
-          <tr>
-            <th>Название</th>
-            <th>Наличие</th>
-            <th>Цена</th>
-          </tr>
-        </thead>
-        <tbody id="userProductsList">
-          <!-- Товары будут добавляться динамически -->
-        </tbody>
-      </table>
-      <h2 style="margin-top:30px;">Заказы (Продажи)</h2>
-      <div id="ordersContentSales">
-        <!-- Таблица продаж загрузится динамически -->
-      </div>
-    </div>
-    
-    <div class="tab-content" id="reviewsTab" style="display:none;">
-      <p>Здесь могут быть отзывы, комментарии и т.д.</p>
-    </div>
-    
-    <!-- Блок заказов (Покупки) - скрыт по умолчанию -->
-    <div class="profile-orders" style="display:none;">
-      <h2>Заказы (Покупки)</h2>
-      <div id="ordersContentPurchases">
-        <!-- Таблица покупок загрузится динамически -->
+      <div class="info-item">
+        <p>Дата регистрации:</p>
+        <span id="registrationDateDisplay">Неизвестно</span>
       </div>
     </div>
   </main>
   
-  <!-- Модальное окно для загрузки аватара -->
+  <!-- Модальное окно для загрузки аватара (вызывается через платную функцию) -->
   <div id="avatarModal" class="modal">
     <div class="modal-content">
-      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <span class="close-modal" onclick="closeModal('avatarModal')">&times;</span>
       <h3>Загрузить аватар</h3>
       <label for="modalAvatarInput" class="custom-file-upload">
         <i class="fas fa-cloud-upload-alt"></i> Выберите файл
@@ -532,6 +345,23 @@
         Загрузить
       </button>
       <div class="upload-preview" id="modalUploadPreview"></div>
+    </div>
+  </div>
+  
+  <!-- Модальное окно для загрузки фонового изображения (вызывается через платную функцию) -->
+  <div id="backgroundModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal('backgroundModal')">&times;</span>
+      <h3>Загрузить фон</h3>
+      <label for="modalBackgroundInput" class="custom-file-upload">
+        <i class="fas fa-image"></i> Выберите файл
+      </label>
+      <input type="file" id="modalBackgroundInput" accept="image/*">
+      <br>
+      <button id="modalBackgroundUploadBtn" style="margin-top:15px; padding:10px 20px; background: var(--accent-color); border: none; border-radius:6px; color:#fff; cursor:pointer;">
+        Загрузить
+      </button>
+      <div class="upload-preview" id="modalBackgroundPreview"></div>
     </div>
   </div>
   
@@ -549,15 +379,13 @@
       <i class="fas fa-comments"></i>
       <span>Чат</span>
     </a>
-    <a href="profile.html" class="bottom-nav-profile">
+    <a href="profile.html">
       <i class="fas fa-user"></i>
       <span>Профиль</span>
     </a>
   </div>
   
-  <footer>
-    © 2025 GlovimPlaye. Все права защищены.
-  </footer>
+ 
   
   <script>
     // Инициализация Firebase
@@ -572,91 +400,119 @@
     };
     firebase.initializeApp(firebaseConfig);
     
-    // Установка постоянства сессии
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => {
-        console.log("Постоянство сессии установлено");
-      })
-      .catch((error) => {
-        console.error("Ошибка установки постоянства сессии:", error);
-      });
-    
     // Инициализация Supabase
     const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
     
-    // Проверка авторизации и загрузка данных профиля
+    // Проверка авторизации и загрузка профиля
     firebase.auth().onAuthStateChanged(function(user) {
-      console.log("Profile page, onAuthStateChanged:", user);
       if (user) {
         loadUserProfile(user);
-        loadSales();
-        loadPurchases();
       } else {
-        console.log("Пользователь не найден, перенаправление на login.html");
         window.location.href = "login.html";
       }
     });
     
-    // Загрузка профиля пользователя из Firebase
+    // Загрузка данных профиля
     function loadUserProfile(user) {
       const userId = user.uid;
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
         let userData = snapshot.val();
         if (!userData) return;
     
-        let nicknameText = userData.nickname || "Без ника";
-        if (userData.role === "admin") {
-          nicknameText += ' <span class="admin-badge">Admin</span>';
-        } else if (userData.support === true || userData.role === "support") {
-          nicknameText += ' <span class="admin-badge" style="background: #3498db;">Поддержка</span>';
-        }
-        document.getElementById('profileNickname').innerHTML = nicknameText;
-    
-        document.getElementById('balanceAmount').innerText = userData.balance !== undefined ? userData.balance : "0";
-        document.getElementById('profileEmail').innerText = user.email || "user@example.com";
-    
-        if (userData.createdAt) {
-          let date = new Date(userData.createdAt);
-          document.getElementById('profileCreatedDate').innerText = date.toLocaleDateString('ru-RU');
+        document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
+        
+        // Обновляем отображение баланса в кнопке (также скрытый элемент для списания)
+        let balance = userData.balance || "0";
+        document.getElementById('balanceAmountDisplay').innerText = balance;
+        if(!document.getElementById('balanceAmount')) {
+          let hidden = document.createElement('div');
+          hidden.id = 'balanceAmount';
+          hidden.style.display = 'none';
+          hidden.innerText = balance;
+          document.body.appendChild(hidden);
         } else {
-          document.getElementById('profileCreatedDate').innerText = "Неизвестно";
+          document.getElementById('balanceAmount').innerText = balance;
         }
     
+        // Рейтинг (отзывы, изначально 0 отзывов, значение по умолчанию 4.7)
+        let rating = userData.rating || "4.7";
+        document.getElementById('ratingDisplay').innerText = rating;
+    
+        // Дата регистрации
+        let registrationDate = "Неизвестно";
+        if(userData.createdAt) {
+          let date = new Date(userData.createdAt);
+          registrationDate = date.toLocaleDateString('ru-RU');
+        }
+        document.getElementById('registrationDateDisplay').innerText = registrationDate;
+    
+        // Аватар
         let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
         document.getElementById('profileAvatar').src = avatarUrl;
     
-        document.getElementById('purchasesCount').innerText = userData.purchasesCount || 0;
-        document.getElementById('followersCount').innerText = userData.followersCount || 0;
-        document.getElementById('ratingValue').innerText = userData.rating || 4.7;
-    
-        updateHeaderUserInfo({
-          nickname: userData.nickname || user.displayName,
-          avatar: avatarUrl
-        });
+        // Если у пользователя задан фон – установить его
+        if(userData.backgroundImage) {
+          document.body.style.backgroundImage = `url(${userData.backgroundImage})`;
+        }
       });
     }
     
-    // Обновление информации о пользователе в хедере
-    function updateHeaderUserInfo(data) {
-      const headerUserInfo = document.getElementById('headerUserInfo');
-      if (headerUserInfo) {
-        headerUserInfo.innerHTML = `<img src="${data.avatar}" alt="avatar"><span>${data.nickname}</span>`;
+    // Закрытие модальных окон
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = "none";
+      if(modalId === 'avatarModal') {
+        document.getElementById('modalUploadPreview').innerHTML = "";
+        document.getElementById('modalAvatarInput').value = "";
+      } else if(modalId === 'backgroundModal') {
+        document.getElementById('modalBackgroundPreview').innerHTML = "";
+        document.getElementById('modalBackgroundInput').value = "";
       }
     }
     
-    // Открытие/закрытие модального окна загрузки аватара
-    function openModal() {
-      document.getElementById('avatarModal').style.display = "flex";
-    }
-    function closeModal() {
-      document.getElementById('avatarModal').style.display = "none";
-      document.getElementById('modalUploadPreview').innerHTML = "";
-      document.getElementById('modalAvatarInput').value = "";
+    // Функция списания средств
+    async function deductAmount(amount) {
+      const user = firebase.auth().currentUser;
+      if(!user) return false;
+      const userId = user.uid;
+      const ref = firebase.database().ref('users/' + userId);
+      const snapshot = await ref.once('value');
+      let userData = snapshot.val();
+      let currentBalance = parseFloat(userData.balance || 0);
+      if(currentBalance < amount) {
+        alert('Недостаточно средств для выполнения операции.');
+        return false;
+      }
+      let newBalance = currentBalance - amount;
+      await ref.update({ balance: newBalance });
+      return true;
     }
     
-    // Загрузка аватара через Supabase и обновление Firebase
+    // Платная функция загрузки аватара
+    function payAndUploadAvatar() {
+      deductAmount(100).then(success => {
+        if(success) {
+          openModal('avatarModal');
+        }
+      });
+    }
+    
+    // Платная функция загрузки фонового изображения (загружается в бакет avatars)
+    function payAndUploadBackground() {
+      deductAmount(100).then(success => {
+        if(success) {
+          openModal('backgroundModal');
+        }
+      });
+    }
+    
+    // Универсальная функция открытия модального окна
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = "flex";
+    }
+    
+    // Обработчик загрузки аватара
     document.getElementById('modalUploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('modalAvatarInput');
       const file = fileInput.files[0];
@@ -673,7 +529,6 @@
         .upload(filePath, file);
       
       if (error) {
-        console.error('Ошибка загрузки:', error);
         alert('Ошибка загрузки: ' + JSON.stringify(error));
         return;
       }
@@ -684,20 +539,11 @@
       
       if (publicData && publicData.publicUrl) {
         document.getElementById('profileAvatar').src = publicData.publicUrl;
-        document.getElementById('modalUploadPreview').innerHTML = `<img src="${publicData.publicUrl}" alt="Preview">`;
-        const userId = firebase.auth().currentUser.uid;
-        firebase.database().ref('users/' + userId).update({
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
           avatar: publicData.publicUrl
         }).then(() => {
-          firebase.auth().currentUser.updateProfile({
-            photoURL: publicData.publicUrl
-          });
           alert('Аватар успешно обновлён!');
-          closeModal();
-          updateHeaderUserInfo({ 
-            nickname: document.getElementById('profileNickname').innerText, 
-            avatar: publicData.publicUrl 
-          });
+          closeModal('avatarModal');
         }).catch(err => {
           console.error('Ошибка обновления профиля в Firebase:', err);
         });
@@ -706,103 +552,60 @@
       }
     });
     
-    // Переключение вкладок
-    function switchTab(tabId, el) {
-      document.querySelectorAll('.profile-nav .nav-item').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      el.classList.add('active');
-    
-      document.getElementById('lotsTab').style.display = 'none';
-      document.getElementById('reviewsTab').style.display = 'none';
-    
-      document.getElementById(tabId).style.display = 'block';
-    }
-    
-    // Загрузка продаж (заказы, где текущий пользователь – продавец)
-    function loadSales() {
-      const ordersRef = firebase.database().ref('orders');
-      const currentUser = firebase.auth().currentUser;
-      if (!currentUser) return;
-      ordersRef.orderByChild('sellerId').equalTo(currentUser.uid).on('value', snapshot => {
-        const container = document.getElementById('ordersContentSales');
-        container.innerHTML = "";
-        if (!snapshot.exists()) {
-          container.innerHTML = '<p>Продаж нет</p>';
-          return;
-        }
-        let table = document.createElement('table');
-        table.className = 'product-table';
-        let thead = document.createElement('thead');
-        thead.innerHTML = `<tr>
-          <th>Название</th>
-          <th>Покупатель</th>
-          <th>Цена</th>
-          <th>Дата</th>
-        </tr>`;
-        table.appendChild(thead);
-        let tbody = document.createElement('tbody');
-        snapshot.forEach(childSnapshot => {
-          const order = childSnapshot.val();
-          let date = new Date(order.date);
-          let row = document.createElement('tr');
-          row.innerHTML = `<td>${order.productName}</td>
-            <td>${order.buyerId}</td>
-            <td>${order.price} ₽</td>
-            <td>${date.toLocaleDateString('ru-RU')}</td>`;
-          tbody.appendChild(row);
+    // Обработчик загрузки фонового изображения
+    document.getElementById('modalBackgroundUploadBtn').addEventListener('click', async () => {
+      const fileInput = document.getElementById('modalBackgroundInput');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Пожалуйста, выберите изображение для загрузки.');
+        return;
+      }
+      
+      const bucketName = 'avatars';
+      const filePath = `${Date.now()}_${file.name}`;
+      
+      const { data, error } = await supabaseClient.storage
+        .from(bucketName)
+        .upload(filePath, file);
+      
+      if (error) {
+        alert('Ошибка загрузки: ' + JSON.stringify(error));
+        return;
+      }
+      
+      const { data: publicData } = supabaseClient.storage
+        .from(bucketName)
+        .getPublicUrl(filePath);
+      
+      if (publicData && publicData.publicUrl) {
+        document.body.style.backgroundImage = `url(${publicData.publicUrl})`;
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
+          backgroundImage: publicData.publicUrl
+        }).then(() => {
+          alert('Фон успешно обновлён!');
+          closeModal('backgroundModal');
+        }).catch(err => {
+          console.error('Ошибка обновления фона в Firebase:', err);
         });
-        table.appendChild(tbody);
-        container.appendChild(table);
-      });
-    }
+      } else {
+        alert('Не удалось получить публичный URL загруженного файла.');
+      }
+    });
     
-    // Загрузка покупок (заказы, где текущий пользователь – покупатель)
-    function loadPurchases() {
-      const ordersRef = firebase.database().ref('orders');
-      const currentUser = firebase.auth().currentUser;
-      if (!currentUser) return;
-      ordersRef.orderByChild('buyerId').equalTo(currentUser.uid).on('value', snapshot => {
-        const container = document.getElementById('ordersContentPurchases');
-        container.innerHTML = "";
-        if (!snapshot.exists()) {
-          container.innerHTML = '<p>Покупок нет</p>';
-          return;
-        }
-        let table = document.createElement('table');
-        table.className = 'product-table';
-        let thead = document.createElement('thead');
-        thead.innerHTML = `<tr>
-          <th>Название</th>
-          <th>Продавец</th>
-          <th>Цена</th>
-          <th>Дата</th>
-        </tr>`;
-        table.appendChild(thead);
-        let tbody = document.createElement('tbody');
-        snapshot.forEach(childSnapshot => {
-          const order = childSnapshot.val();
-          let date = new Date(order.date);
-          let row = document.createElement('tr');
-          row.innerHTML = `<td>${order.productName}</td>
-            <td>${order.sellerId}</td>
-            <td>${order.price} ₽</td>
-            <td>${date.toLocaleDateString('ru-RU')}</td>`;
-          tbody.appendChild(row);
-        });
-        table.appendChild(tbody);
-        container.appendChild(table);
-      });
-    }
-    
-    // Функции редактирования профиля и пополнения баланса
+    // Функции редактирования профиля и выхода – вызываются из гамбургер-меню
     function editProfile() { alert('Редактирование профиля'); }
-    function topUpBalance() { alert('Пополнение баланса'); }
     function logout() {
       firebase.auth().signOut().then(() => {
         window.location.href = "login.html";
       });
     }
+    
+    // Открытие/закрытие гамбургер-меню
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const hamburgerMenu = document.getElementById('hamburgerMenu');
+    hamburgerBtn.addEventListener('click', () => {
+      hamburgerMenu.classList.toggle('open');
+    });
   </script>
 </body>
 </html>
