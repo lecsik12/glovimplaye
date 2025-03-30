@@ -567,6 +567,58 @@ hr {
       color: #ccc;
       line-height: 1.6;
     }
+
+
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+   
+    
+    /* Контейнер для карточек */
+    .card-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    /* Стили для самой карточки */
+    .card {
+      position: relative;
+      height: 180px;
+      background-position: center;
+      background-size: cover;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+    
+    /* Блок с текстом поверх картинки */
+    .card-content {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    }
+    
+    .card-content h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #fff;
+    }
+    
     
     /* Футер */
     footer {
@@ -814,58 +866,6 @@ hr {
 
 </section>
 
-
-
- <!-- Секция с большими виджетами -->
- <section class="widgets-section">
-  <div class="container">
-    <h2 class="section-title">Популярные игры</h2>
-    
-    <!-- Верхний ряд карточек -->
-    <div class="widgets-row">
-      <div class="widget-card" onclick="location.href='poe2.html'">
-        <img src="images/poe2.jpg" alt="Path of Exile 2">
-        <div class="widget-title">Path of Exile 2</div>
-      </div>
-      <div class="widget-card" onclick="location.href='cs2.html'">
-        <img src="images/csgooo.jpg"alt="Counter-Strike 2">
-        <div class="widget-title">Counter-Strike 2</div>
-      </div>
-      <div class="widget-card" onclick="location.href='brawlstars.html'">
-        <img src="images/bravl-ava.jpg" alt="Brawl Stars">
-        <div class="widget-title">Brawl Stars</div>
-      </div>
-    </div>
-    
-    <!-- Нижний ряд карточек -->
-    <div class="widgets-row">
-      <div class="widget-card" onclick="location.href='wotblitz.html'">
-        <img src="images/wotblitz.jpg" alt="World of Tanks Blitz">
-        <div class="widget-title">World of Tanks Blitz</div>
-      </div>
-      <div class="widget-card" onclick="location.href='wot.html'">
-        <img src="images/wot.jpg" alt="World of Tanks">
-        <div class="widget-title">World of Tanks</div>
-      </div>
-      <div class="widget-card" onclick="location.href='genshin.html'">
-        <img src="images/genshin.jpg" alt="Genshin Impact">
-        <div class="widget-title">Genshin Impact</div>
-      </div>
-      <div class="widget-card" onclick="location.href='mobilelegends.html'">
-        <img src="images/photo_2025-02-22_08-29-19.jpg" alt="Mobile Legends">
-        <div class="widget-title">Mobile Legends</div>
-      </div>
-    </div>
-    
-     <!-- Дополнительная "карточка" для ссылки на каталог -->
-     <div class="catalog-link-card" onclick="location.href='catalog.html'">
-      <span>Больше игр в нашем каталоге</span>
-    </div>
-  </div>
-</section>
-
- 
-
   <!-- Основной контент -->
   <div class="container">
     <!-- Пример ваших горизонтальных скроллов -->
@@ -973,6 +973,60 @@ hr {
       </div>
     </div>
   </div>
+
+
+  
+  <div class="card-container">
+    <!-- Карточка 1 -->
+    <div class="card" style="background-image: url('images/poe2.jpg');">
+      <div class="card-content">
+        <h2>Path of Exile 2</h2>
+      </div>
+    </div>
+
+    <!-- Карточка 2 -->
+    <div class="card" style="background-image: url('images/cs2.jpg');">
+      <div class="card-content">
+        <h2>Counter-Strike 2</h2>
+      </div>
+    </div>
+
+    <!-- Карточка 3 -->
+    <div class="card" style="background-image: url('images/brawl-stars.jpg');">
+      <div class="card-content">
+        <h2>Brawl Stars</h2>
+      </div>
+    </div>
+
+    <!-- Карточка 4 -->
+    <div class="card" style="background-image: url('images/wot-blitz.jpg');">
+      <div class="card-content">
+        <h2>World of Tanks Blitz</h2>
+      </div>
+    </div>
+
+    <!-- Карточка 5 -->
+    <div class="card" style="background-image: url('images/bravl-ava.jpg');">
+      <div class="card-content">
+        <h2>Genshin Impact</h2>
+      </div>
+    </div>
+
+    <!-- Карточка 6 -->
+    <div class="card" style="background-image: url('images/mobile-legends.jpg');">
+      <div class="card-content">
+        <h2>Mobile Legends</h2>
+      </div>
+    </div>
+
+    <!-- Добавьте при желании ещё карточки -->
+    <div class="card" style="background-image: url('images/more-games.jpg');">
+      <div class="card-content">
+        <h2>Больше игр...</h2>
+      </div>
+    </div>
+  </div>
+
 
 
   
