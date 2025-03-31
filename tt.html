@@ -1,155 +1,109 @@
-<aside class="sidebar-menu">
-    <nav class="menu-list">
-      <!-- Мои лоты (с иконкой слева и плюсиком справа) -->
-      <div class="menu-item">
-        <div class="icon-wrap">
-          <!-- Иконка для "Мои лоты" (например, fa-file-alt) -->
-          <i class="fas fa-file-alt"></i>
-        </div>
-        <span>Мои лоты</span>
-        <div class="icon-wrap plus-icon">
-          <!-- Иконка плюс -->
-          <i class="fas fa-plus"></i>
-        </div>
-      </div>
-  
-      <!-- Покупки -->
-      <div class="menu-item">
-        <div class="icon-wrap">
-          <!-- Иконка для "Покупки" (пример: fa-download) -->
-          <i class="fas fa-download"></i>
-        </div>
-        <span>Покупки</span>
-      </div>
-  
-      <!-- Продажи -->
-      <div class="menu-item">
-        <div class="icon-wrap">
-          <!-- Иконка для "Продажи" (пример: fa-upload) -->
-          <i class="fas fa-upload"></i>
-        </div>
-        <span>Продажи</span>
-      </div>
-  
-      <hr />
-  
-      <!-- Сообщения -->
-      <div class="menu-item">
-        <div class="icon-wrap">
-          <!-- Иконка для "Сообщения" (пример: fa-comments) -->
-          <i class="fas fa-comments"></i>
-        </div>
-        <span>Сообщения</span>
-      </div>
-  
-      <hr />
-  
-      <!-- Каталог игр (пример активного пункта) -->
-      <div class="menu-item active">
-        <div class="icon-wrap">
-          <!-- Иконка для "Каталог игр" (пример: fa-th-large) -->
-          <i class="fas fa-th-large"></i>
-        </div>
-        <span>Каталог игр</span>
-      </div>
-    </nav>
-  </aside>
-  
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Простой чат</title>
   <style>
-    /* Боковая обёртка */
-.sidebar-menu {
-    width: 220px;               /* Ширина бокового меню */
-    background-color: #0e0e0e;  /* Тёмный фон */
-    padding: 1rem;
-    /* Если нужно фиксировать сбоку:
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    */
-    font-family: 'Montserrat', sans-serif; /* Чтобы сочеталось с остальным сайтом */
-  }
-  
-  /* Контейнер списка пунктов */
-  .menu-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem; /* Расстояние между пунктами */
-  }
-  
-  /* Стили для одного пункта меню */
-  .menu-item {
-    display: flex;
-    align-items: center;
-    background-color: #1a1a1a;  /* Фон каждого пункта (можно менять) */
-    border-radius: 8px;
-    padding: 0.6rem 0.8rem;
-    color: #ccc;
-    cursor: pointer;
-    transition: background 0.2s, color 0.2s;
-  }
-  
-  /* Иконка слева и её «пузырёк» */
-  .icon-wrap {
-    width: 32px;
-    height: 32px;
-    background-color: #2f2f2f; /* Тёмный оттенок фона иконки */
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 0.6rem; /* Отступ между иконкой и текстом */
-    color: #ccc;
-    transition: background 0.2s, color 0.2s;
-  }
-  
-  /* Иконка внутри пузырька */
-  .icon-wrap i {
-    font-size: 14px; /* Можно менять, если нужно крупнее/мельче */
-  }
-  
-  /* Плюс-иконка (справа) */
-  .plus-icon {
-    margin-left: auto; /* Сдвигает плюсик в правый край */
-    background-color: #4fc3f7; /* Цвет фона для плюса (акцент) */
-    color: #0e0e0e;           /* Цвет самой иконки */
-    width: 24px;
-    height: 24px;
-    border-radius: 6px;
-    font-size: 12px;
-  }
-  
-  /* При наведении на пункт меню — меняем цвет фона и иконок */
-  .menu-item:hover {
-    background-color: #2a2a2a;
-    color: #fff;
-  }
-  
-  .menu-item:hover .icon-wrap {
-    background-color: #3f3f3f;
-    color: #fff;
-  }
-  
-  /* Активный пункт (выделен) */
-  .menu-item.active {
-    background-color: #d35400; /* Оранжево-коричневый */
-    color: #fff;
-  }
-  
-  .menu-item.active .icon-wrap {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  /* Разделитель */
-  hr {
-    border: none;
-    border-top: 1px solid #333;
-    margin: 0.5rem 0;
-  }
-  
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat-container {
+      background: #fff;
+      width: 400px;
+      height: 500px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      border-bottom: 1px solid #ccc;
+    }
+    .chat-input {
+      display: flex;
+    }
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-top: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .chat-input button {
+      padding: 10px 20px;
+      border: none;
+      border-top: 1px solid #ccc;
+      background: #28a745;
+      color: #fff;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .chat-input button:hover {
+      background: #218838;
+    }
+    .message {
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 4px;
+      background: #e9ecef;
+      max-width: 80%;
+    }
+    .message.self {
+      background: #d4edda;
+      align-self: flex-end;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Введите сообщение...">
+      <button onclick="sendMessage()">Отправить</button>
+    </div>
+  </div>
 
+  <script>
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const messageText = input.value.trim();
+      if (!messageText) return;
+      
+      // Создаем новое сообщение
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', 'self');
+      messageDiv.textContent = messageText;
+      
+      // Добавляем сообщение в чат
+      document.getElementById('chatMessages').appendChild(messageDiv);
+      
+      // Прокручиваем чат вниз
+      document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+      
+      // Очищаем поле ввода
+      input.value = '';
+      
+      // Здесь можно добавить отправку сообщения на сервер или ответ бота
+    }
 
-
-
-    </style>  
-  
+    // Обработка нажатия клавиши Enter
+    document.getElementById('chatInput').addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
+</body>
+</html>
