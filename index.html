@@ -71,7 +71,7 @@
       align-items: center;
     }
     .logo-image {
-      width: 50px;
+      width: 73px;
       height: auto;
       transition: transform 0.3s;
     }
@@ -79,14 +79,14 @@
       transform: scale(1.05);
     }
     .logo-text {
-      font-size: 26px;
+      font-size: 28px;
       font-weight: 600;
-      color: #4fc3f7;
+      color: #012e34
       margin-left: 10px;
       transition: color 0.3s;
     }
     .logo-container:hover .logo-text {
-      color: #80deea;
+      color: #00d9f6;
     }
     
     /* Поиск */
@@ -223,114 +223,6 @@
       object-fit: cover;
       margin-bottom: 2px;
     }
-
-
-
-
-
-
-
-
-/* Боковая обёртка */
-.sidebar-menu {
-  width: 220px;               /* Ширина бокового меню */
-  background-color: #0e0e0e;  /* Тёмный фон */
-  padding: 1rem;
-  /* Если нужно фиксировать сбоку:
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  */
-  font-family: 'Montserrat', sans-serif; /* Чтобы сочеталось с остальным сайтом */
-}
-
-/* Контейнер списка пунктов */
-.menu-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem; /* Расстояние между пунктами */
-}
-
-/* Стили для одного пункта меню */
-.menu-item {
-  display: flex;
-  align-items: center;
-  background-color: #1a1a1a;  /* Фон каждого пункта (можно менять) */
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-  color: #ccc;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-/* Иконка слева и её «пузырёк» */
-.icon-wrap {
-  width: 32px;
-  height: 32px;
-  background-color: #2f2f2f; /* Тёмный оттенок фона иконки */
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.6rem; /* Отступ между иконкой и текстом */
-  color: #ccc;
-  transition: background 0.2s, color 0.2s;
-}
-
-/* Иконка внутри пузырька */
-.icon-wrap i {
-  font-size: 14px; /* Можно менять, если нужно крупнее/мельче */
-}
-
-/* Плюс-иконка (справа) */
-.plus-icon {
-  margin-left: auto; /* Сдвигает плюсик в правый край */
-  background-color: #4fc3f7; /* Цвет фона для плюса (акцент) */
-  color: #0e0e0e;           /* Цвет самой иконки */
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
-/* При наведении на пункт меню — меняем цвет фона и иконок */
-.menu-item:hover {
-  background-color: #2a2a2a;
-  color: #fff;
-}
-
-.menu-item:hover .icon-wrap {
-  background-color: #3f3f3f;
-  color: #fff;
-}
-
-/* Активный пункт (выделен) */
-.menu-item.active {
-  background-color: #d35400; /* Оранжево-коричневый */
-  color: #fff;
-}
-
-.menu-item.active .icon-wrap {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Разделитель */
-hr {
-  border: none;
-  border-top: 1px solid #333;
-  margin: 0.5rem 0;
-}
-
-
-
-
-
-
-
-
-
-
     
     /* Боковая панель (админ-секция) */
     .admin-sidebar {
@@ -568,58 +460,47 @@ hr {
       line-height: 1.6;
     }
 
+/* Контейнер для карточек */
+.card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
+/* Стили для самой карточки */
+.card {
+  position: relative;
+  height: 180px;
+  background-position: center;
+  background-size: cover;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-   
-    
-    /* Контейнер для карточек */
-    .card-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      grid-gap: 20px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    
-    /* Стили для самой карточки */
-    .card {
-      position: relative;
-      height: 180px;
-      background-position: center;
-      background-size: cover;
-      border-radius: 10px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-    }
-    
-    .card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    }
-    
-    /* Блок с текстом поверх картинки */
-    .card-content {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      padding: 10px;
-      background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-    }
-    
-    .card-content h2 {
-      margin: 0;
-      font-size: 18px;
-      color: #fff;
-    }
-    
-    
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+
+/* Блок с текстом поверх картинки */
+.card-content {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+}
+
+.card-content h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+}
+
     /* Футер */
     footer {
       background: #161616;
@@ -817,8 +698,8 @@ hr {
         <!-- Левая часть: логотип с картинкой и названием -->
         <div class="header-left" onclick="location.href='index.html'">
           <div class="logo-container">
-            <img src="images/gl.png" alt="Логотип" class="logo-image">
-            <span class="logo-text">GlovimPlaye</span>
+            
+            <span class="logo-text">GlovimGame</span>
           </div>
         </div>
         <!-- Поиск -->
@@ -848,26 +729,67 @@ hr {
     </div>
   </header>
   
+  <!-- Результаты поиска -->
+  <div class="search-results" id="search-results"></div>
 
-<!-- Hero (баннер) секция с картинкой внутри -->
-<section class="hero-section">
-  <div class="container">
-    <img src="images/avatar.png" alt="Баннер GlovimPlaye" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;">
-    <h1>GlovimPlaye — маркетплейс игровых товаров и услуг</h1>
-    <p>GlovimPlaye — это инновационный маркетплейс, где геймеры могут покупать и продавать игровые товары, аккаунты и услуги. Платформа объединяет продавцов и покупателей, предлагая безопасные сделки, удобный интерфейс и широкий ассортимент товаров для самых популярных игр.
+
+</section>
+<h1>New</h1>
+
+<div class="card-container">
+  <!-- Карточка 1 -->
+  <div class="card" style="background-image: url('images/ex.jpg');">
+    <div class="card-content">
+      <h2>Path of Exile 2</h2>
+    </div>
   </div>
-  <!-- Дополнительная "карточка" для ссылки на каталог -->
-  <div class="catalog-link-card" onclick="location.href='profile.html'">
-    <span>Узнать больше о GlovimPlaye</span>
+
+  <!-- Карточка 2 -->
+  <div class="card" style="background-image: url('images/con.jpg');">
+    <div class="card-content">
+      <h2>Counter-Strike 2</h2>
+    </div>
+  </div>
+
+  <!-- Карточка 3 -->
+  <div class="card" style="background-image: url('images/brv.jpg');">
+    <div class="card-content">
+      <h2>Brawl Stars</h2>
+    </div>
+  </div>
+
+  <!-- Карточка 4 -->
+  <div class="card" style="background-image: url('images/wor.jpg');">
+    <div class="card-content">
+      <h2>World of Tanks Blitz</h2>
+    </div>
+  </div>
+
+  <!-- Карточка 5 -->
+  <div class="card" style="background-image: url('images/gi.jpg');">
+    <div class="card-content">
+      <h2>Genshin Impact</h2>
+    </div>
+  </div>
+
+  <!-- Карточка 6 -->
+  <div class="card" style="background-image: url('images/mbl.jpg');">
+    <div class="card-content">
+      <h2>Mobile Legends</h2>
+    </div>
+  </div>
+
+  <!-- Добавьте при желании ещё карточки -->
+  <div class="card" style="background-image: url('images/bl.jpg');">
+    <div class="card-content">
+      <h2>Больше игр...</h2>
+    </div>
   </div>
 </div>
-</section>
 
 
-</section>
-
-  <!-- Основной контент -->
-  <div class="container">
+   <!-- Основной контент -->
+   <div class="container">
     <!-- Пример ваших горизонтальных скроллов -->
     <h2 class="section-title">Игры</h2>
     <div class="horizontal-scroll">
@@ -974,131 +896,25 @@ hr {
     </div>
   </div>
 
-
-  
-  <div class="card-container">
-    <!-- Карточка 1 -->
-    <div class="card" style="background-image: url('images/poe2.jpg');">
-      <div class="card-content">
-        <h2>Path of Exile 2</h2>
-      </div>
-    </div>
-
-    <!-- Карточка 2 -->
-    <div class="card" style="background-image: url('images/cs2.jpg');">
-      <div class="card-content">
-        <h2>Counter-Strike 2</h2>
-      </div>
-    </div>
-
-    <!-- Карточка 3 -->
-    <div class="card" style="background-image: url('images/brawl-stars.jpg');">
-      <div class="card-content">
-        <h2>Brawl Stars</h2>
-      </div>
-    </div>
-
-    <!-- Карточка 4 -->
-    <div class="card" style="background-image: url('images/wot-blitz.jpg');">
-      <div class="card-content">
-        <h2>World of Tanks Blitz</h2>
-      </div>
-    </div>
-
-    <!-- Карточка 5 -->
-    <div class="card" style="background-image: url('images/bravl-ava.jpg');">
-      <div class="card-content">
-        <h2>Genshin Impact</h2>
-      </div>
-    </div>
-
-    <!-- Карточка 6 -->
-    <div class="card" style="background-image: url('images/mobile-legends.jpg');">
-      <div class="card-content">
-        <h2>Mobile Legends</h2>
-      </div>
-    </div>
-
-    <!-- Добавьте при желании ещё карточки -->
-    <div class="card" style="background-image: url('images/more-games.jpg');">
-      <div class="card-content">
-        <h2>Больше игр...</h2>
-      </div>
-    </div>
-  </div>
-
-
-
-  
-
    
-
+<!-- Hero (баннер) секция -->
+<section class="hero-section">
+  <div class="container">
+    <h1>Биржа для торговли между игроками</h1>
+    <p>GlovimPlaye-безопасный маркетплейс, где можно продать и купить внутриигровые ценности, предметы, валюту или аккаунты.</p>
+  </div>
+</section>
+  
   
   
   <!-- Боковая панель (админ-секция) -->
   <aside class="admin-sidebar" id="adminSidebar">
-    <div class="sidebar-logo" onclick="location.href='index.html'"></div>
-    <h3></h3>
-    
+    <div class="sidebar-logo" onclick="location.href='index.html'">GlovimGame</div>
+    <h3>Админы</h3>
     <!-- Здесь динамически будут загружаться админы с ролями -->
-  <!-- Подключите Font Awesome в <head>, если ещё не подключили -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+  </aside>
 
-<!-- Боковое меню -->
- 
-  <nav class="menu-list">
-    <!-- Мои лоты -->
-    <a href="mylots.html" class="menu-item">
-      <div class="icon-wrap">
-        <!-- Иконка (пример: fa-file-alt) -->
-        <i class="fas fa-file-alt"></i>
-      </div>
-      <span>Мои лоты</span>
-      <div class="icon-wrap plus-icon">
-        <!-- Иконка плюс -->
-        <i class="fas fa-plus"></i>
-      </div>
-    </a>
 
-    <!-- Покупки -->
-    <a href="purchases.html" class="menu-item">
-      <div class="icon-wrap">
-        <i class="fas fa-download"></i>
-      </div>
-      <span>Покупки</span>
-    </a>
-
-    <!-- Продажи -->
-    <a href="sales.html" class="menu-item">
-      <div class="icon-wrap">
-        <i class="fas fa-upload"></i>
-      </div>
-      <span>Продажи</span>
-    </a>
-
-    <hr />
-
-    <!-- Сообщения -->
-    <a href="chat.html" class="menu-item">
-      <div class="icon-wrap">
-        <i class="fas fa-comments"></i>
-      </div>
-      <span>Сообщения</span>
-    </a>
-
-    <hr />
-
-    <!-- Каталог игр (пример активного пункта) -->
-    <a href="catalog.html" class="menu-item active">
-      <div class="icon-wrap">
-        <i class="fas fa-th-large"></i>
-      </div>
-      <span>Каталог игр</span>
-    </a>
-  </nav>
-</aside>
-
-    
   
   <!-- Нижняя панель (мобильная навигация) -->
   <div class="bottom-nav">
@@ -1374,4 +1190,4 @@ hr {
     });
   </script>
 </body>
-</html>
+</html> 
