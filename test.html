@@ -2,415 +2,265 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye | Главная</title>
+  <title>Личный чат с Firebase</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Подключение Font Awesome для иконок (по желанию) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  
-  <!-- Font Awesome для иконок -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-  
-  <!-- Firebase v8 -->
+  <!-- Подключение Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  
+
   <style>
     :root {
-      --bg-color: #0e0e0e;
-      --header-bg: #161616;
-      --accent-color: #4fc3f7;
-      --accent-hover: #80deea;
-      --text-color: #ccc;
-      --card-bg: #1e1e1e;
-      --border-radius: 8px;
+      --bg-main: #121212;
+      --bg-chat: #181818;
+      --accent-color: #ffb400;
+      --text-color: #e0e0e0;
+      --border-color: #2c2c2c;
     }
-    /* Сброс стилей */
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    
     body {
-      background: var(--bg-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-main);
       color: var(--text-color);
-      font-family: 'Montserrat', sans-serif;
-      min-height: 100vh;
-      padding-bottom: 70px; /* для нижней навигации */
-      transition: background 0.3s, color 0.3s;
-    }
-    a { text-decoration: none; color: inherit; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-    
-    /* Верхний хедер: логотип и гамбургер */
-    header {
-      background: var(--header-bg);
-      padding: 10px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      margin: 0;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
+      height: 100vh;
     }
-    .logo {
-      font-size: 28px;
-      font-weight: bold;
-      color: var(--accent-color);
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    .logo:hover { transform: scale(1.05); }
-    .search-bar {
+    
+    .chat-container {
       flex: 1;
-      max-width: 500px;
-      margin: 0 20px;
-      position: relative;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 50px;
-      background: #1e1e1e;
-      color: var(--text-color);
-      outline: none;
-      font-size: 15px;
-      transition: background 0.3s, color 0.3s;
-    }
-    .search-bar input::placeholder { color: #555; }
-    .search-btn {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--accent-color);
-      font-size: 18px;
-      cursor: pointer;
-    }
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .theme-toggle-btn {
-      background: none;
-      border: none;
-      color: var(--accent-color);
-      font-size: 20px;
-      cursor: pointer;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      transition: color 0.3s;
-    }
-    .theme-toggle-btn:hover { color: var(--accent-hover); }
-    .theme-toggle-btn span { font-size: 12px; margin-top: 3px; }
-    .balance {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: var(--accent-color);
-      font-size: 14px;
-    }
-    .balance i { font-size: 18px; margin-bottom: 2px; }
-    .profile-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid var(--accent-color);
-      object-fit: cover;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    .profile-avatar:hover { transform: scale(1.05); }
-    
-    /* Кнопка гамбургера – всегда видна */
-    .hamburger-btn {
-      background: none;
-      border: none;
-      color: var(--accent-color);
-      font-size: 24px;
-      cursor: pointer;
-    }
-    .hamburger-btn span { font-size: 14px; margin-left: 5px; }
-    
-    /* Нижняя панель (мобильная навигация) */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: var(--header-bg);
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
-      z-index: 20;
-    }
-    .bottom-nav a {
-      text-decoration: none;
-      color: var(--text-color);
-      text-align: center;
-      flex-grow: 1;
-      font-size: 14px;
-    }
-    .bottom-nav a i { display: block; font-size: 22px; margin-bottom: 2px; }
-    .bottom-nav a:hover { color: var(--accent-color); }
-    .bottom-nav-profile img.avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      margin-bottom: 2px;
-    }
-    @media (min-width: 768px) {
-      .bottom-nav { display: none; }
+      max-width: 600px;
+      margin: 20px auto;
+      border: 1px solid var(--border-color);
+      background: var(--bg-chat);
+      border-radius: 8px;
+      overflow: hidden;
     }
     
-    /* Боковое меню (гамбургер-меню) – используется на всех устройствах */
-    .hamburger-menu {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 250px;
-      height: 100%;
-      background: var(--card-bg);
-      box-shadow: -4px 0 10px rgba(0,0,0,0.6);
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      z-index: 30;
-      padding: 20px;
-    }
-    .hamburger-menu.open { transform: translateX(0); }
-    .hamburger-menu h3 {
-      margin-bottom: 20px;
-      color: var(--accent-color);
-      text-align: center;
-    }
-    .menu-item {
-      padding: 10px;
-      border-bottom: 1px solid #333;
-      cursor: pointer;
-      transition: background 0.3s;
-      font-size: 16px;
-    }
-    .menu-item:hover { background: #222; }
-    
-    /* Footer */
-    footer {
-      background: var(--header-bg);
-      text-align: center;
+    .chat-header {
       padding: 15px;
-      font-size: 14px;
-      margin-top: 20px;
+      background: var(--accent-color);
+      color: #1e1e1e;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
     }
     
-    /* Анимация появления */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+    
+    .message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      background: #2c2c2c;
+      max-width: 70%;
+      word-wrap: break-word;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .message.mine {
+      background: #3a3a3a;
+      margin-left: auto;
+    }
+    
+    .message .sender {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .message .time {
+      font-size: 12px;
+      text-align: right;
+      margin-top: 5px;
+      color: #9e9e9e;
+    }
+    
+    .chat-input {
+      display: flex;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-chat);
+      padding: 10px;
+    }
+    
+    .chat-input input {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      outline: none;
+      background: #333;
+      color: var(--text-color);
+      font-size: 14px;
+    }
+    
+    .chat-input button {
+      margin-left: 10px;
+      padding: 10px 20px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #1e1e1e;
+      transition: background 0.3s;
+    }
+    
+    .chat-input button:hover {
+      background: #ff9800;
+    }
+    
+    .login-container {
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      background: var(--bg-chat);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .login-container input {
+      width: 80%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 4px;
+      outline: none;
+      background: #333;
+      color: var(--text-color);
+    }
+    
+    .login-container button {
+      padding: 10px 20px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      color: #1e1e1e;
+      transition: background 0.3s;
+    }
+    
+    .login-container button:hover {
+      background: #ff9800;
     }
   </style>
 </head>
 <body>
-  <!-- Верхний хедер -->
-  <header>
-    <div class="logo" onclick="window.location.href='index.html'">GlovimGame</div>
-    <!-- При необходимости можно оставить строку поиска для ПК -->
-    <div class="header-right">
-      <button class="theme-toggle-btn" id="themeToggle">
-        <i class="fas fa-adjust"></i>
-        <span>Светлая тема</span>
-      </button>
-      <div class="balance" id="headerBalance">
-        <i class="fas fa-wallet"></i>
-        <span>0₽</span>
-      </div>
-      <img id="headerProfileAvatar" class="profile-avatar" src="default-avatar.png" alt="Avatar" onclick="window.location.href='profile.html'">
-    </div>
-    <button class="hamburger-btn" id="hamburgerBtn">
-      <i class="fas fa-bars"></i> <span>Меню</span>
-    </button>
-  </header>
-  
-  <!-- Боковое меню (гамбургер-меню) -->
-  <aside class="hamburger-menu" id="hamburgerMenu">
-    <h3>Меню профиля</h3>
-    <div class="menu-item" onclick="window.location.href='profile.html'">Мои товары</div>
-    <div class="menu-item" onclick="window.location.href='orders.html'">Мои заказы</div>
-    <div class="menu-item" onclick="editProfile()">Редактировать профиль</div>
-    <div class="menu-item" onclick="logout()">Выйти</div>
-  </aside>
-  
-  <!-- Основной контент (пример контента) -->
-  <main class="container">
-    <!-- Пример секции Hero (баннер) -->
-    <section class="hero-section" style="background: var(--header-bg); padding: 40px 20px; text-align: center; border-radius: var(--border-radius); margin: 20px 0;">
-      <h1 style="font-size: 32px; color: var(--accent-color); margin-bottom: 15px;">Биржа для торговли между игроками</h1>
-      <p style="font-size: 18px; max-width: 700px; margin: 0 auto;">GlovimGame — безопасный маркетплейс, где можно продать и купить внутриигровые ценности, предметы, валюту или аккаунты.</p>
-      <button class="hero-btn" style="margin-top: 20px; background: var(--accent-color); padding: 10px 20px; border: none; border-radius: 6px; color: #121212; cursor: pointer;">Узнать подробнее</button>
-    </section>
-    
-    <!-- Пример карточек игр -->
-    <h2 class="section-title">Новинки</h2>
-    <div class="card-container">
-      <!-- Карточка 1 -->
-      <div class="card" style="background-image: url('images/ex.jpg');">
-        <div class="card-content">
-          <h2>Path of Exile 2</h2>
-        </div>
-      </div>
-      <!-- Карточка 2 -->
-      <div class="card" style="background-image: url('images/con.jpg');">
-        <div class="card-content">
-          <h2>Counter-Strike 2</h2>
-        </div>
-      </div>
-      <!-- Карточка 3 -->
-      <div class="card" style="background-image: url('images/brv.jpg');">
-        <div class="card-content">
-          <h2>Brawl Stars</h2>
-        </div>
-      </div>
-      <!-- Карточка 4 -->
-      <div class="card" style="background-image: url('images/wor.jpg');">
-        <div class="card-content">
-          <h2>World of Tanks Blitz</h2>
-        </div>
-      </div>
-      <!-- Карточка 5 -->
-      <div class="card" style="background-image: url('images/gi.jpg');">
-        <div class="card-content">
-          <h2>Genshin Impact</h2>
-        </div>
-      </div>
-      <!-- Карточка 6 -->
-      <div class="card" style="background-image: url('images/mbl.jpg');">
-        <div class="card-content">
-          <h2>Mobile Legends</h2>
-        </div>
-      </div>
-      <!-- Карточка "Больше игр..." -->
-      <div class="card" style="background-image: url('images/bl.jpg');">
-        <div class="card-content">
-          <h2>Больше игр...</h2>
-        </div>
-      </div>
-    </div>
-  </main>
-  
-  <!-- Нижняя панель (мобильная навигация) -->
-  <div class="bottom-nav">
-    <a href="index.html">
-      <i class="fas fa-home"></i>
-      <span>Главная</span>
-    </a>
-    <a href="add.html">
-      <i class="fas fa-plus"></i>
-      <span>Продать</span>
-    </a>
-    <a href="chat.html">
-      <i class="fas fa-comment-dots"></i>
-      <span>Чат</span>
-    </a>
-    <a href="profile.html" class="bottom-nav-profile">
-      <i class="fas fa-user"></i>
-      <span>Профиль</span>
-    </a>
+
+  <!-- Форма авторизации/выбора чата -->
+  <div class="login-container" id="loginContainer">
+    <h2>Добро пожаловать!</h2>
+    <p>Введите своё имя и имя собеседника:</p>
+    <input type="text" id="currentUserInput" placeholder="Ваше имя">
+    <input type="text" id="partnerUserInput" placeholder="Имя собеседника">
+    <br>
+    <button onclick="startChat()">Начать чат</button>
   </div>
   
-  <!-- Футер -->
-  <footer>
-    <div class="container" style="align-items: center;">
-      <div style="max-width: 250px;">
-        <h3>GlovimGame</h3>
-        <p>Безопасная торговая площадка с низкими ценами</p>
-        <p>support@glovimgame.com</p>
-      </div>
-      <div>
-        <h4>Способы оплаты</h4>
-        <p>💳 💸 🪙 🎮</p>
-      </div>
-      <div>
-        <h4>Информация</h4>
-        <p><a href="#">О компании</a></p>
-        <p><a href="#">Правила и гарантии</a></p>
-        <p><a href="#">Курсы валют</a></p>
-        <p><a href="#">Советы и гайды</a></p>
-      </div>
-      <div>
-        <h4>Наши соц.сети</h4>
-        <p><a href="https://t.me/" target="_blank">Telegram канал</a></p>
-        <p><a href="https://vk.com/" target="_blank">Группа ВКонтакте</a></p>
-        <p><a href="https://www.youtube.com/" target="_blank">YouTube канал</a></p>
-        <p><a href="https://discord.com/" target="_blank">Discord сервер</a></p>
-      </div>
-      <div>
-        <button class="footer-btn">Написать в техподдержку</button>
-      </div>
+  <!-- Контейнер чата (скрыт до авторизации) -->
+  <div class="chat-container" id="chatContainer" style="display:none;">
+    <div class="chat-header" id="chatHeader">Чат</div>
+    <div class="messages" id="messagesContainer"></div>
+    <div class="chat-input">
+      <input type="text" id="messageInput" placeholder="Введите сообщение...">
+      <button onclick="sendMessage()">Отправить</button>
     </div>
-    <p class="copyright">
-      © 2025 GlovimGame. Все права защищены.
-    </p>
-  </footer>
+  </div>
   
   <script>
-    // Firebase-конфигурация и инициализация
+    // Инициализация Firebase (замените на свои данные)
     var firebaseConfig = {
-      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-      authDomain: "glovimplaye-b1023.firebaseapp.com",
-      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-      projectId: "glovimplaye-b1023",
-      storageBucket: "glovimplaye-b1023.firebasestorage.app",
-      messagingSenderId: "553440591519",
-      appId: "1:553440591519:web:b7be45a9253689f322acaa"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
     firebase.initializeApp(firebaseConfig);
     
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(function() { console.log("Сессия установлена"); loadAdmins(); })
-      .catch(function(error) { console.error("Ошибка установки сессии:", error); });
+    let currentUser = "";
+    let partnerUser = "";
+    let chatId = "";
+    let messagesRef = null;
     
-    // Функции загрузки профиля, обновления данных и работы с Supabase (если требуется)
-    function loadAdmins() {
-      var adminsRef = firebase.database().ref('users');
-      adminsRef.orderByChild('role').startAt('admin').endAt('admin\uf8ff').once('value')
-        .then(function(snapshot) {
-          // Пример работы с админами
-          console.log("Админы загружены");
-        })
-        .catch(function(error) { console.error("Ошибка загрузки админов:", error); });
-    }
-    
-    // Обработчик для кнопки гамбургера: открытие/закрытие бокового меню
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const hamburgerMenu = document.getElementById('hamburgerMenu');
-    hamburgerBtn.addEventListener('click', () => {
-      hamburgerMenu.classList.toggle('open');
-    });
-    
-    // Переключение темы
-    const themeToggleBtn = document.getElementById('themeToggle');
-    function setTheme(theme) {
-      if(theme === 'light'){
-        document.body.classList.add('light-mode');
-        themeToggleBtn.querySelector('span').textContent = 'Темная тема';
-      } else {
-        document.body.classList.remove('light-mode');
-        themeToggleBtn.querySelector('span').textContent = 'Светлая тема';
+    // Функция начала чата: задаются имена и определяется идентификатор чата
+    function startChat() {
+      currentUser = document.getElementById('currentUserInput').value.trim();
+      partnerUser = document.getElementById('partnerUserInput').value.trim();
+      if (!currentUser || !partnerUser) {
+        alert("Пожалуйста, заполните оба поля.");
+        return;
       }
-      localStorage.setItem('theme', theme);
+      // Генерируем идентификатор чата на основе отсортированного списка имён
+      chatId = [currentUser, partnerUser].sort().join('_');
+      
+      // Скрываем форму логина и показываем чат
+      document.getElementById('loginContainer').style.display = 'none';
+      document.getElementById('chatContainer').style.display = 'flex';
+      document.getElementById('chatHeader').textContent = `Чат: ${currentUser} ↔ ${partnerUser}`;
+      
+      // Получаем ссылку на базу данных для этого чата
+      messagesRef = firebase.database().ref("private_chats/" + chatId);
+      
+      // Слушаем новые сообщения
+      messagesRef.on("child_added", function(snapshot) {
+        const msg = snapshot.val();
+        displayMessage(msg);
+      });
     }
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(currentTheme);
-    themeToggleBtn.addEventListener('click', () => {
-      const newTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
-      setTheme(newTheme);
-    });
+    
+    // Функция отправки сообщения
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (!text) return;
+      const now = new Date();
+      const newMsg = {
+        sender: currentUser,
+        text: text,
+        timestamp: now.getTime(),
+        isMine: true
+      };
+      // Отправляем сообщение в Firebase
+      messagesRef.push(newMsg);
+      input.value = "";
+    }
+    
+    // Функция отображения сообщения в чате
+    function displayMessage(msg) {
+      const container = document.getElementById('messagesContainer');
+      const div = document.createElement('div');
+      div.classList.add('message');
+      if (msg.sender === currentUser) {
+        div.classList.add('mine');
+      }
+      // Форматируем время
+      let timeStr = "";
+      if (msg.timestamp) {
+        const date = new Date(msg.timestamp);
+        timeStr = date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+      }
+      div.innerHTML = `
+        <div class="sender">${msg.sender}</div>
+        <div>${msg.text}</div>
+        <div class="time">${timeStr}</div>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }
   </script>
 </body>
 </html>
+

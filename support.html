@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>GlovimPlaye | Запрос в поддержку</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  
+  <style>
+    body {
+      background: #f5f5f5;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #555;
+    }
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    input[type="file"] {
+      margin-bottom: 15px;
+    }
+    button {
+      background: #4fc3f7;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #80deea;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Запрос в поддержку</h1>
+    <form id="supportForm">
+      <!-- Выбор категории проблемы -->
+      <label for="problemType">Проблема</label>
+      <select id="problemType" name="problemType" required>
+        <option value="" disabled selected>Выберите категорию...</option>
+        <option value="payment">Проблема с платежом</option>
+        <option value="account">Проблема с аккаунтом</option>
+        <option value="technical">Техническая проблема</option>
+        <option value="other">Другое</option>
+      </select>
+      
+      <!-- Вместо ника – поле с ID пользователя -->
+      <label for="userId">Ваш ID</label>
+      <input type="text" id="userId" name="userId" readonly required placeholder="Загрузка ID...">
+      
+      <!-- Тема запроса -->
+      <label for="subject">Тема запроса</label>
+      <input type="text" id="subject" name="subject" required placeholder="Краткое описание проблемы">
+      
+      <!-- Описание проблемы -->
+      <label for="message">Описание проблемы</label>
+      <textarea id="message" name="message" rows="5" required placeholder="Подробное описание проблемы"></textarea>
+      
+      <!-- Прикрепление файла (опционально) -->
+      <label for="attachment">Прикрепить файл (по желанию)</label>
+      <input type="file" id="attachment" name="attachment" accept="image/*, .pdf, .doc, .docx">
+      
+      <button type="submit">Отправить запрос</button>
+    </form>
+  </div>
+  
+  <script>
+    // Инициализация Firebase
+    var firebaseConfig = {
+      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+      authDomain: "glovimplaye-b1023.firebaseapp.com",
+      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+      projectId: "glovimplaye-b1023",
+      storageBucket: "glovimplaye-b1023.firebasestorage.app",
+      messagingSenderId: "553440591519",
+      appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    };
+    firebase.initializeApp(firebaseConfig);
+    
+    // Проверка авторизации: если пользователь авторизован – подставляем его UID в поле, иначе можно реализовать редирект на login.html
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        document.getElementById('userId').value = user.uid;
+      } else {
+        // Можно перенаправить неавторизованного пользователя
+        // window.location.href = "login.html";
+      }
+    });
+    
+    // Обработчик отправки формы
+    document.getElementById('supportForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Собираем данные формы
+      var formData = {
+        problemType: document.getElementById('problemType').value,
+        userId: document.getElementById('userId').value,
+        subject: document.getElementById('subject').value,
+        message: document.getElementById('message').value,
+        attachment: document.getElementById('attachment').files[0] 
+                      ? document.getElementById('attachment').files[0].name 
+                      : null,
+        createdAt: firebase.database.ServerValue.TIMESTAMP,
+        status: "pending"  // начальный статус запроса
+      };
+      
+      // Записываем данные запроса в базу данных в узел "supportRequests"
+      firebase.database().ref('supportRequests').push(formData)
+        .then(() => {
+          alert("Ваш запрос в поддержку отправлен!");
+          // Сохраняем значение userId и очищаем форму
+          var userId = document.getElementById('userId').value;
+          document.getElementById('supportForm').reset();
+          document.getElementById('userId').value = userId;
+        })
+        .catch(error => {
+          console.error("Ошибка отправки запроса:", error);
+          alert("Ошибка отправки запроса. Попробуйте позже.");
+        });
+    });
+  </script>
+</body>
+</html>

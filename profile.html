@@ -151,6 +151,28 @@
       margin-top: 5px;
     }
     
+    /* Скрытый блок с user ID */
+    .hidden-id {
+      margin-top: 20px;
+      padding: 15px;
+      background: #333;
+      border-radius: var(--border-radius);
+      display: none;
+    }
+    .toggle-btn {
+      margin-top: 10px;
+      background: var(--accent-color);
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--border-radius);
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .toggle-btn:hover {
+      background: var(--accent-hover);
+    }
+    
     /* Модальные окна (для загрузки аватара и фона) */
     .modal {
       display: none;
@@ -297,7 +319,6 @@
   <!-- Боковая панель (гамбургер-меню) -->
   <aside class="hamburger-menu" id="hamburgerMenu">
     <h3>Меню</h3>
-    <!-- Платные функции загрузки -->
     <div class="menu-item" onclick="payAndUploadAvatar()">Загрузить аватар (100₽)</div>
     <div class="menu-item" onclick="payAndUploadBackground()">Загрузить фон (100₽)</div>
     <div class="menu-item" onclick="editProfile()">Редактировать профиль</div>
@@ -315,7 +336,6 @@
     <!-- Информационный блок -->
     <div class="profile-info">
       <div class="info-item">
-        <!-- Баланс как красивая кнопка -->
         <button class="balance-btn" onclick="alert('Ваш баланс: ' + document.getElementById('balanceAmount').innerText + ' ₽')">
           <i class="fas fa-wallet"></i> <span id="balanceAmountDisplay">0</span> ₽
         </button>
@@ -329,9 +349,15 @@
         <span id="registrationDateDisplay">Неизвестно</span>
       </div>
     </div>
+    
+    <!-- Скрытый блок с ID пользователя -->
+    <div id="userIdContainer" class="hidden-id">
+      <p>ID пользователя: <span id="userIdDisplay"></span></p>
+    </div>
+    <button class="toggle-btn" id="toggleIdBtn">Показать ID</button>
   </main>
   
-  <!-- Модальное окно для загрузки аватара (вызывается через платную функцию) -->
+  <!-- Модальное окно для загрузки аватара -->
   <div id="avatarModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeModal('avatarModal')">&times;</span>
@@ -348,7 +374,7 @@
     </div>
   </div>
   
-  <!-- Модальное окно для загрузки фонового изображения (вызывается через платную функцию) -->
+  <!-- Модальное окно для загрузки фонового изображения -->
   <div id="backgroundModal" class="modal">
     <div class="modal-content">
       <span class="close-modal" onclick="closeModal('backgroundModal')">&times;</span>
@@ -385,8 +411,6 @@
     </a>
   </div>
   
- 
-  
   <script>
     // Инициализация Firebase
     var firebaseConfig = {
@@ -417,13 +441,16 @@
     // Загрузка данных профиля
     function loadUserProfile(user) {
       const userId = user.uid;
+      // Заполнение скрытого блока с ID
+      document.getElementById('userIdDisplay').innerText = userId;
+      
       firebase.database().ref('users/' + userId).once('value').then(snapshot => {
         let userData = snapshot.val();
         if (!userData) return;
     
         document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
-        
-        // Обновляем отображение баланса в кнопке (также скрытый элемент для списания)
+    
+        // Баланс
         let balance = userData.balance || "0";
         document.getElementById('balanceAmountDisplay').innerText = balance;
         if(!document.getElementById('balanceAmount')) {
@@ -436,7 +463,7 @@
           document.getElementById('balanceAmount').innerText = balance;
         }
     
-        // Рейтинг (отзывы, изначально 0 отзывов, значение по умолчанию 4.7)
+        // Рейтинг
         let rating = userData.rating || "4.7";
         document.getElementById('ratingDisplay').innerText = rating;
     
@@ -452,12 +479,25 @@
         let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
         document.getElementById('profileAvatar').src = avatarUrl;
     
-        // Если у пользователя задан фон – установить его
+        // Фон
         if(userData.backgroundImage) {
           document.body.style.backgroundImage = `url(${userData.backgroundImage})`;
         }
       });
     }
+    
+    // Переключатель видимости блока с ID
+    const toggleBtn = document.getElementById('toggleIdBtn');
+    const userIdContainer = document.getElementById('userIdContainer');
+    toggleBtn.addEventListener('click', () => {
+      if (userIdContainer.style.display === "none" || userIdContainer.style.display === "") {
+        userIdContainer.style.display = "block";
+        toggleBtn.innerText = "Скрыть ID";
+      } else {
+        userIdContainer.style.display = "none";
+        toggleBtn.innerText = "Показать ID";
+      }
+    });
     
     // Закрытие модальных окон
     function closeModal(modalId) {
@@ -498,7 +538,7 @@
       });
     }
     
-    // Платная функция загрузки фонового изображения (загружается в бакет avatars)
+    // Платная функция загрузки фонового изображения
     function payAndUploadBackground() {
       deductAmount(100).then(success => {
         if(success) {
@@ -507,7 +547,7 @@
       });
     }
     
-    // Универсальная функция открытия модального окна
+    // Открытие модального окна
     function openModal(modalId) {
       document.getElementById(modalId).style.display = "flex";
     }
@@ -592,7 +632,7 @@
       }
     });
     
-    // Функции редактирования профиля и выхода – вызываются из гамбургер-меню
+    // Функции редактирования профиля и выхода
     function editProfile() { alert('Редактирование профиля'); }
     function logout() {
       firebase.auth().signOut().then(() => {
