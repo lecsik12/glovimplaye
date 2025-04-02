@@ -403,231 +403,141 @@ header {
 
 
 
-
-
-/* Боковая панель (админ-секция) — оставляем существующий стиль */
-.admin-sidebar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 280px;
-  height: 100%;
-  background: rgba(30, 30, 30, 0.85);
-  backdrop-filter: blur(8px);
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 20px;
-  overflow-y: auto;
-  transition: transform 0.3s ease, background 0.3s;
-  z-index: 1000;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.25);
-  animation: fadeIn 0.5s ease-out;
-}
-
-/* Анимация появления */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-/* Логотип панели */
-.sidebar-logo {
-  font-size: 28px;
-  font-weight: bold;
-  color: #4fc3f7;
-  text-align: center;
-  margin-bottom: 30px;
-  cursor: pointer;
-  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
-  transition: transform 0.3s;
-}
-
-.sidebar-logo:hover {
-  transform: scale(1.05);
-}
-
-/* Заголовок админов */
-.admin-sidebar h3 {
-  font-size: 18px;
-  color: #fff;
-  margin: 30px 0 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 5px;
-}
-
-/* Стили для вертикального меню */
-.menu-list {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0 0;
-}
-
-.menu-item {
-  border-radius: 6px;
-  margin-bottom: 8px;
-  transition: background 0.3s, transform 0.2s;
-}
-
-.menu-item a {
-  display: flex;
-  align-items: center;
-  padding: 12px 15px;
-  color: #ccc;
-  text-decoration: none;
-  transition: color 0.3s;
-}
-
-/* Стили для иконок */
-.icon {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  margin-right: 12px;
-  /* Можно добавить общий фильтр или эффект, если нужно */
-}
-
-/* Примеры назначений иконок для каждого элемента меню */
-.icon-accounts {
-  background-image: url('icons/accounts.svg');
-}
-
-.icon-purchases {
-  background-image: url('icons/purchases.svg');
-}
-
-.icon-operations {
-  background-image: url('icons/operations.svg');
-}
-
-.icon-transferred {
-  background-image: url('icons/transferred.svg');
-}
-
-.icon-reviews {
-  background-image: url('icons/reviews.svg');
-}
-
-.icon-favorites {
-  background-image: url('icons/favorites.svg');
-}
-
-.icon-labels {
-  background-image: url('icons/labels.svg');
-}
-
-.icon-ignore-sellers {
-  background-image: url('icons/ignore-sellers.svg');
-}
-
-.icon-block-buyers {
-  background-image: url('icons/block-buyers.svg');
-}
-
-.icon-disputes {
-  background-image: url('imeges/disputes.svg');
-}
-
-.icon-auto-buy {
-  background-image: url('icons/auto-buy.svg');
-}
-
-.icon-auto-payment {
-  background-image: url('icons/auto-payment.svg');
-}
-
-/* Стили для эффекта при наведении на элементы меню */
-.menu-item a:hover {
-  background-color: rgba(79, 195, 247, 0.2);
-  color: #fff;
-  transform: translateX(-4px);
-}
-
-.menu-item.active a {
-  border-left: 4px solid #4fc3f7;
-  background-color: rgba(79, 195, 247, 0.35);
-  color: #fff;
-}
-
-.menu-item.active .icon {
-  filter: brightness(1.2);
-}
-
-/* Стили для админ аккаунта (оставляем как есть) */
-.admin-account {
-  display: flex;
-  align-items: center;
-  background: rgba(38, 38, 38, 0.8);
-  padding: 12px;
-  border-radius: 10px;
-  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-  margin-bottom: 15px;
-}
-
-.admin-account:hover {
-  background: rgba(51, 51, 51, 0.9);
-  transform: translateX(-5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.admin-account img {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  margin-right: 12px;
-  object-fit: cover;
-  border: 2px solid #4fc3f7;
-}
-
-.admin-account .admin-name {
-  font-size: 15px;
-  color: #ccc;
-  font-weight: 600;
-}
-
-.admin-role {
-  font-size: 13px;
-  color: #aaa;
-  margin-top: 3px;
-}
-
-/* Стили для кнопок */
-.button {
-  display: inline-block;
-  padding: 10px 22px;
-  background-color: #4fc3f7;
-  color: #fff;
-  text-decoration: none;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s;
-  margin-top: 12px;
-}
-
-.button:hover {
-  background-color: #39a0d8;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-  transform: translateY(-2px);
-}
-
-.button:active {
-  background-color: #318ab8;
-  transform: translateY(0);
-}
-
-.button:disabled {
-  background-color: #555;
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-
-
-
-
+секция) */
+    .admin-sidebar {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      background: #1e1e1e;
+      border-left: 1px solid #333;
+      padding: 20px;
+      overflow-y: auto;
+      transition: transform 0.3s ease, background 0.3s;
+      z-index: 4;
+    }
+    
+    /* Логотип панели */
+    .sidebar-logo {
+      font-size: 24px;
+      font-weight: 600;
+      color: #4fc3f7;
+      text-align: center;
+      margin-bottom: 20px;
+      cursor: pointer;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    }
+    
+    .admin-sidebar h3 {
+      font-size: 18px;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    
+    .admin-account {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      background: #262626;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+    
+    .admin-account:hover {
+      background: #333;
+    }
+    
+    .admin-account img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+    
+    .admin-account .admin-name {
+      font-size: 14px;
+      color: #ccc;
+    }
+    
+    .admin-role {
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 3px;
+    }
+    
+    /* Стили для вертикального меню */
+    .menu-list {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0 0;
+    }
+    
+    .menu-item {
+      transition: background 0.3s, border-left 0.3s;
+    }
+    
+    .menu-item a {
+      display: flex;
+      align-items: center;
+      padding: 8px 15px;
+      color: #ccc;
+      text-decoration: none;
+    }
+    
+    .menu-item i {
+      font-size: 18px;
+      margin-right: 10px;
+      color: #888;
+    }
+    
+    .menu-item a:hover {
+      background-color: #2b2b2b;
+      color: #fff;
+    }
+    
+    .menu-item.active a {
+      border-left: 4px solid #4fc3f7;
+      background-color: #2b2b2b;
+      color: #fff;
+    }
+    
+    .menu-item.active i {
+      color: #4fc3f7;
+    }
+    
+    /* Стили для кнопок */
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4fc3f7; /* основной цвет, как у логотипа */
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    
+    .button:hover {
+      background-color: #39a0d8;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    .button:active {
+      background-color: #318ab8;
+    }
+    
+    .button:disabled {
+      background-color: #555;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
 
 
 
@@ -834,6 +744,7 @@ footer p.copyright {
 <body>
 <!-- Хедер -->
 <header>
+  <meta name="heleket" content="1b2996ce" />
   <div class="header-wrapper">
     <!-- Левая часть: Логотип -->
     <div class="header-left">
@@ -1062,7 +973,6 @@ footer p.copyright {
   </div>
   
 
-
   <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-logo" onclick="location.href='index.html'">GlovimGame</div>
     <ul class="menu-list">
@@ -1143,7 +1053,6 @@ footer p.copyright {
     <h3>Админы</h3>
     <!-- Здесь динамически будут загружаться админы с ролями -->
   </aside>
-
 
 
 <!-- Футер -->
