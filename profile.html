@@ -20,9 +20,9 @@
   <style>
     :root {
       --bg-color: #0e0e0e;
-      --header-bg: #161616;
-      --accent-color: #4fc3f7;
-      --accent-hover: #80deea;
+      --header-bg: linear-gradient(135deg, #000, #393838);
+      --accent-color: #d3be05;
+      --accent-hover: #f1f1ec;
       --text-color: #ccc;
       --card-bg: #1e1e1e;
       --border-radius: 8px;
@@ -35,7 +35,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
     body {
       background: var(--bg-color);
       color: var(--text-color);
@@ -46,13 +45,12 @@
       background-size: cover;
       background-position: center;
     }
-    
     a {
       text-decoration: none;
       color: inherit;
     }
     
-    /* Верхний хедер – логотип и кнопка гамбургера */
+    /* Верхний хедер */
     header {
       background: var(--header-bg);
       padding: 15px 20px;
@@ -74,8 +72,6 @@
     header .logo:hover {
       transform: scale(1.05);
     }
-    
-    /* Кнопка гамбургера */
     .hamburger-btn {
       background: none;
       border: none;
@@ -84,96 +80,124 @@
       cursor: pointer;
     }
     
-    /* Основной контейнер профиля */
-    .profile-container {
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 20px;
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      animation: fadeInUp 0.6s ease-out;
+    /* Баннер профиля: размытый фон, аватар, ник, статус и статистика */
+    .profile-banner {
       position: relative;
+      width: 100%;
+      height: 250px;
+      background-color: #181818;
+      overflow: hidden;
+    }
+    .profile-banner-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background: center/cover no-repeat;
+      filter: blur(8px);
       z-index: 1;
     }
-    
-    /* Верхняя информация: аватар и никнейм */
-    .profile-header {
+    .profile-banner-content {
+      position: relative;
+      z-index: 2;
       display: flex;
       align-items: center;
       gap: 20px;
-      margin-bottom: 20px;
+      padding: 20px;
+      height: 100%;
     }
-    .profile-header img {
-      width: 80px;
-      height: 80px;
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
-      border: 4px solid var(--accent-color);
+      border: 4px solid rgba(255,255,255,0.2);
       object-fit: cover;
     }
-    .profile-header .nickname {
-      font-size: 22px;
+    .profile-user-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      color: #fff;
+    }
+    .profile-name {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    .profile-status {
+      color: #4fc3f7;
+      margin-bottom: 10px;
+    }
+    .profile-stats {
+      display: flex;
+      gap: 30px;
+      margin-top: 5px;
+    }
+    .stat-item {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 16px;
       font-weight: bold;
+      display: block;
+    }
+    .stat-label {
+      font-size: 14px;
+      color: #999;
     }
     
-    /* Информационный блок */
-    .profile-info {
-      background: #222;
-      padding: 20px;
-      border-radius: var(--border-radius);
+    /* Блок действий: баланс, редактирование, показ ID */
+    .profile-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
-      align-items: center;
-      justify-content: space-around;
-      font-size: 16px;
+      justify-content: center;
+      margin: 20px auto;
+      max-width: 600px;
     }
-    /* Красивый баланс в виде кнопки */
-    .balance-btn {
-      background: var(--btn-gradient);
-      padding: 15px 25px;
+    .profile-actions button {
+      flex: 1;
+      padding: 15px 20px;
       border: none;
       border-radius: var(--border-radius);
-      color: #fff;
-      font-size: 18px;
+      font-size: 16px;
       cursor: pointer;
-      transition: box-shadow 0.3s;
+      transition: background 0.3s, box-shadow 0.3s;
+      color: #fff;
+      min-width: 150px;
+    }
+    .balance-btn {
+      background: var(--btn-gradient);
     }
     .balance-btn:hover {
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
-    .info-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    .edit-btn {
+      background: var(--accent-color);
     }
-    .info-item span {
-      font-weight: bold;
-      margin-top: 5px;
+    .edit-btn:hover {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .id-btn {
+      background: #555;
+    }
+    .id-btn:hover {
+      background: #777;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
     
-    /* Скрытый блок с user ID */
+    /* Скрытый блок с ID пользователя */
     .hidden-id {
-      margin-top: 20px;
+      margin: 20px auto;
       padding: 15px;
       background: #333;
       border-radius: var(--border-radius);
       display: none;
-    }
-    .toggle-btn {
-      margin-top: 10px;
-      background: var(--accent-color);
-      border: none;
-      padding: 10px 20px;
-      border-radius: var(--border-radius);
-      color: #fff;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .toggle-btn:hover {
-      background: var(--accent-hover);
+      max-width: 600px;
+      text-align: center;
     }
     
-    /* Модальные окна (для загрузки аватара и фона) */
+    /* Модальные окна (аватар и фон) */
     .modal {
       display: none;
       position: fixed;
@@ -291,19 +315,17 @@
       background: #222;
     }
     
-    /* Footer */
-    footer {
-      background: var(--header-bg);
-      text-align: center;
-      padding: 15px;
-      font-size: 14px;
-      margin-top: 20px;
-    }
-    
     /* Анимация появления */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Мобильная оптимизация: на узких экранах блок действий переходит в колонку */
+    @media (max-width: 480px) {
+      .profile-actions {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -325,37 +347,43 @@
     <div class="menu-item" onclick="logout()">Выйти</div>
   </aside>
   
-  <!-- Основной контейнер профиля -->
-  <main class="profile-container" id="profileContainer">
-    <!-- Верхняя информация: аватар и никнейм -->
-    <div class="profile-header">
-      <img id="profileAvatar" src="default-avatar.png" alt="Avatar">
-      <div class="nickname" id="profileNickname">Загрузка...</div>
-    </div>
-    
-    <!-- Информационный блок -->
-    <div class="profile-info">
-      <div class="info-item">
-        <button class="balance-btn" onclick="alert('Ваш баланс: ' + document.getElementById('balanceAmount').innerText + ' ₽')">
-          <i class="fas fa-wallet"></i> <span id="balanceAmountDisplay">0</span> ₽
-        </button>
-      </div>
-      <div class="info-item">
-        <p>Рейтинг:</p>
-        <span id="ratingDisplay">4.7</span> (0 отзывов)
-      </div>
-      <div class="info-item">
-        <p>Дата регистрации:</p>
-        <span id="registrationDateDisplay">Неизвестно</span>
+  <!-- Баннер профиля -->
+  <section class="profile-banner">
+    <div class="profile-banner-bg" id="profileBannerBg"></div>
+    <div class="profile-banner-content">
+      <img id="profileAvatar" src="default-avatar.png" alt="Avatar" class="profile-avatar">
+      <div class="profile-user-info">
+        <h1 class="profile-name" id="profileNickname">Загрузка...</h1>
+        <div class="profile-status" id="profileStatus">Онлайн</div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-value" id="lotsCount">0</span>
+            <span class="stat-label">Лоты</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value" id="reviewsCount">0</span>
+            <span class="stat-label">Отзывы</span>
+          </div>
+        </div>
       </div>
     </div>
-    
-    <!-- Скрытый блок с ID пользователя -->
-    <div id="userIdContainer" class="hidden-id">
-      <p>ID пользователя: <span id="userIdDisplay"></span></p>
-    </div>
-    <button class="toggle-btn" id="toggleIdBtn">Показать ID</button>
-  </main>
+  </section>
+  
+  <!-- Блок действий: баланс, редактировать профиль, показать/скрыть ID -->
+  <section class="profile-actions">
+    <button class="balance-btn" onclick="alert('Ваш баланс: ' + document.getElementById('balanceAmount').innerText + ' ₽')">
+      <i class="fas fa-wallet"></i> <span id="balanceAmountDisplay">0</span> ₽
+    </button>
+    <button class="edit-btn" onclick="editProfile()">
+      <i class="fas fa-edit"></i> Редактировать профиль
+    </button>
+    <button class="id-btn" id="toggleIdBtn">Показать ID</button>
+  </section>
+  
+  <!-- Скрытый блок с ID пользователя -->
+  <div class="hidden-id" id="userIdContainer">
+    <p>ID пользователя: <span id="userIdDisplay"></span></p>
+  </div>
   
   <!-- Модальное окно для загрузки аватара -->
   <div id="avatarModal" class="modal">
@@ -439,51 +467,45 @@
     });
     
     // Загрузка данных профиля
-    function loadUserProfile(user) {
+    async function loadUserProfile(user) {
       const userId = user.uid;
-      // Заполнение скрытого блока с ID
       document.getElementById('userIdDisplay').innerText = userId;
       
-      firebase.database().ref('users/' + userId).once('value').then(snapshot => {
-        let userData = snapshot.val();
-        if (!userData) return;
-    
-        document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
-    
-        // Баланс
-        let balance = userData.balance || "0";
-        document.getElementById('balanceAmountDisplay').innerText = balance;
-        if(!document.getElementById('balanceAmount')) {
-          let hidden = document.createElement('div');
-          hidden.id = 'balanceAmount';
-          hidden.style.display = 'none';
-          hidden.innerText = balance;
-          document.body.appendChild(hidden);
-        } else {
-          document.getElementById('balanceAmount').innerText = balance;
-        }
-    
-        // Рейтинг
-        let rating = userData.rating || "4.7";
-        document.getElementById('ratingDisplay').innerText = rating;
-    
-        // Дата регистрации
-        let registrationDate = "Неизвестно";
-        if(userData.createdAt) {
-          let date = new Date(userData.createdAt);
-          registrationDate = date.toLocaleDateString('ru-RU');
-        }
-        document.getElementById('registrationDateDisplay').innerText = registrationDate;
-    
-        // Аватар
-        let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
-        document.getElementById('profileAvatar').src = avatarUrl;
-    
-        // Фон
-        if(userData.backgroundImage) {
-          document.body.style.backgroundImage = `url(${userData.backgroundImage})`;
-        }
-      });
+      // Пример статистики – здесь можно подгрузить реальные данные
+      document.getElementById('lotsCount').textContent = 0;
+      document.getElementById('reviewsCount').textContent = 0;
+      
+      const snapshot = await firebase.database().ref('users/' + userId).once('value');
+      let userData = snapshot.val();
+      if (!userData) return;
+      
+      // Никнейм
+      document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
+      
+      // Баланс
+      let balance = userData.balance || "0";
+      document.getElementById('balanceAmountDisplay').innerText = balance;
+      if(!document.getElementById('balanceAmount')) {
+        let hidden = document.createElement('div');
+        hidden.id = 'balanceAmount';
+        hidden.style.display = 'none';
+        hidden.innerText = balance;
+        document.body.appendChild(hidden);
+      } else {
+        document.getElementById('balanceAmount').innerText = balance;
+      }
+      
+      // Аватар
+      let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
+      document.getElementById('profileAvatar').src = avatarUrl;
+      
+      // Фон – если нет, подставляем дефолтное изображение
+      let bgUrl = userData.backgroundImage || 'default-bg.jpg';
+      document.getElementById('profileBannerBg').style.backgroundImage = `url(${bgUrl})`;
+      
+      // Статус (пример)
+      let isOnline = userData.online !== undefined ? userData.online : true;
+      document.getElementById('profileStatus').innerText = isOnline ? "Онлайн" : "Оффлайн";
     }
     
     // Переключатель видимости блока с ID
@@ -618,7 +640,7 @@
         .getPublicUrl(filePath);
       
       if (publicData && publicData.publicUrl) {
-        document.body.style.backgroundImage = `url(${publicData.publicUrl})`;
+        document.getElementById('profileBannerBg').style.backgroundImage = `url(${publicData.publicUrl})`;
         firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
           backgroundImage: publicData.publicUrl
         }).then(() => {
