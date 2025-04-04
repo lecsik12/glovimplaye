@@ -4,19 +4,19 @@
   <meta charset="UTF-8">
   <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
+
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-  
+
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  
+
   <style>
     :root {
       --bg-color: #0e0e0e;
@@ -28,7 +28,6 @@
       --border-radius: 8px;
       --btn-gradient: linear-gradient(45deg, #4fc3f7, #80deea);
     }
-    
     /* Сброс стилей */
     *, *::before, *::after {
       margin: 0;
@@ -49,7 +48,6 @@
       text-decoration: none;
       color: inherit;
     }
-    
     /* Верхний хедер */
     header {
       background: var(--header-bg);
@@ -79,8 +77,7 @@
       font-size: 24px;
       cursor: pointer;
     }
-    
-    /* Баннер профиля: размытый фон, аватар, ник, статус и статистика */
+    /* Баннер профиля */
     .profile-banner {
       position: relative;
       width: 100%;
@@ -90,7 +87,8 @@
     }
     .profile-banner-bg {
       position: absolute;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
       background: center/cover no-repeat;
@@ -127,25 +125,37 @@
       color: #4fc3f7;
       margin-bottom: 10px;
     }
-    .profile-stats {
-      display: flex;
-      gap: 30px;
-      margin-top: 5px;
-    }
-    .stat-item {
-      text-align: center;
-    }
-    .stat-value {
+    /* Блок для отображения Лоты и Отзывы в одну строку – кликабелен */
+    .profile-lots-reviews {
       font-size: 16px;
-      font-weight: bold;
-      display: block;
+      color: #fff;
+      cursor: pointer;
+      user-select: none;
     }
-    .stat-label {
+    .profile-lots-reviews span {
+      text-decoration: underline;
+    }
+    /* Коллапсируемые панели */
+    .collapse-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+      background: rgba(0,0,0,0.7);
+      padding: 0 15px;
+      margin: 10px 20px;
+      border-radius: var(--border-radius);
+    }
+    .collapse-panel.open {
+      /* Достаточно большое значение max-height для вмещания контента */
+      max-height: 300px;
+      padding: 15px 20px;
+    }
+    /* Пример стилей для содержимого панели */
+    .panel-content {
       font-size: 14px;
-      color: #999;
+      color: #fff;
     }
-    
-    /* Блок действий: баланс, редактирование, показ ID */
+    /* Блок действий: теперь только кнопка ID */
     .profile-actions {
       display: flex;
       flex-wrap: wrap;
@@ -165,19 +175,6 @@
       color: #fff;
       min-width: 150px;
     }
-    .balance-btn {
-      background: var(--btn-gradient);
-    }
-    .balance-btn:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    .edit-btn {
-      background: var(--accent-color);
-    }
-    .edit-btn:hover {
-      background: var(--accent-hover);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
     .id-btn {
       background: #555;
     }
@@ -185,7 +182,6 @@
       background: #777;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
-    
     /* Скрытый блок с ID пользователя */
     .hidden-id {
       margin: 20px auto;
@@ -196,7 +192,6 @@
       max-width: 600px;
       text-align: center;
     }
-    
     /* Модальные окна (аватар и фон) */
     .modal {
       display: none;
@@ -253,7 +248,6 @@
       border: 3px solid var(--accent-color);
       object-fit: cover;
     }
-    
     /* Нижняя панель (мобильная навигация) */
     .bottom-nav {
       position: fixed;
@@ -281,7 +275,6 @@
     @media (min-width: 768px) {
       .bottom-nav { display: none; }
     }
-    
     /* Боковая панель (гамбургер-меню) */
     .hamburger-menu {
       position: fixed;
@@ -310,17 +303,16 @@
       cursor: pointer;
       transition: background 0.3s;
       font-size: 16px;
+      color: #fff;
     }
     .menu-item:hover {
       background: #222;
     }
-    
     /* Анимация появления */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    
     /* Мобильная оптимизация: на узких экранах блок действий переходит в колонку */
     @media (max-width: 480px) {
       .profile-actions {
@@ -341,7 +333,11 @@
   <!-- Боковая панель (гамбургер-меню) -->
   <aside class="hamburger-menu" id="hamburgerMenu">
     <h3>Меню</h3>
-    <div class="menu-item" onclick="payAndUploadAvatar()">Загрузить аватар (100₽)</div>
+    <!-- Пункт меню с балансом -->
+    <div class="menu-item" onclick="alert('Ваш баланс: ' + document.getElementById('balanceAmount').innerText + ' ₽')">
+      Баланс: <span id="balanceAmountDisplay">0</span> ₽
+    </div>
+    <div class="menu-item" onclick="payAndUploadAvatar()">Загрузить аватар</div>
     <div class="menu-item" onclick="payAndUploadBackground()">Загрузить фон (100₽)</div>
     <div class="menu-item" onclick="editProfile()">Редактировать профиль</div>
     <div class="menu-item" onclick="logout()">Выйти</div>
@@ -355,28 +351,35 @@
       <div class="profile-user-info">
         <h1 class="profile-name" id="profileNickname">Загрузка...</h1>
         <div class="profile-status" id="profileStatus">Онлайн</div>
-        <div class="profile-stats">
-          <div class="stat-item">
-            <span class="stat-value" id="lotsCount">0</span>
-            <span class="stat-label">Лоты</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-value" id="reviewsCount">0</span>
-            <span class="stat-label">Отзывы</span>
-          </div>
+        <!-- Одна строка для Лоты и Отзывы; по клику открывается соответствующая панель -->
+        <div class="profile-lots-reviews">
+          Лоты <span id="lotsCount" onclick="togglePanel('lotsPanel')">0</span> | 
+          Отзывы <span id="reviewsCount" onclick="togglePanel('reviewsPanel')">0</span>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- Панель для Лотов (скрыта по умолчанию) -->
+  <div id="lotsPanel" class="collapse-panel">
+    <div class="panel-content">
+      <!-- Здесь разместите информацию о лотах -->
+      <p>Список лотов будет здесь...</p>
+      <button onclick="togglePanel('lotsPanel')">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Панель для Отзывов (скрыта по умолчанию) -->
+  <div id="reviewsPanel" class="collapse-panel">
+    <div class="panel-content">
+      <!-- Здесь разместите отзывы -->
+      <p>Список отзывов будет здесь...</p>
+      <button onclick="togglePanel('reviewsPanel')">Закрыть</button>
+    </div>
+  </div>
   
-  <!-- Блок действий: баланс, редактировать профиль, показать/скрыть ID -->
+  <!-- Блок действий: только кнопка ID -->
   <section class="profile-actions">
-    <button class="balance-btn" onclick="alert('Ваш баланс: ' + document.getElementById('balanceAmount').innerText + ' ₽')">
-      <i class="fas fa-wallet"></i> <span id="balanceAmountDisplay">0</span> ₽
-    </button>
-    <button class="edit-btn" onclick="editProfile()">
-      <i class="fas fa-edit"></i> Редактировать профиль
-    </button>
     <button class="id-btn" id="toggleIdBtn">Показать ID</button>
   </section>
   
@@ -440,6 +443,12 @@
   </div>
   
   <script>
+    // Функция для переключения (открытия/закрытия) панелей
+    function togglePanel(panelId) {
+      const panel = document.getElementById(panelId);
+      panel.classList.toggle('open');
+    }
+
     // Инициализация Firebase
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
@@ -451,12 +460,12 @@
       appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
     firebase.initializeApp(firebaseConfig);
-    
+
     // Инициализация Supabase
     const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-    
+
     // Проверка авторизации и загрузка профиля
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
@@ -465,24 +474,24 @@
         window.location.href = "login.html";
       }
     });
-    
+
     // Загрузка данных профиля
     async function loadUserProfile(user) {
       const userId = user.uid;
       document.getElementById('userIdDisplay').innerText = userId;
-      
+
       // Пример статистики – здесь можно подгрузить реальные данные
       document.getElementById('lotsCount').textContent = 0;
       document.getElementById('reviewsCount').textContent = 0;
-      
+
       const snapshot = await firebase.database().ref('users/' + userId).once('value');
       let userData = snapshot.val();
       if (!userData) return;
-      
+
       // Никнейм
       document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
-      
-      // Баланс
+
+      // Баланс (скрыт в div#balanceAmount, выводим через гамбургер)
       let balance = userData.balance || "0";
       document.getElementById('balanceAmountDisplay').innerText = balance;
       if(!document.getElementById('balanceAmount')) {
@@ -494,20 +503,20 @@
       } else {
         document.getElementById('balanceAmount').innerText = balance;
       }
-      
+
       // Аватар
       let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
       document.getElementById('profileAvatar').src = avatarUrl;
-      
+
       // Фон – если нет, подставляем дефолтное изображение
       let bgUrl = userData.backgroundImage || 'default-bg.jpg';
       document.getElementById('profileBannerBg').style.backgroundImage = `url(${bgUrl})`;
-      
+
       // Статус (пример)
       let isOnline = userData.online !== undefined ? userData.online : true;
       document.getElementById('profileStatus').innerText = isOnline ? "Онлайн" : "Оффлайн";
     }
-    
+
     // Переключатель видимости блока с ID
     const toggleBtn = document.getElementById('toggleIdBtn');
     const userIdContainer = document.getElementById('userIdContainer');
@@ -520,7 +529,7 @@
         toggleBtn.innerText = "Показать ID";
       }
     });
-    
+
     // Закрытие модальных окон
     function closeModal(modalId) {
       document.getElementById(modalId).style.display = "none";
@@ -532,7 +541,7 @@
         document.getElementById('modalBackgroundInput').value = "";
       }
     }
-    
+
     // Функция списания средств
     async function deductAmount(amount) {
       const user = firebase.auth().currentUser;
@@ -550,16 +559,16 @@
       await ref.update({ balance: newBalance });
       return true;
     }
-    
+
     // Платная функция загрузки аватара
     function payAndUploadAvatar() {
-      deductAmount(100).then(success => {
+      deductAmount(0).then(success => {
         if(success) {
           openModal('avatarModal');
         }
       });
     }
-    
+
     // Платная функция загрузки фонового изображения
     function payAndUploadBackground() {
       deductAmount(100).then(success => {
@@ -568,12 +577,12 @@
         }
       });
     }
-    
+
     // Открытие модального окна
     function openModal(modalId) {
       document.getElementById(modalId).style.display = "flex";
     }
-    
+
     // Обработчик загрузки аватара
     document.getElementById('modalUploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('modalAvatarInput');
@@ -582,23 +591,23 @@
         alert('Пожалуйста, выберите изображение для загрузки.');
         return;
       }
-      
+
       const bucketName = 'avatars';
       const filePath = `${Date.now()}_${file.name}`;
-      
+
       const { data, error } = await supabaseClient.storage
         .from(bucketName)
         .upload(filePath, file);
-      
+
       if (error) {
         alert('Ошибка загрузки: ' + JSON.stringify(error));
         return;
       }
-      
-      const { data: publicData } = supabaseClient.storage
+
+      const { data: publicData } = await supabaseClient.storage
         .from(bucketName)
         .getPublicUrl(filePath);
-      
+
       if (publicData && publicData.publicUrl) {
         document.getElementById('profileAvatar').src = publicData.publicUrl;
         firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
@@ -613,7 +622,7 @@
         alert('Не удалось получить публичный URL загруженного файла.');
       }
     });
-    
+
     // Обработчик загрузки фонового изображения
     document.getElementById('modalBackgroundUploadBtn').addEventListener('click', async () => {
       const fileInput = document.getElementById('modalBackgroundInput');
@@ -622,23 +631,23 @@
         alert('Пожалуйста, выберите изображение для загрузки.');
         return;
       }
-      
+
       const bucketName = 'avatars';
       const filePath = `${Date.now()}_${file.name}`;
-      
+
       const { data, error } = await supabaseClient.storage
         .from(bucketName)
         .upload(filePath, file);
-      
+
       if (error) {
         alert('Ошибка загрузки: ' + JSON.stringify(error));
         return;
       }
-      
-      const { data: publicData } = supabaseClient.storage
+
+      const { data: publicData } = await supabaseClient.storage
         .from(bucketName)
         .getPublicUrl(filePath);
-      
+
       if (publicData && publicData.publicUrl) {
         document.getElementById('profileBannerBg').style.backgroundImage = `url(${publicData.publicUrl})`;
         firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
@@ -653,7 +662,7 @@
         alert('Не удалось получить публичный URL загруженного файла.');
       }
     });
-    
+
     // Функции редактирования профиля и выхода
     function editProfile() { alert('Редактирование профиля'); }
     function logout() {
@@ -661,7 +670,7 @@
         window.location.href = "login.html";
       });
     }
-    
+
     // Открытие/закрытие гамбургер-меню
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const hamburgerMenu = document.getElementById('hamburgerMenu');

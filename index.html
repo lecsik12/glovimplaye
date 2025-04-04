@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   
   <!-- Фавикон -->
-  <link rel="icon" type="image/png" href="images/logo (2).png" sizes="16x16">
+  <link rel="icon" type="image/png" href="images/looooooogoooo.jpg" sizes="16x16">
   
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
@@ -48,13 +48,14 @@
     /* На мобильных фиксируем хедер */
     @media (max-width: 768px) {
       header { position: fixed; top: 0; left: 0; right: 0; }
-      body { padding-top: 60px; }
+      body { padding-top: 60px; padding-right: 0; }
     }
     .header-wrapper {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
+      position: relative;
     }
     /* Левый блок: логотип */
     .header-left {
@@ -65,7 +66,7 @@
     .header-left .logo {
       display: flex;
       align-items: center;
-      color: #d3be05;
+      color: #f9f9f8;
       font-size: 1.5em;
       font-weight: bold;
     }
@@ -132,91 +133,96 @@
     .search-result-item img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; }
     .result-text { color: #ccc; }
     
-    /* Правый блок: гамбургер и переключатель языка */
+    /* Правый блок: профиль и иконки для ПК */
     .header-right {
       display: flex;
       align-items: center;
       gap: 15px;
     }
-    /* По умолчанию для десктопа – показываем профиль и иконки */
     .chat-icon, .notifications-icon {
-      color: #8e8e8c;
+      color: #fffffb;
       font-size: 1.2em;
       transition: transform 0.3s;
     }
     .chat-icon:hover, .notifications-icon:hover { transform: scale(1.1); }
-    .profile img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #8e8e8c; }
+    .profile img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fffffa; }
     .lang-switcher {
       background: none;
-      border: 1px solid #8e8e8c;
+      border: 1px solid #fdfdf5;
       border-radius: 4px;
       padding: 4px 8px;
-      color: #8e8e8c;
+      color: #fffffc;
       cursor: pointer;
       font-size: 0.9em;
       transition: background 0.3s;
     }
     .lang-switcher:hover { background: #333; }
     
-    /* Мобильные стили */
+    /* Мобильные стили: скрываем правый блок и показываем гамбургер */
     @media (max-width: 768px) {
-      /* Левый блок остаётся только логотип */
-      .header-left .logo img { width: 40px; }
-      .header-left .logo span { font-size: 1.2em; }
-      /* Центр: поле поиска занимает всю ширину */
-      .header-center { flex-grow: 1; }
-      .search-box { max-width: 100%; }
-      /* Правый блок: на мобильных вместо стандартного блока - гамбургер в правом углу */
       .header-right { display: none; }
-    }
-    
-    /* Скрываем гамбургер на ПК */
-    @media (min-width: 769px) {
-      .mobile-hamburger {
-        display: none !important;
-      }
-    }
-    
-    /* На мобильных поднимаем гамбургер выше */
-    @media (max-width: 768px) {
-      /* Устанавливаем позиционирование для родительского контейнера */
-      .header-wrapper {
-        position: relative;
-      }
-      
       .mobile-hamburger {
         display: block;
         position: absolute;
-        top: 10px;    /* Отступ сверху */
-        right: 10px;  /* Отступ справа */
+        top: 10px;
+        right: 10px;
         font-size: 1.8em;
         color: #f0ebeb;
         cursor: pointer;
       }
     }
+    /* Скрываем гамбургер на ПК */
+    @media (min-width: 769px) {
+      .mobile-hamburger { display: none; }
+    }
     
+    /* Hero секция */
     .hero-section {
       position: relative;
-      overflow: hidden; /* чтобы видео не вылезало за границы */
-      padding: 60px 20px;
+      overflow: hidden;
+      padding: 40px 10px;
       text-align: center;
       border-radius: 8px;
-      margin: 40px 20px;
-      /* Убираем background image, если он больше не нужен */
+      margin: 20px 10px;
+      background: linear-gradient(135deg, #4fc3f7, #80deea);
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
-    
-    .hero-video {
+    .hero-section::after {
+      content: "";
       position: absolute;
-      top: 50%;
-      left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
-      transform: translate(-50%, -50%);
-      z-index: -1; /* видео будет на заднем плане */
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 1;
+      border-radius: 8px;
     }
-    
+    .hero-section .container {
+      position: relative;
+      z-index: 2;
+    }
+    .hero-section h1 {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+    .hero-section p {
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+    .hero-section .cta-btn {
+      background: #fff;
+      color: #4fc3f7;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .hero-section .cta-btn:hover {
+      background: #f1f1f1;
+      transform: translateY(-3px);
+    }
 
 
 /* События в играх для мобильных: 1 большая и 4 маленьких */
@@ -338,6 +344,42 @@
       margin-left: 5px;
       vertical-align: middle;
     }
+
+
+    
+    /* Нижняя панель (мобильная навигация) */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: #161616;
+      border-top: 1px solid #333;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 110;
+    }
+    .bottom-nav a {
+      color: #ccc;
+      font-size: 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a i {
+      font-size: 22px;
+      margin-bottom: 3px;
+    }
+    .bottom-nav a:hover { color: #4fc3f7; }
+    .bottom-nav-profile img.avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #4fc3f7;
+      object-fit: cover;
+      margin-bottom: 2px;
+    }
     
     /* Админ-панель */
     .admin-sidebar {
@@ -365,7 +407,11 @@
       cursor: pointer;
       text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
     }
-    .admin-sidebar h3 { font-size: 18px; color: #fff; margin: 20px 0 10px; }
+    .admin-sidebar h3 {
+      font-size: 18px;
+      color: #fff;
+      margin: 20px 0 10px;
+    }
     .admin-account {
       display: flex;
       flex-direction: column;
@@ -387,9 +433,11 @@
     }
     .admin-name { font-size: 14px; color: #ccc; }
     .admin-role { font-size: 12px; color: #aaa; margin-top: 3px; }
-    
     .admin-menu { margin-top: 20px; }
-    .admin-menu li { list-style: none; margin-bottom: 8px; }
+    .admin-menu li {
+      list-style: none;
+      margin-bottom: 8px;
+    }
     .admin-menu a {
       display: flex;
       align-items: center;
@@ -439,7 +487,6 @@
     
     /* Мобильные стили для нижней панели */
     @media (max-width: 768px) {
-      body { padding-right: 0; padding-bottom: 80px; }
       .bottom-nav { display: flex; }
     }
   </style>
@@ -463,7 +510,7 @@
           <div class="search-results" id="search-results"></div>
         </div>
       </div>
-      <!-- Правый блок: на ПК показываются элементы, на мобильных - гамбургер в правом углу -->
+      <!-- Правый блок: для ПК -->
       <div class="header-right">
         <a href="chat.html" class="chat-icon" title="Чат"><i class="fas fa-comments"></i></a>
         <a href="notifications.html" class="notifications-icon" title="Уведомления"><i class="fas fa-bell"></i></a>
@@ -471,7 +518,7 @@
           <img id="headerProfileAvatar" src="default-avatar.png" alt="Profile">
         </a>
       </div>
-      <!-- Мобильный гамбургер: на мобильных этот блок показывается вместо правого блока -->
+      <!-- Мобильный гамбургер -->
       <div class="mobile-hamburger" id="adminHamburger">
         <i class="fas fa-bars"></i>
       </div>
@@ -480,24 +527,19 @@
   
   <!-- Фиксированный блок результатов поиска -->
   <div class="search-results" id="search-results"></div>
-  
- <!-- Hero секция с видео фоном -->
-<section class="hero-section">
-  <video autoplay muted loop class="hero-video">
-    <source src="videos/videoframe_918.mp4" type="video/mp4">
-    Ваш браузер не поддерживает видео.
-  </video>
-  <div class="container">
-    <h1>Биржа для торговли между игроками</h1>
-    <p>GlovimPlaye – безопасный маркетплейс для продажи и покупки внутриигровых ценностей, предметов, валюты и аккаунтов.</p>
-  </div>
-</section>
 
-
+  <!-- Hero секция без видео -->
+  <section class="hero-section">
+    <div class="container">
+      <h1>GlovimPlaye – безопасный маркетплейс</h1>
+      <p>Покупайте и продавайте с уверенностью!</p>
+      <a href="index.html" class="cta-btn">Начать сейчас</a>
+    </div>
+  </section>
 
   <!-- События в играх -->
   <section class="events-section container">
-    <!-- Мобильный вариант: 1 большая карточка сверху и 4 маленьких снизу -->
+    <!-- Мобильный вариант -->
     <div class="big-event">
       <div class="card" style="background-image: url('images/wor.jpg');">
         <div class="card-content">
@@ -527,7 +569,7 @@
         </div>
       </div>
     </div>
-    <!-- Десктопный вариант: 5 карточек (если нужно, можно скрыть на мобильных) -->
+    <!-- Десктопный вариант -->
     <div class="cards-row">
       <div class="card" style="background-image: url('images/wor.jpg');">
         <div class="card-content">
@@ -559,7 +601,6 @@
   
   <!-- Основной контент -->
   <div class="container">
-    <!-- Пример ваших горизонтальных скроллов -->
     <h2 class="section-title">Игры</h2>
     <div class="horizontal-scroll">
       <div class="game-card" onclick="location.href='csgo.html'">
@@ -656,7 +697,7 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    <div class="sidebar-logo" onclick="location.href='index.html'"></div>
+    <div class="sidebar-logo" onclick="location.href='index.html'">GlovimPlaye</div>
     <!-- Статическое меню админ-панели -->
     <ul class="admin-menu">
       <li><a href="my-goods.html"><i class="fas fa-box"></i>Мои товары</a></li>
@@ -664,7 +705,7 @@
       <li><a href="purchases.html"><i class="fas fa-shopping-cart"></i>Покупки</a></li>
       <li><a href="balance.html"><i class="fas fa-wallet"></i>Баланс</a></li>
       <li><a href="reviews.html"><i class="fas fa-star"></i>Отзывы</a></li>
-      <li><a href="games-catalog.html"><i class="fas fa-gamepad"></i>Каталог игр</a></li>
+      <li><a href="sell.html"><i class="fas fa-gamepad"></i>Каталог игр</a></li>
       <li><a href="support.html"><i class="fas fa-life-ring"></i>Поддержка</a></li>
     </ul>
     <h3>Администраторы</h3>
@@ -773,26 +814,26 @@
       // Поисковые данные и логика
       const items = [
         { name: "Standoff 2", category: "Мобильные игры", link: "standoff2.html", image: "images/standoff2.jpg" },
-        { name: "PUBG Mobile", category: "Мобильные игры", link: "pubg-mobile.html", image: "images/pabg mobael.jpg" },
-        { name: "Counter-Strike", category: "Компьютерные игры", link: "csgo.html", image: "images/csgo.jpg" },
-        { name: "World of Tanks", category: "Компьютерные игры", link: "wot.html", image: "images/wot.jpg" },
-        { name: "Brawl Stars", category: "Мобильные игры", link: "brawl-stars.html", image: "images/brv.jpg" },
-        { name: "Counter-Strike", category: "PC-игры", link: "csgo.html", image: "images/csgo.jpg" },
-        { name: "Dota 2", category: "PC-игры", link: "dota2.html", image: "images/dota.jpg" },
-        { name: "Call of Duty", category: "PC-игры", link: "callofduty.html", image: "images/cal of duty.jpg" },
-        { name: "Fortnite", category: "PC-игры", link: "fortnite.html", image: "images/fortna.jpg" },
-        { name: "GTA 5 Online", category: "PC-игры", link: "gta5.html", image: "images/gta.jpg" },
-        { name: "Minecraft", category: "PC-игры", link: "minecraft.html", image: "images/main.jpg" },
-        { name: "Rust", category: "PC-игры", link: "rust.html", image: "images/rust.png" },
-        { name: "Roblox", category: "Мобильные игры", link: "roblox.html", image: "images/roblox.jpg" },
-        { name: "PUBG", category: "PC-игры", link: "pubg.html", image: "images/pabg.png" },
-        { name: "Discord", category: "Приложения", link: "discord.html", image: "images/diccord.jpg" },
-        { name: "Epic Gems", category: "Приложения", link: "epic-gems.html", image: "images/epgems.jpg" },
-        { name: "PlayStation", category: "Приложения", link: "playstation.html", image: "images/Playstetion.png" },
-        { name: "Spotify", category: "Приложения", link: "spotify.html", image: "images/spotifay.jpg" },
-        { name: "Steam", category: "Приложения", link: "steam.html", image: "images/steam.jpg" },
-        { name: "Telegram", category: "Приложения", link: "telegram.html", image: "images/telegram.jpg" },
-        { name: "Tik Tok", category: "Приложения", link: "tiktok.html", image: "images/tiktik.jpg" }
+       , { name: "PUBG Mobile", category: "Мобильные игры", link: "pubg-mobile.html", image: "images/pabg mobael.jpg" }
+       , { name: "Counter-Strike", category: "Компьютерные игры", link: "csgo.html", image: "images/csgo.jpg" },
+       , { name: "World of Tanks", category: "Компьютерные игры", link: "wot.html", image: "images/wot.jpg" },
+       , { name: "Brawl Stars", category: "Мобильные игры", link: "brawl-stars.html", image: "images/brv.jpg" },
+       , { name: "Counter-Strike", category: "PC-игры", link: "csgo.html", image: "images/csgo.jpg" },
+       , { name: "Dota 2", category: "PC-игры", link: "dota2.html", image: "images/dota.jpg" },
+       , { name: "Call of Duty", category: "PC-игры", link: "callofduty.html", image: "images/cal of duty.jpg" },
+       , { name: "Fortnite", category: "PC-игры", link: "fortnite.html", image: "images/fortna.jpg" },
+       , { name: "GTA 5 Online", category: "PC-игры", link: "gta5.html", image: "images/gta.jpg" },
+       , { name: "Minecraft", category: "PC-игры", link: "minecraft.html", image: "images/main.jpg" },
+       , { name: "Rust", category: "PC-игры", link: "rust.html", image: "images/rust.png" },
+       , { name: "Roblox", category: "Мобильные игры", link: "roblox.html", image: "images/roblox.jpg" },
+       , { name: "PUBG", category: "PC-игры", link: "pubg.html", image: "images/pabg.png" },
+       , { name: "Discord", category: "Приложения", link: "discord.html", image: "images/diccord.jpg" },
+       , { name: "Epic Gems", category: "Приложения", link: "epic-gems.html", image: "images/epgems.jpg" },
+       , { name: "PlayStation", category: "Приложения", link: "playstation.html", image: "images/Playstetion.png" },
+       , { name: "Spotify", category: "Приложения", link: "spotify.html", image: "images/spotifay.jpg" },
+       , { name: "Steam", category: "Приложения", link: "steam.html", image: "images/steam.jpg" },
+       , { name: "Telegram", category: "Приложения", link: "telegram.html", image: "images/telegram.jpg" },
+       , { name: "Tik Tok", category: "Приложения", link: "tiktok.html", image: "images/tiktik.jpg" }
       ];
       
       const searchInput = document.querySelector('.search-input');
@@ -866,24 +907,30 @@
       
       // Переключатель языка
       const langSwitcher = document.getElementById('langSwitcher');
-      langSwitcher.addEventListener('click', () => {
-        const currentLang = langSwitcher.textContent.trim();
-        if (currentLang === 'RU') {
-          langSwitcher.textContent = 'EN';
-          localStorage.setItem('siteLang', 'en');
-        } else {
-          langSwitcher.textContent = 'RU';
-          localStorage.setItem('siteLang', 'ru');
-        }
-      });
+      if(langSwitcher){
+        langSwitcher.addEventListener('click', () => {
+          const currentLang = langSwitcher.textContent.trim();
+          if (currentLang === 'RU') {
+            langSwitcher.textContent = 'EN';
+            localStorage.setItem('siteLang', 'en');
+          } else {
+            langSwitcher.textContent = 'RU';
+            localStorage.setItem('siteLang', 'ru');
+          }
+        });
+      }
       
-      // Гамбургер для админ-панели (на мобильных)
+      // Гамбургер для админ-панели на мобильных
       const adminHamburger = document.getElementById('adminHamburger');
       const adminSidebar = document.getElementById('adminSidebar');
       const adminClose = document.getElementById('adminClose');
       
-      adminHamburger.addEventListener('click', () => { adminSidebar.classList.toggle('open'); });
-      adminClose.addEventListener('click', () => { adminSidebar.classList.remove('open'); });
+      adminHamburger.addEventListener('click', () => {
+        adminSidebar.classList.toggle('open');
+      });
+      adminClose.addEventListener('click', () => {
+        adminSidebar.classList.remove('open');
+      });
     });
   </script>
 </body>

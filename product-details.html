@@ -199,7 +199,7 @@
       color: #4fc3f7;
     }
     
-    /* Модальные окна (без изменений) */
+    /* Модальные окна */
     .modal {
       display: none;
       position: fixed;
@@ -273,7 +273,7 @@
       <div class="order-summary">
         <p><strong>Итого к оплате:</strong> <span id="orderTotal">0</span> ₽</p>
       </div>
-      <!-- Блок продавца (при клике открывается модальное окно с данными продавца) -->
+      <!-- Блок продавца -->
       <div class="seller-info" onclick="openSellerModal()">
         <img id="sellerAvatar" src="default-avatar.png" alt="Продавец">
         <div>
@@ -312,7 +312,6 @@
     <p>© 2025 GlovimPlaye. Все права защищены.</p>
   </footer>
   
-  <!-- Модальные окна остаются без изменений -->
   <!-- Модальное окно подтверждения покупки -->
   <div id="confirmationModal" class="modal">
     <div class="modal-content">
@@ -348,18 +347,7 @@
     </div>
   </div>
   
-  <!-- Модальное окно просмотра аккаунта продавца -->
-  <div id="sellerModal" class="modal">
-    <div class="modal-content">
-      <h3>Аккаунт продавца</h3>
-      <img id="modalSellerAvatar" src="default-avatar.png" alt="Аватар продавца" style="width:80px; height:80px; border-radius:50%; margin-bottom:10px;">
-      <p><strong id="modalSellerName">Неизвестно</strong></p>
-      <p id="modalSellerAbout"></p>
-      <div class="modal-buttons">
-        <button class="btn cancel" onclick="closeSellerModal()">Закрыть</button>
-      </div>
-    </div>
-  </div>
+  <!-- Модальное окно просмотра аккаунта продавца (удалено, так как при нажатии на продавца происходит переход) -->
   
   <script>
     // Инициализация Firebase (замените на свои данные)
@@ -448,9 +436,6 @@
             console.log("Данные продавца:", sellerData);
             document.getElementById("sellerName").innerText = sellerData.nickname || "Неизвестно";
             document.getElementById("sellerAvatar").src = sellerData.avatar || "default-avatar.png";
-            document.getElementById("modalSellerName").innerText = sellerData.nickname || "Неизвестно";
-            document.getElementById("modalSellerAvatar").src = sellerData.avatar || "default-avatar.png";
-            document.getElementById("modalSellerAbout").innerText = sellerData.about || "";
           } else {
             document.getElementById("sellerName").innerText = "Неизвестно";
             document.getElementById("sellerAvatar").src = "default-avatar.png";
@@ -621,12 +606,10 @@
       window.location.href = "chat.html";
     }
 
-    // Функции для модального окна аккаунта продавца
+    // Функция для перехода на страницу просмотра аккаунта продавца
     function openSellerModal() {
-      document.getElementById("sellerModal").style.display = "flex";
-    }
-    function closeSellerModal() {
-      document.getElementById("sellerModal").style.display = "none";
+      // Перенаправляем на страницу seller.html с передачей идентификатора продавца
+      window.location.href = "seller.html?id=" + currentSeller;
     }
   </script>
 </body>

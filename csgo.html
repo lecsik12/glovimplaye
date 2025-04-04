@@ -15,6 +15,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
+    :root {
+      --bg-color: #0e0e0e;
+      --card-bg: #1e1e1e;
+      --accent-color: #4fc3f7;
+      --accent-hover: #80deea;
+      --text-color: #ccc;
+      --header-bg: #161616;
+    }
+    
     /* Сброс стилей */
     *, *::before, *::after {
       margin: 0;
@@ -24,11 +33,10 @@
     
     body {
       font-family: 'Montserrat', sans-serif;
-      background: #0e0e0e;
-      color: #fff;
+      background: var(--bg-color);
+      color: var(--text-color);
       min-height: 100vh;
-      margin: 0;
-      padding-bottom: 70px; /* для нижней навигации на мобильных */
+      padding-bottom: 70px; /* место для нижней навигации */
     }
     
     a {
@@ -36,36 +44,30 @@
       color: inherit;
     }
     
-    .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 8px;
-    }
-    
-    /* Хедер */
+    /* Шапка */
     header {
       width: 100%;
-      background: #161616;
+      background: var(--header-bg);
       padding: 15px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
     .logo-button {
       background: none;
       border: none;
-      color: #4fc3f7;
+      color: var(--accent-color);
       font-size: 28px;
       font-weight: bold;
       cursor: pointer;
-      transition: color 0.3s, transform 0.3s;
+      transition: transform 0.3s, color 0.3s;
     }
     .logo-button:hover {
-      color: #80deea;
+      color: var(--accent-hover);
       transform: scale(1.05);
     }
     .search-container {
@@ -76,7 +78,7 @@
       border: 2px solid #333;
       border-radius: 30px;
       overflow: hidden;
-      background: #1e1e1e;
+      background: var(--card-bg);
     }
     .search-input {
       flex: 1;
@@ -84,7 +86,7 @@
       font-size: 16px;
       border: none;
       background: transparent;
-      color: #fff;
+      color: var(--text-color);
       outline: none;
     }
     .search-input::placeholder {
@@ -99,11 +101,20 @@
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      border: 2px solid #4fc3f7;
+      border: 2px solid var(--accent-color);
       transition: transform 0.3s;
     }
     .profile img:hover {
       transform: scale(1.1);
+    }
+    
+    /* Контейнер контента */
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 8px;
     }
     
     /* CS:GO Header */
@@ -121,7 +132,7 @@
     }
     .csgo-header h1 {
       font-size: 28px;
-      color: #4fc3f7;
+      color: var(--accent-color);
     }
     
     /* Подкатегории */
@@ -140,7 +151,7 @@
       padding: 15px;
       border-radius: 8px;
       text-align: center;
-      color: #fff;
+      color: var(--text-color);
       transition: background 0.3s;
     }
     .subcategory-card:hover {
@@ -170,7 +181,7 @@
       background: #3a3a3a;
     }
     .product-name {
-      color: #4fc3f7;
+      color: var(--accent-color);
       font-weight: bold;
     }
     .product-name:hover {
@@ -189,20 +200,20 @@
     }
     .seller-name {
       font-size: 16px;
-      color: #fff;
+      color: var(--text-color);
     }
     .price {
       font-weight: bold;
-      color: #4fc3f7;
+      color: var(--accent-color);
     }
     
-    /* Нижняя панель (мобильная навигация) */
+    /* Нижняя навигация для мобильных */
     .bottom-nav {
       position: fixed;
       bottom: 0;
       left: 0;
       width: 100%;
-      background: #161616;
+      background: var(--header-bg);
       display: none;
       justify-content: space-around;
       align-items: center;
@@ -212,7 +223,7 @@
     }
     .bottom-nav a {
       text-decoration: none;
-      color: #fff;
+      color: var(--text-color);
       text-align: center;
       flex: 1;
       font-size: 12px;
@@ -225,14 +236,15 @@
     
     /* Footer */
     footer {
-      background: #161616;
+      background: var(--header-bg);
       padding: 20px;
       text-align: center;
-      color: #fff;
+      color: var(--text-color);
       margin-top: 20px;
+      border-radius: 8px;
     }
     .footer-btn {
-      background: #4fc3f7;
+      background: var(--accent-color);
       color: #121212;
       border: none;
       padding: 10px 20px;
@@ -241,7 +253,7 @@
       transition: background 0.3s;
     }
     .footer-btn:hover {
-      background: #80deea;
+      background: var(--accent-hover);
     }
     .social-links {
       margin-top: 10px;
@@ -250,7 +262,7 @@
       gap: 15px;
     }
     .social-links a {
-      color: #fff;
+      color: var(--text-color);
       font-size: 24px;
       transition: color 0.3s;
     }
@@ -296,25 +308,23 @@
   </style>
 </head>
 <body>
-  <!-- Header -->
+  <!-- Шапка -->
   <header>
-    <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
+    <button class="logo-button" onclick="window.location.href='index.html'">GlovimPlaye</button>
     <div class="search-container">
       <input type="text" class="search-input" placeholder="Поиск...">
     </div>
-    <!-- Блок профиля, отображается при авторизации -->
     <div class="profile" id="profileSection" onclick="showProfileModal()">
-      <img id="avatar" class="avatar" src="default-avatar.png" alt="Avatar">
+      <img id="avatar" src="default-avatar.png" alt="Avatar">
     </div>
   </header>
   
-  <!-- Main Content -->
+  <!-- Основной контент -->
   <div class="container">
     <div class="csgo-header">
       <img src="images/csgo.jpg" alt="CS:GO">
       <h1>CS:GO</h1>
     </div>
-    <!-- Заголовок выбора подкатегорий -->
     <p class="subcategory-title">
       <span class="desktop">Выберите подкатегорию:</span>
       <span class="mobile">Подкатегории:</span>
@@ -330,7 +340,7 @@
       <a href="csgo-items.html" class="subcategory-card">Буст</a>
       <a href="csgo-items.html" class="subcategory-card">Аренда</a>
     </div>
-    <!-- Таблица товаров (заполняется динамически) -->
+    <!-- Таблица товаров -->
     <table class="product-table">
       <thead>
         <tr>
@@ -341,18 +351,29 @@
         </tr>
       </thead>
       <tbody id="productList">
-        <!-- Товары будут добавляться динамически из Firebase -->
+        <!-- Данные будут подгружаться из Firebase -->
       </tbody>
     </table>
   </div>
   
-  <!-- Нижняя панель (мобильная навигация) -->
+  <!-- Нижняя навигация для мобильных -->
   <div class="bottom-nav">
     <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
     <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
     <a href="chat.html"><i class="fas fa-comments"></i><span>Чат</span></a>
     <a href="profile.html"><i class="fas fa-user"></i><span>Профиль</span></a>
   </div>
+  
+  <!-- Footer -->
+  <footer>
+    <button class="footer-btn" onclick="window.location.href='index.html'">На главную</button>
+    <div class="social-links">
+      <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+      <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+    </div>
+    <p>© 2025 GlovimPlaye. Все права защищены.</p>
+  </footer>
   
   <!-- Скрипты Firebase и логика страницы -->
   <script>
@@ -370,13 +391,12 @@
     var auth = firebase.auth();
     var provider = new firebase.auth.GoogleAuthProvider();
     
-    // Функция обновления профиля (шапка и модальное окно, если оно реализовано)
+    // Обновление профиля в шапке
     function updateProfile(user) {
       document.getElementById("profileSection").style.display = "flex";
       document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
     }
     
-    // Подписка на состояние авторизации
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         updateProfile(user);
@@ -385,28 +405,11 @@
       }
     });
     
-    function login() {
-      auth.signInWithPopup(provider).catch(function(error) {
-        console.error("Ошибка входа:", error);
-      });
-    }
-    
-    function logout() {
-      auth.signOut().catch(function(error) {
-        console.error("Ошибка выхода:", error);
-      });
-    }
-    
     function showProfileModal() {
-      // Здесь можно реализовать показ модального окна с профилем
       alert("Показ профиля");
     }
     
-    function goToHomePage() {
-      window.location.href = "index.html";
-    }
-    
-    // Загрузка товаров из Firebase Realtime Database
+    // Загрузка товаров из Firebase
     window.onload = function() {
       const productList = document.getElementById('productList');
       firebase.database().ref('products').on('value', function(snapshot) {
@@ -426,7 +429,7 @@
                 <span class="seller-name">${product.sellerName}</span>
               </div>
             </td>
-            <td>${product.stock} шт.</td>
+            <td>${product.stock || 0} шт.</td>
             <td class="price">${product.price} ₽</td>
           `;
           productList.appendChild(row);
