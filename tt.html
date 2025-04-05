@@ -2,284 +2,440 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Каталог | GlovimPlaye</title>
+  <title>GlovimPlaye | Добавить товар</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
+  <!-- Firebase v8 -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+  
+  <!-- CryptoJS для шифрования -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  
+
   <style>
-    /* Базовые стили */
+    /* Общие стили */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Montserrat', sans-serif;
-      background: #0e0e0e;
-      color: #ccc;
-      line-height: 1.6;
-      padding-bottom: 70px; /* место для мобильной навигации */
+      font-family: Arial, sans-serif;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      background-blend-mode: multiply;
+      background-color: #2b2a2a;
+      color: #fff;
+      padding: 20px;
+      padding-bottom: 70px;
     }
-    a { text-decoration: none; color: inherit; }
-    .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 0 20px;
-    }
-    
-    /* Хедер */
     header {
-      background: linear-gradient(135deg, #222020, #201e1e);
-      padding: 10px 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header-wrapper {
+      background: linear-gradient(135deg, #3a3a3a, #222);
+      padding: 20px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      font-size: 1.5em;
-      font-weight: bold;
-      color: #f9f9f8;
-    }
-    .logo img {
-      width: 50px;
-      margin-right: 10px;
-    }
-    /* Простой навигационный блок (можно расширять по необходимости) */
-    nav {
-      font-size: 1em;
-    }
-    
-    /* Заголовки разделов */
-    .section-title {
-      font-size: 1.8rem;
-      margin: 20px 0 10px;
-      color: #4fc3f7;
-    }
-    
-    /* Горизонтальный скролл для карточек */
-    .horizontal-scroll {
-      display: flex;
-      overflow-x: auto;
-      gap: 16px;
-      padding-bottom: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      border-radius: 8px;
       margin-bottom: 20px;
     }
-    .horizontal-scroll::-webkit-scrollbar { height: 6px; }
-    .horizontal-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-    .horizontal-scroll::-webkit-scrollbar-track { background: #1e1e1e; }
-    
-    /* Карточка игры/приложения */
-    .game-card {
-      width: 120px;
-      text-align: center;
+    .logo-button {
+      background: none;
+      border: none;
+      color: #ff7f50;
+      font-size: 32px;
+      font-weight: bold;
       cursor: pointer;
-      flex-shrink: 0;
-      transition: transform 0.2s;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+      transition: color 0.3s, transform 0.3s;
     }
-    .game-card img {
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 8px;
-      transition: transform 0.2s;
-    }
-    .game-card img:hover { transform: scale(1.05); }
-    .game-name {
-      margin-top: 6px;
-      font-size: 14px;
-      white-space: nowrap;
-    }
-    .new-badge {
-      display: inline-block;
-      background: #ff4500;
+    .logo-button:hover {
       color: #fff;
-      font-size: 10px;
-      padding: 2px 5px;
-      border-radius: 4px;
-      margin-left: 5px;
-      vertical-align: middle;
+      transform: scale(1.1);
     }
-    
-    /* Футер */
-    footer {
-      background: #161616;
-      padding: 20px;
-      text-align: center;
-      color: #777;
-      margin-top: 20px;
-      font-size: 14px;
-    }
-    footer a { color: #777; }
-    footer a:hover { color: #fff; }
-    
-    /* Мобильная нижняя навигация */
-    .bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      height: 60px;
-      background: #161616;
-      border-top: 1px solid #333;
+    .top-nav {
+      display: flex;
+      gap: 20px;
       align-items: center;
-      justify-content: space-around;
-      z-index: 110;
     }
-    .bottom-nav a {
-      color: #ccc;
-      font-size: 12px;
-      text-align: center;
+    .top-nav a {
+      text-decoration: none;
+      color: #fff;
+      font-size: 16px;
+      transition: color 0.3s;
+    }
+    .top-nav a:hover { color: #ff7f50; }
+    .top-nav a i { margin-right: 5px; }
+    /* Контейнер для формы */
+    .container {
+      background: rgba(48,44,44,0.85);
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .container h2 { margin-bottom: 15px; text-align: center; }
+    form#addProductForm {
       display: flex;
       flex-direction: column;
+      gap: 10px;
+    }
+    form#addProductForm label { font-size: 14px; }
+    form#addProductForm input,
+    form#addProductForm select,
+    form#addProductForm textarea {
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    form#addProductForm textarea { resize: vertical; min-height: 60px; }
+    form#addProductForm button {
+      padding: 10px 20px;
+      background: #ff7f50;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    form#addProductForm button:hover { background: #ff4500; }
+    /* Футер */
+    footer {
+      background: rgba(71,68,68,0.85);
+      padding: 20px;
+      text-align: center;
+      margin-top: 30px;
+      border-radius: 8px;
+      color: #fff;
+    }
+    .social-links a {
+      margin: 0 10px;
+      color: #fafbfb;
+      font-size: 24px;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .social-links a:hover { color: #ff4500; }
+    /* Нижняя панель (мобильная навигация) */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #222;
+      display: flex;
+      justify-content: space-around;
       align-items: center;
+      padding: 10px 0;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
+      z-index: 100;
     }
-    .bottom-nav a i { font-size: 22px; margin-bottom: 3px; }
-    .bottom-nav a:hover { color: #4fc3f7; }
-    
-    /* Адаптивность */
-    @media (max-width: 768px) {
-      .game-card { width: 100px; }
-      .game-card img { width: 100px; height: 100px; }
-      .section-title { font-size: 1.5rem; }
-      body { padding-bottom: 80px; }
-      .bottom-nav { display: flex; }
+    .bottom-nav a {
+      text-decoration: none;
+      color: #fff;
+      text-align: center;
+      flex: 1;
+      padding: 5px;
+      font-size: 12px;
     }
+    .bottom-nav a i {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    @media (min-width: 768px) { .bottom-nav { display: none; } }
   </style>
 </head>
 <body>
+
   <!-- Хедер -->
   <header>
-    <div class="header-wrapper container">
-      <a href="index.html" class="logo">
-        <img src="images/logo (2).png" alt="Logo">
-        <span>GlovimPlaye</span>
-      </a>
-      <nav>
-        <!-- Можно добавить пункты меню -->
-        <a href="catalog.html" style="margin-right: 15px; color: #4fc3f7;">Каталог</a>
-        <a href="about.html">О сайте</a>
-      </nav>
-    </div>
+    <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
+    <nav class="top-nav">
+      <!-- Дополнительное меню -->
+    </nav>
   </header>
-  
-  <!-- Основной контент: Каталог игр, мобильных игр и приложений -->
-  <div class="container">
-    <h2 class="section-title">Игры</h2>
-    <div class="horizontal-scroll">
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-      <div class="game-card" onclick="location.href='roblox.html'">
-        <img src="images/roblox.jpg" alt="Roblox">
-        <div class="game-name">Roblox</div>
-      </div>
-      <div class="game-card" onclick="location.href='minecraft.html'">
-        <img src="images/main.jpg" alt="Minecraft">
-        <div class="game-name">Minecraft</div>
-      </div>
-      <div class="game-card" onclick="location.href='fortnite.html'">
-        <img src="images/fortna.jpg" alt="Fortnite">
-        <div class="game-name">Fortnite</div>
-      </div>
-      <div class="game-card" onclick="location.href='dota2.html'">
-        <img src="images/dota.jpg" alt="Dota 2">
-        <div class="game-name">Dota 2</div>
-      </div>
-      <div class="game-card" onclick="location.href='rust.html'">
-        <img src="images/rust.png" alt="Rust">
-        <div class="game-name">Rust <span class="new-badge">Новое</span></div>
-      </div>
-    </div>
-    
-    <h2 class="section-title">Мобильные игры</h2>
-    <div class="horizontal-scroll">
-      <div class="game-card" onclick="location.href='pubg-mobile.html'">
-        <img src="images/pabg mobael.jpg" alt="PUBG Mobile">
-        <div class="game-name">PUBG Mobile</div>
-      </div>
-      <div class="game-card" onclick="location.href='standoff2.html'">
-        <img src="images/standoff2.jpg" alt="Standoff 2">
-        <div class="game-name">Standoff 2</div>
-      </div>
-      <div class="game-card" onclick="location.href='callofduty.html'">
-        <img src="images/cal of duty.jpg" alt="Call of Duty">
-        <div class="game-name">Call of Duty</div>
-      </div>
-    </div>
-    
-    <h2 class="section-title">Приложения</h2>
-    <div class="horizontal-scroll">
-      <div class="game-card" onclick="location.href='discord.html'">
-        <img src="images/diccord.jpg" alt="Discord">
-        <div class="game-name">Discord</div>
-      </div>
-      <div class="game-card" onclick="location.href='spotify.html'">
-        <img src="images/spotifay.jpg" alt="Spotify">
-        <div class="game-name">Spotify</div>
-      </div>
-      <div class="game-card" onclick="location.href='telegram.html'">
-        <img src="images/telegram.jpg" alt="Telegram">
-        <div class="game-name">Telegram</div>
-      </div>
-      <div class="game-card" onclick="location.href='steam.html'">
-        <img src="images/steam.jpg" alt="Steam">
-        <div class="game-name">Steam</div>
-      </div>
-      <div class="game-card" onclick="location.href='tiktok.html'">
-        <img src="images/tiktik.jpg" alt="Tik Tok">
-        <div class="game-name">Tik Tok</div>
-      </div>
-      <div class="game-card" onclick="location.href='epic-gems.html'">
-        <img src="images/epgems.jpg" alt="Epic Gems">
-        <div class="game-name">Epic Gems</div>
-      </div>
-      <div class="game-card" onclick="location.href='playstation.html'">
-        <img src="images/Playstetion.png" alt="PlayStation">
-        <div class="game-name">PlayStation</div>
-      </div>
-    </div>
+
+  <!-- Блок авторизации -->
+  <div class="auth-container" id="authContainer" style="text-align:center; margin:50px 0; display:none;">
+    <button id="loginButton" class="login-btn" onclick="login()"
+      style="background:#fff; color:#efedec; border:none; padding:12px 30px; font-size:18px; border-radius:8px; cursor:pointer;">
+        Войти через Google
+    </button>
   </div>
-  
+
+  <!-- Основной контент: Форма добавления товара -->
+  <main id="mainContent" style="display:none;">
+    <div class="container">
+      <h2>Добавить товар</h2>
+      <form id="addProductForm">
+        <label for="category">Категория</label>
+        <select id="category" required>
+          <option value="">-- Выберите категорию --</option>
+          <option value="csgo">CS:GO</option>
+          <option value="dota">Dota</option>
+          <option value="other">Другое</option>
+        </select>
+
+        <label for="subcategory">Подкатегория</label>
+        <select id="subcategory" required>
+          <option value="">-- Выберите подкатегорию --</option>
+          <option value="accounts">Аккаунты</option>
+          <option value="skins">Скины</option>
+          <option value="stars">Звезды</option>
+          <option value="donate">Донат</option>
+          <option value="services">Услуги</option>
+          <option value="items">Товары</option>
+        </select>
+
+        <label for="productName">Название</label>
+        <input type="text" id="productName" required />
+
+        <label for="publicDescription">Описание товара</label>
+        <textarea id="publicDescription" placeholder="Введите описание товара" required></textarea>
+
+        <label for="sensitiveData">Чувствительные данные товара (будут зашифрованы)</label>
+        <textarea id="sensitiveData" placeholder="Введите дополнительные данные товара" required></textarea>
+
+        <label for="price">Цена</label>
+        <input type="number" id="price" required />
+
+        <label for="stock">Наличие (шт.)</label>
+        <input type="number" id="stock" required />
+
+        <label for="productPhoto">Фото товара (максимум 3 фото)</label>
+        <input type="file" id="productPhoto" accept="image/*" multiple />
+
+        <button type="submit">Добавить</button>
+      </form>
+    </div>
+  </main>
+
   <!-- Нижняя панель (мобильная навигация) -->
   <div class="bottom-nav">
-    <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
-    <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
-    <a href="chat.html"><i class="fas fa-comment-dots"></i><span>Чат</span></a>
-    <a href="profile.html" class="bottom-nav-profile">
-      <img src="default-avatar.png" alt="Avatar" class="avatar">
+    <a href="index.html">
+      <i class="fas fa-home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="add.html">
+      <i class="fas fa-plus"></i>
+      <span>Продать</span>
+    </a>
+    <a href="chat.html">
+      <i class="fas fa-comments"></i>
+      <span>Чат</span>
+    </a>
+    <a href="profile.html">
+      <i class="fas fa-user"></i>
       <span>Профиль</span>
     </a>
   </div>
-  
+
   <!-- Футер -->
   <footer>
-    <div class="container">
-      <div>
-        <h3>О сайте</h3>
-        <p>GlovimPlaye – маркетплейс для торговли внутриигровыми ценностями.</p>
-      </div>
-      <div>
-        <h4>Навигация</h4>
-        <a href="index.html">Главная</a><br>
-        <a href="about.html">О сайте</a><br>
-        <a href="services.html">Услуги</a>
-      </div>
-      <div>
-        <h4>Контакты</h4>
-        <a href="mailto:info@glovimplaye.ru">info@glovimplaye.ru</a>
-      </div>
+    <div class="social-links">
+      <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+      <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+      <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
     </div>
-    <p style="text-align:center;margin-top:20px;font-size:13px;">&copy; 2025 GlovimPlaye. Все права защищены.</p>
+    <p>© 2025 GlovimPlaye. Все права защищены.</p>
   </footer>
+
+  <script>
+    // Инициализация Firebase
+    var firebaseConfig = {
+      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+      authDomain: "glovimplaye-b1023.firebaseapp.com",
+      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+      projectId: "glovimplaye-b1023",
+      storageBucket: "glovimplaye-b1023.firebasestorage.app",
+      messagingSenderId: "553440591519",
+      appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // Установка постоянства сессии
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .catch(function(error) {
+        console.error("Ошибка установки постоянства сессии:", error);
+      });
+
+    // Инициализация Supabase
+    const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Отображаем контент или кнопку входа
+    firebase.auth().onAuthStateChanged(function(user) {
+      console.log("onAuthStateChanged:", user);
+      if (user) {
+        document.getElementById("authContainer").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        loadUserProfile(user);
+      } else {
+        document.getElementById("authContainer").style.display = "block";
+        document.getElementById("mainContent").style.display = "none";
+      }
+    });
+
+    // Загрузка профиля
+    function loadUserProfile(user) {
+      firebase.database().ref('users/' + user.uid).once('value')
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            console.log("Профиль загружен:", snapshot.val());
+          }
+        })
+        .catch(err => { console.error("Ошибка загрузки профиля:", err); });
+    }
+
+    // Авторизация через Google
+    async function login() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await firebase.auth().signInWithPopup(provider);
+      } catch (error) {
+        console.error("Ошибка входа:", error);
+      }
+    }
+
+    // Переход на главную страницу
+    function goToHomePage() {
+      window.location.href = "index.html";
+    }
+
+    // Функция шифрования
+    function encryptData(data) {
+      const secretKey = "GlovimPlayeSecretKey";
+      return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
+    }
+    function decryptData(encryptedData) {
+      const secretKey = "GlovimPlayeSecretKey";
+      const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
+      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+    }
+
+    // Обработка отправки формы добавления товара
+    const addForm = document.getElementById('addProductForm');
+    addForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const currentUser = firebase.auth().currentUser;
+      if (!currentUser) {
+        alert("Для добавления товара необходимо войти в систему.");
+        return;
+      }
+
+      // Приведение значений к стандартному виду (все буквы в нижнем регистре)
+      const category = document.getElementById('category').value.trim().toLowerCase();
+      const subcategory = document.getElementById('subcategory').value.trim().toLowerCase();
+      const name = document.getElementById('productName').value.trim();
+      const publicDescription = document.getElementById('publicDescription').value.trim();
+      const sensitiveData = document.getElementById('sensitiveData').value;
+      const price = parseFloat(document.getElementById('price').value);
+      const stock = parseInt(document.getElementById('stock').value);
+
+      // Валидация
+      if (price < 20) {
+        alert("Цена не может быть меньше 20 рублей.");
+        return;
+      }
+      if (publicDescription.length < 15) {
+        alert("Описание товара должно быть минимум 15 символов.");
+        return;
+      }
+      if (name.length < 5) {
+        alert("Название товара должно быть минимум 5 символов.");
+        return;
+      }
+
+      const photoFiles = document.getElementById('productPhoto').files;
+      if (photoFiles.length > 3) {
+        alert("Можно загрузить максимум 3 фото товара.");
+        return;
+      }
+
+      let photoURLs = [];
+      // Загрузка фото через Supabase
+      for (const photoFile of photoFiles) {
+        const filePath = `${Date.now()}_${photoFile.name}`;
+        const { data, error } = await supabaseClient.storage
+          .from('products')
+          .upload(filePath, photoFile);
+        if (error) {
+          alert("Ошибка загрузки фото товара: " + error.message);
+          return;
+        }
+        const { data: publicData } = supabaseClient.storage
+          .from('products')
+          .getPublicUrl(filePath);
+        if (publicData && publicData.publicUrl) {
+          photoURLs.push(publicData.publicUrl);
+        } else {
+          alert("Не удалось получить URL загруженного фото товара.");
+          return;
+        }
+      }
+
+      // Шифрование чувствительных данных
+      const sensitiveObject = { sensitiveData: sensitiveData };
+      const encryptedData = encryptData(sensitiveObject);
+      const commission = price * 0.05;
+
+      const newProduct = {
+        category: category, // должно быть, например, "dota" или "csgo"
+        subcategory: subcategory,
+        name: name,
+        description: publicDescription,
+        encryptedData: encryptedData,
+        sellerName: currentUser.displayName || "Без имени",
+        sellerAvatar: currentUser.photoURL || "default-avatar.png",
+        sellerId: currentUser.uid,
+        price: price,
+        commission: commission,
+        stock: stock,
+        photoURLs: photoURLs,
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+      };
+
+      // Сохранение товара в Firebase
+      firebase.database().ref('products').push(newProduct, function(error) {
+        if (error) {
+          alert('Ошибка добавления товара: ' + error.message);
+        } else {
+          alert('Товар успешно добавлен!');
+          addForm.reset();
+          sendTelegramNotification(newProduct);
+        }
+      });
+    });
+
+    // Отправка уведомления в Telegram (при наличии настроек)
+    function sendTelegramNotification(product) {
+      const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
+      const TELEGRAM_CHAT_ID = "YOUR_TELEGRAM_CHAT_ID";
+      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+      const text = `Новый товар добавлен!\n\n*Название:* ${product.name}\n*Категория:* ${product.category}\n*Цена:* ${product.price}\n*Комиссия (5%):* ${product.commission}\n*Продавец:* ${product.sellerName}`;
+      fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: text,
+          parse_mode: "Markdown"
+        })
+      })
+      .then(response => response.json())
+      .then(data => console.log("Telegram уведомление отправлено", data))
+      .catch(error => console.error("Ошибка отправки в Telegram:", error));
+    }
+  </script>
+
 </body>
 </html>

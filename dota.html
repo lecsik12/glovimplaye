@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>CS:GO — Подкатегории | GlovimPlaye</title>
+  <title>Dota — Подкатегории | GlovimPlaye</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="format-detection" content="telephone=no">
   
@@ -42,7 +42,6 @@
     a {
       text-decoration: none;
       color: inherit;
-      cursor: pointer;
     }
     
     /* Шапка */
@@ -118,20 +117,20 @@
       border-radius: 8px;
     }
     
-    /* CS:GO Header */
-    .csgo-header {
+    /* Dota Header */
+    .dota-header {
       display: flex;
       align-items: center;
       margin-bottom: 20px;
     }
-    .csgo-header img {
+    .dota-header img {
       width: 60px;
       height: 60px;
       object-fit: cover;
       border-radius: 8px;
       margin-right: 15px;
     }
-    .csgo-header h1 {
+    .dota-header h1 {
       font-size: 28px;
       color: var(--accent-color);
     }
@@ -317,31 +316,28 @@
     </div>
     <div class="profile" id="profileSection" onclick="showProfileModal()">
       <img id="avatar" src="default-avatar.png" alt="Avatar">
-      <!-- Элемент для никнейма будет создан динамически -->
     </div>
   </header>
   
   <!-- Основной контент -->
   <div class="container">
-    <div class="csgo-header">
-      <img src="images/csgo.jpg" alt="CS:GO">
-      <h1>CS:GO</h1>
+    <div class="dota-header">
+      <!-- Замените путь к картинке на актуальный для Dota -->
+      <img src="images/dota.jpg" alt="Dota">
+      <h1>Dota</h1>
     </div>
     <p class="subcategory-title">
       <span class="desktop">Выберите подкатегорию:</span>
       <span class="mobile">Подкатегории:</span>
     </p>
     <div class="subcategories">
-      <!-- При клике вызываем функцию loadProducts с выбранной подкатегорией -->
-      <div class="subcategory-card" onclick="loadProducts('accounts')">Аккаунты</div>
-      <div class="subcategory-card" onclick="loadProducts('skins')">Скины</div>
-      <div class="subcategory-card" onclick="loadProducts('donate')">Донат</div>
-      <div class="subcategory-card" onclick="loadProducts('services')">Услуги</div>
-      <div class="subcategory-card" onclick="loadProducts('items')">Товары</div>
-      <div class="subcategory-card" onclick="loadProducts('prime status')">Prime Status</div>
-      <div class="subcategory-card" onclick="loadProducts('other')">Другое</div>
-      <div class="subcategory-card" onclick="loadProducts('boost')">Буст</div>
-      <div class="subcategory-card" onclick="loadProducts('rental')">Аренда</div>
+      <!-- Пример подкатегорий для Dota. Измените ссылки и названия по необходимости -->
+      <a href="dota-accounts.html" class="subcategory-card">Аккаунты</a>
+      <a href="dota-skins.html" class="subcategory-card">Скины</a>
+      <a href="dota-donate.html" class="subcategory-card">Донат</a>
+      <a href="dota-services.html" class="subcategory-card">Услуги</a>
+      <a href="dota-items.html" class="subcategory-card">Товары</a>
+      <a href="dota-other.html" class="subcategory-card">Другое</a>
     </div>
     <!-- Таблица товаров -->
     <table class="product-table">
@@ -354,7 +350,7 @@
         </tr>
       </thead>
       <tbody id="productList">
-        <!-- Данные будут подгружаться из Firebase с фильтром category = "csgo" и выбранной подкатегорией -->
+        <!-- Данные будут подгружаться из Firebase -->
       </tbody>
     </table>
   </div>
@@ -392,117 +388,52 @@
     };
     firebase.initializeApp(firebaseConfig);
     
-    // Функция для отображения профиля (текущего пользователя)
+    // Отображение профиля в шапке
+    function updateProfile(user) {
+      document.getElementById("profileSection").style.display = "flex";
+      document.getElementById("avatar").src = user.photoURL || 'default-avatar.png';
+    }
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        updateProfile(user);
+      } else {
+        document.getElementById("profileSection").style.display = "none";
+      }
+    });
     function showProfileModal() {
       alert("Показ профиля");
     }
     
-    // Моментальное считывание профиля авторизованного пользователя (если нужно)
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        // Если пользователь авторизован, получаем его данные из базы данных
-        firebase.database().ref('users/' + user.uid).once('value').then(function(snapshot) {
-          var profileData = snapshot.val();
-          if (profileData) {
-            // Обновляем аватарку, если задана; иначе стандартная картинка
-            document.getElementById('avatar').src = profileData.avatar || 'default-avatar.png';
-            // Создаём или обновляем элемент для отображения никнейма
-            var nicknameElement = document.getElementById('nickname');
-            if (!nicknameElement) {
-              nicknameElement = document.createElement('span');
-              nicknameElement.id = 'nickname';
-              nicknameElement.style.marginLeft = '10px';
-              nicknameElement.style.fontSize = '16px';
-              nicknameElement.style.color = '#ccc';
-              document.getElementById('profileSection').appendChild(nicknameElement);
-            }
-            nicknameElement.textContent = profileData.nickname || 'Без имени';
-          }
-        }).catch(function(error) {
-          console.error("Ошибка получения профиля:", error);
-        });
-      } else {
-        // Если пользователь не авторизован, устанавливаем стандартное значение
-        document.getElementById('avatar').src = 'default-avatar.png';
-        var nicknameElement = document.getElementById('nickname');
-        if (nicknameElement) {
-          nicknameElement.textContent = '';
-        }
-      }
-    });
-    
-    // Функция загрузки товаров с фильтрацией по подкатегории (и категории "csgo")
-    function loadProducts(selectedSubcategory) {
+    // Загрузка товаров категории Dota из Firebase
+    window.onload = function() {
       const productList = document.getElementById('productList');
-      productList.innerHTML = "<tr><td colspan='4'>Загрузка...</td></tr>";
-      
       firebase.database().ref('products')
         .orderByChild('category')
-        .equalTo('csgo')
-        .once('value', function(snapshot) {
+        .equalTo('dota')
+        .on('value', function(snapshot) {
           productList.innerHTML = "";
           if (!snapshot.exists()) {
             productList.innerHTML = '<tr><td colspan="4">Товаров нет</td></tr>';
             return;
           }
-          
           snapshot.forEach(function(childSnapshot) {
             const product = childSnapshot.val();
-            
-            // Сравниваем выбранную подкатегорию
-            if (product.subcategory && product.subcategory.toLowerCase() === selectedSubcategory) {
-              
-              // Создаём пустую строку (пока без данных о продавце)
-              const row = document.createElement('tr');
-              
-              // Функция для заполнения строки, когда будут получены данные о продавце
-              function fillRow(sellerNickname, sellerAvatar) {
-                row.innerHTML = `
-                  <td>
-                    <a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a>
-                  </td>
-                  <td class="seller">
-                    <div class="seller-container">
-                      <img src="${sellerAvatar || 'default-avatar.png'}" alt="Аватар">
-                      <span class="seller-name">${sellerNickname || 'NoName'}</span>
-                    </div>
-                  </td>
-                  <td>${product.stock || 0} шт.</td>
-                  <td class="price">${product.price || 0} ₽</td>
-                `;
-                productList.appendChild(row);
-              }
-              
-              // Если в товаре есть sellerUid — грузим данные продавца
-              if (product.sellerUid) {
-                firebase.database().ref('users/' + product.sellerUid)
-                  .once('value')
-                  .then(function(snap) {
-                    if (snap.exists()) {
-                      const sellerData = snap.val();
-                      fillRow(sellerData.nickname, sellerData.avatar);
-                    } else {
-                      // Если не нашли продавца в базе, заполним с заглушками
-                      fillRow('Unknown seller', 'default-avatar.png');
-                    }
-                  })
-                  .catch(function(err) {
-                    console.error('Ошибка чтения продавца:', err);
-                    fillRow('Error seller', 'default-avatar.png');
-                  });
-              } else {
-                // Если в товаре не указали sellerUid, заполняем с заглушкой
-                fillRow('Unknown seller', 'default-avatar.png');
-              }
-            }
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td><a href="product-details.html?id=${childSnapshot.key}" class="product-name">${product.name}</a></td>
+              <td>
+                <div class="seller-container">
+                  <img src="${product.sellerAvatar || 'default-avatar.png'}" alt="Аватар">
+                  <span class="seller-name">${product.sellerName}</span>
+                </div>
+              </td>
+              <td>${product.stock || 0} шт.</td>
+              <td class="price">${product.price} ₽</td>
+            `;
+            productList.appendChild(row);
           });
-          
-          // Если после фильтрации ничего не найдено, выводим сообщение
-          if (productList.innerHTML.trim() === "") {
-            productList.innerHTML = '<tr><td colspan="4">Товаров нет</td></tr>';
-          }
         });
-    }
+    };
   </script>
 </body>
 </html>

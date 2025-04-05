@@ -50,84 +50,7 @@
       transform: scale(1.05);
     }
 
-    /* ======= Контейнер (как на главной) ======= */
-    .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      background: rgba(48, 44, 44, 0.85);
-      padding: 20px;
-      border-radius: 8px;
-    }
-    .container h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 24px;
-    }
-
-    /* ======= Сетка карточек ======= */
-    .product-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    /* ======= Стиль карточки товара ======= */
-    .product-card {
-      background: #1f1f1f;        /* Тёмный фон */
-      border: 1px solid #333;    /* Тонкая граница */
-      border-radius: 8px;        /* Скруглённые углы */
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s;
-    }
-    .product-card:hover {
-      transform: scale(1.02);
-    }
-
-    /* Название товара */
-    .product-name {
-      color: #ff7f50;            /* Оранжевый акцент */
-      font-weight: bold;
-      text-decoration: none;
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .product-name:hover {
-      text-decoration: underline;
-    }
-
-    /* Описание, продавец, наличие, цена */
-    .product-description {
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    .product-seller,
-    .product-stock {
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: #ccc;
-    }
-    .product-price {
-      font-size: 16px;
-      font-weight: bold;
-      color: #ff7f50;           /* Акцент на цене */
-      margin-bottom: 10px;
-    }
-
-    /* Ссылка «Подробнее» */
-    .product-details-link {
-      margin-top: auto;  /* Прижимает ссылку вниз карточки */
-      text-align: right;
-    }
-    .product-details-link a {
-      color: #ff7f50;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .product-details-link a:hover {
-      text-decoration: underline;
-    }
+   
   </style>
 </head>
 <body>
@@ -140,49 +63,62 @@
 <!-- ===== Основной контейнер ===== -->
 <div class="container">
   <h1>CS:GO — Аккаунты</h1>
-  <!-- Список товаров (карточки) -->
-  <div class="product-list" id="productList"></div>
+</div>
+
+
+<h1>Все товары</h1>
+<div class="product-list" id="productList">
+  <!-- Товары будут загружаться сюда -->
 </div>
 
 <script>
-  // Кнопка "логотип" - переход на главную
-  function goHome() {
-    window.location.href = 'index.html';
+  // Инициализация Firebase (замените на свои данные)
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  // Функция для отображения товара
+  function displayProduct(product, key) {
+    const productList = document.getElementById('productList');
+    
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    // При клике на карточку можно перенаправить пользователя на страницу товара (например, product.html?pid=key)
+    card.onclick = () => { window.location.href = `product.html?pid=${key}`; };
+
+    // Если у товара есть фото (массив photoURLs), выводим первое
+    const imgSrc = product.photoURLs && product.photoURLs.length ? product.photoURLs[0] : 'default-product.jpg';
+
+    card.innerHTML = `
+      <img src="${imgSrc}" alt="${product.name}">
+      <h3>${product.name}</h3>
+      <p>${product.description.substring(0, 100)}...</p>
+      <div class="price">${product.price} ₽</div>
+    `;
+    productList.appendChild(card);
   }
 
-  // При загрузке страницы
-  window.addEventListener('DOMContentLoaded', function() {
-    const productListEl = document.getElementById('productList');
-    // Читаем все товары из localStorage
-    let products = JSON.parse(localStorage.getItem('products')) || [];
-
-    // Фильтруем по категории и подкатегории
-    let filtered = products.filter(p => p.category === 'csgo' && p.subcategory === 'accounts');
-
-    if (filtered.length === 0) {
-      productListEl.innerHTML = '<p>Товаров нет</p>';
-    } else {
-      filtered.forEach(product => {
-        // Создаём div-карточку
-        const card = document.createElement('div');
-        card.className = 'product-card';
-
-        // Вставляем HTML содержимое
-        card.innerHTML = `
-          <a href="#" class="product-name">${product.name}</a>
-          <div class="product-description">${product.description}</div>
-          <div class="product-seller">Продавец: ${product.sellerName}</div>
-          <div class="product-stock">Наличие: ${product.stock} шт.</div>
-          <div class="product-price">${product.price} ₽</div>
-          <div class="product-details-link">
-            <a href="product-details.html?id=${product.id}">Подробнее</a>
-          </div>
-        `;
-
-        productListEl.appendChild(card);
+  // Загружаем товары из узла 'products'
+  firebase.database().ref('products').once('value')
+    .then(snapshot => {
+      snapshot.forEach(childSnapshot => {
+        const key = childSnapshot.key;
+        const product = childSnapshot.val();
+        displayProduct(product, key);
       });
-    }
-  });
+    })
+    .catch(error => {
+      console.error("Ошибка загрузки товаров:", error);
+    });
 </script>
 </body>
 </html>
+
+

@@ -2,1322 +2,259 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye </title>
+  <title>Поддержка | Просмотр заявки</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Google Fonts -->
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
-  
-  <!-- Font Awesome для иконок -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-  
-  <!-- Firebase v8 -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  
   <style>
-    /* Общие стили */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
     body {
-      font-family: 'Montserrat', sans-serif;
-      background: #0e0e0e;
-      color: #ccc;
-      min-height: 100vh;
-      line-height: 1.6;
-      padding-bottom: 70px; /* чтобы нижняя панель не перекрывала контент */
-      padding-right: 270px; /* отступ для sidebar на десктопе */
-      transition: background 0.3s, color 0.3s;
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
     }
     .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    
-    /* Верхний хедер */
-    header {
-      background: #161616;
-      border-bottom: 1px solid #333;
-      padding: 10px 20px;
-      position: relative;
-      z-index: 3;
-      transition: background 0.3s, border-color 0.3s;
-    }
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: nowrap;
-    }
-    /* Левая часть: логотип с картинкой и названием */
-    .header-left {
-      display: flex;
-      align-items: center;
-      flex: 0 0 auto;
-      cursor: pointer;
-    }
-    .logo-container {
-      display: flex;
-      align-items: center;
-    }
-    .logo-image {
-      width: 50px;
-      height: auto;
-      transition: transform 0.3s;
-    }
-    .logo-container:hover .logo-image {
-      transform: scale(1.05);
-    }
-    .logo-text {
-      font-size: 26px;
-      font-weight: 600;
-      color: #4fc3f7;
-      margin-left: 10px;
-      transition: color 0.3s;
-    }
-    .logo-container:hover .logo-text {
-      color: #80deea;
-    }
-    
-    /* Поиск */
-    .search-bar {
-      flex: 1 1 auto;
-      max-width: 500px;
-      margin: 0 20px;
-      position: relative;
-    }
-    .search-bar input {
-      width: 100%;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 50px;
-      background: #1e1e1e;
-      color: #ccc;
-      outline: none;
-      font-size: 15px;
-      transition: background 0.3s, color 0.3s;
-    }
-    .search-bar input::placeholder {
-      color: #555;
-    }
-    .search-btn {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: #4fc3f7;
-      font-size: 18px;
-      cursor: pointer;
-      outline: none;
-    }
-    
-    /* Правая часть для десктопа */
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex: 0 0 auto;
-    }
-    .nav-btn, .theme-toggle-btn {
-      background: none;
-      border: none;
-      color: #4fc3f7;
-      font-size: 20px;
-      cursor: pointer;
-      transition: color 0.3s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .nav-btn:hover, .theme-toggle-btn:hover {
-      color: #80deea;
-    }
-    .nav-btn span, .theme-toggle-btn span {
-      font-size: 12px;
-      margin-top: 3px;
-    }
-    .balance {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #4fc3f7;
-      font-size: 14px;
-    }
-    .balance i {
-      font-size: 18px;
-      margin-bottom: 2px;
-    }
-    .profile-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid #4fc3f7;
-      object-fit: cover;
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    .profile-avatar:hover {
-      transform: scale(1.05);
-    }
-    
-    /* Кнопка гамбургера для мобильных */
-    .hamburger-btn {
-      display: none;
-      background: none;
-      border: none;
-      color: #4fc3f7;
-      font-size: 24px;
-      cursor: pointer;
-    }
-    .hamburger-btn span {
-      font-size: 14px;
-      margin-left: 5px;
-    }
-    
-    /* Нижняя панель (мобильная навигация) */
-    .bottom-nav {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: #161616;
-      border-top: 1px solid #333;
-      align-items: center;
-      justify-content: space-around;
-      z-index: 2;
-    }
-    .bottom-nav a {
-      color: #ccc;
-      font-size: 12px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .bottom-nav a i {
-      font-size: 22px;
-      margin-bottom: 3px;
-    }
-    .bottom-nav a:hover {
-      color: #4fc3f7;
-    }
-    .bottom-nav-profile img.avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      border: 2px solid #4fc3f7;
-      object-fit: cover;
-      margin-bottom: 2px;
-    }
-
-
-
-
-
-
-
-
-/* Боковая обёртка */
-.sidebar-menu {
-  width: 220px;               /* Ширина бокового меню */
-  background-color: #0e0e0e;  /* Тёмный фон */
-  padding: 1rem;
-  /* Если нужно фиксировать сбоку:
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  */
-  font-family: 'Montserrat', sans-serif; /* Чтобы сочеталось с остальным сайтом */
-}
-
-/* Контейнер списка пунктов */
-.menu-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem; /* Расстояние между пунктами */
-}
-
-/* Стили для одного пункта меню */
-.menu-item {
-  display: flex;
-  align-items: center;
-  background-color: #1a1a1a;  /* Фон каждого пункта (можно менять) */
-  border-radius: 8px;
-  padding: 0.6rem 0.8rem;
-  color: #ccc;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-}
-
-/* Иконка слева и её «пузырёк» */
-.icon-wrap {
-  width: 32px;
-  height: 32px;
-  background-color: #2f2f2f; /* Тёмный оттенок фона иконки */
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.6rem; /* Отступ между иконкой и текстом */
-  color: #ccc;
-  transition: background 0.2s, color 0.2s;
-}
-
-/* Иконка внутри пузырька */
-.icon-wrap i {
-  font-size: 14px; /* Можно менять, если нужно крупнее/мельче */
-}
-
-/* Плюс-иконка (справа) */
-.plus-icon {
-  margin-left: auto; /* Сдвигает плюсик в правый край */
-  background-color: #4fc3f7; /* Цвет фона для плюса (акцент) */
-  color: #0e0e0e;           /* Цвет самой иконки */
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  font-size: 12px;
-}
-
-/* При наведении на пункт меню — меняем цвет фона и иконок */
-.menu-item:hover {
-  background-color: #2a2a2a;
-  color: #fff;
-}
-
-.menu-item:hover .icon-wrap {
-  background-color: #3f3f3f;
-  color: #fff;
-}
-
-/* Активный пункт (выделен) */
-.menu-item.active {
-  background-color: #d35400; /* Оранжево-коричневый */
-  color: #fff;
-}
-
-.menu-item.active .icon-wrap {
-  background-color: rgba(255, 255, 255, 0.2);
-}
-
-/* Разделитель */
-hr {
-  border: none;
-  border-top: 1px solid #333;
-  margin: 0.5rem 0;
-}
-
-
-
-
-
-
-
-
-
-
-    
-    /* Боковая панель (админ-секция) */
-    .admin-sidebar {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 250px;
-      height: 100%;
-      background: #1e1e1e;
-      border-left: 1px solid #333;
-      padding: 20px;
-      overflow-y: auto;
-      transition: transform 0.3s ease, background 0.3s;
-      z-index: 4;
-    }
-    /* Для мобильных скрываем панель */
-    @media (max-width: 768px) {
-      .admin-sidebar {
-        transform: translateX(100%);
-      }
-      .admin-sidebar.open {
-        transform: translateX(0);
-      }
-    }
-    .admin-sidebar .sidebar-logo {
-      font-size: 24px;
-      font-weight: 600;
-      color: #4fc3f7;
-      text-align: center;
-      margin-bottom: 20px;
-      cursor: pointer;
-    }
-    .admin-sidebar h3 {
-      font-size: 18px;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-    .admin-account {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 15px;
-      background: #262626;
-      padding: 10px;
-      border-radius: 8px;
-      transition: background 0.3s;
-      cursor: pointer;
-    }
-    .admin-account:hover {
-      background: #333;
-    }
-    .admin-account img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      margin-right: 10px;
-      object-fit: cover;
-    }
-    .admin-account .admin-name {
-      font-size: 14px;
-      color: #ccc;
-    }
-    .admin-role {
-      font-size: 12px;
-      color: #aaa;
-      margin-top: 3px;
-    }
-    
-    /* Результаты поиска */
-    .search-results {
-      position: absolute;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1e1e1e;
-      width: 100%;
-      max-width: 400px;
-      max-height: 300px;
-      overflow-y: auto;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.8);
-      display: none;
-      z-index: 10;
-    }
-    .search-result-item {
-      display: flex;
-      align-items: center;
-      padding: 10px 15px;
-      border-bottom: 1px solid #333;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .search-result-item:hover {
-      background: #262626;
-    }
-    .search-result-item img {
-      width: 40px;
-      height: 40px;
-      object-fit: cover;
-      border-radius: 4px;
-      margin-right: 15px;
-    }
-    .result-text {
-      display: flex;
-      flex-direction: column;
-    }
-    .result-name {
-      font-weight: 600;
-      color: #fff;
-    }
-    .no-results {
-      padding: 10px 15px;
-      color: #888;
-    }
-
-
-    .hero-section {
-      background: #161616;       /* Тёмный фон */
-      color: #fff;               /* Светлый текст */
-      padding: 60px 20px;        /* Отступы сверху/снизу и по бокам */
-      text-align: center;        /* Центрируем текст */
-      border-radius: 8px;        /* Скруглённые углы (опционально) */
-      margin-bottom: 40px;       /* Отступ снизу, чтобы отделить от контента */
-      position: relative;        /* Если нужно добавлять фоновое изображение */
-      /* Пример фонового изображения (раскомментируйте, если нужно):
-      background-image: url('images/banner-bg.jpg');
-      background-size: cover;
-      background-position: center;
-      */
-    }
-    
-    .hero-section h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-      color: #4fc3f7;       /* Акцентный цвет */
-    }
-    
-    .hero-section p {
-      font-size: 18px;
-      color: #ccc;
-      max-width: 700px;     /* Чтобы текст не растягивался на всю ширину */
-      margin: 0 auto 30px;  /* Выравниваем по центру и даём отступ снизу */
-      line-height: 1.6;
-    }
-    
-    .hero-btn {
-      background: #4fc3f7;  /* Акцентная заливка */
-      color: #121212;       /* Тёмный цвет текста */
-      padding: 12px 24px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s;
-    }
-    .hero-btn:hover {
-      background: #80deea;
-    }
-    
-    
-    /* Заголовок секции */
-    .section-title {
-      font-size: 20px;
-      margin: 30px 0 10px;
-      color: #4fc3f7;
-    }
-    
-    /* Горизонтальная прокрутка для категорий */
-    .horizontal-scroll {
-      display: flex;
-      overflow-x: auto;
-      padding-bottom: 10px;
-      scroll-behavior: smooth;
-      margin-bottom: 20px;
-    }
-    .horizontal-scroll::-webkit-scrollbar {
-      height: 6px;
-    }
-    .horizontal-scroll::-webkit-scrollbar-thumb {
-      background: #333;
-      border-radius: 4px;
-    }
-    .horizontal-scroll::-webkit-scrollbar-track {
-      background: #1e1e1e;
-    }
-    
-    /* Карточка игры/приложения */
-    .game-card {
-      width: 80px;
-      margin-right: 16px;
-      text-align: center;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .game-card img {
-      width: 80px;
-      height: 80px;
-      object-fit: cover;
-      border-radius: 8px;
-      transition: transform 0.2s;
-    }
-    .game-card img:hover {
-      transform: scale(1.05);
-    }
-    .game-card .game-name {
-      margin-top: 6px;
-      font-size: 13px;
-      color: #ccc;
-      white-space: nowrap;
-    }
-    .new-badge {
-      display: inline-block;
-      background: #ff4500;
-      color: #fff;
-      font-size: 10px;
-      padding: 2px 5px;
-      border-radius: 4px;
-      margin-left: 5px;
-      vertical-align: middle;
-    }
-    
-    /* Блок "О сайте" */
-    .about-section {
-      background: #161616;
-      padding: 30px 20px;
-      margin: 20px 0;
-      border-radius: 8px;
-    }
-    .about-section h2 {
-      color: #4fc3f7;
-      margin-bottom: 15px;
-    }
-    .about-section p {
-      color: #ccc;
-      line-height: 1.6;
-    }
-    
-    /* Футер */
-    footer {
-      background: #161616;
-      color: #777;
-      padding: 30px 20px;
-      margin-top: 20px;
-      transition: background 0.3s, color 0.3s;
-    }
-    footer .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      gap: 20px;
-    }
-    footer h3, footer h4 {
-      color: #4fc3f7;
-      margin-bottom: 8px;
-    }
-    footer a {
-      color: #777;
-      font-size: 14px;
-    }
-    footer a:hover {
-      color: #fff;
-    }
-    footer p {
-      font-size: 13px;
-    }
-    .footer-btn {
-      background: #4fc3f7;
-      color: #121212;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .footer-btn:hover {
-      background: #80deea;
-    }
-    footer p.copyright {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 13px;
-    }
-    
-    /* Адаптивные стили для мобильных устройств */
-    @media (max-width: 768px) {
-      body {
-        padding-right: 20px;
-      }
-      .header-inner {
-        justify-content: space-between;
-      }
-      .search-bar {
-        margin: 10px 0;
-        flex: 1;
-      }
-      /* Скрываем десктопный блок с кнопками */
-      .header-right {
-        display: none;
-      }
-      /* Отображаем кнопку гамбургера */
-      .hamburger-btn {
-        display: flex;
-        align-items: center;
-      }
-      /* Показываем нижнюю панель навигации */
-      .bottom-nav {
-        display: flex;
-      }
-    }
-    
-    /* Стили для светлой темы */
-    body.light-mode {
-      background: #ffffff;
-      color: #333;
-    }
-    body.light-mode header {
-      background: #f8f8f8;
-      border-bottom: 1px solid #ddd;
-    }
-    body.light-mode .logo-text {
-      /* При необходимости можно задать другой цвет для светлой темы */
-    }
-    body.light-mode .search-bar input {
+      max-width: 800px;
+      margin: auto;
       background: #fff;
-      color: #333;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    body.light-mode .search-bar input::placeholder {
-      color: #999;
-    }
-    body.light-mode .header-right, 
-    body.light-mode .nav-btn, 
-    body.light-mode .theme-toggle-btn, 
-    body.light-mode .balance {
-      color: #007acc;
-    }
-    body.light-mode .admin-sidebar {
-      background: #f0f0f0;
-      border-left: 1px solid #ddd;
-    }
-    body.light-mode footer {
-      background: #f8f8f8;
-      color: #555;
-    }
-
-    /* Секция с "виджетами" (большие карточки), похожая на скриншоте */
-    .widgets-section {
-      margin: 40px 0;
-    }
-    .widgets-row {
-      display: flex;
-      flex-wrap: wrap; /* Чтобы на мобильных переносились */
-      gap: 20px;
+    h1, h2 {
+      text-align: center;
       margin-bottom: 20px;
     }
-    .widget-card {
-      flex: 1 1 0;
-      min-width: 200px;
-      max-width: 360px;
-      background: #1e1e1e;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
+    .ticket-details {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 15px;
+      background: #fafafa;
+      margin-bottom: 20px;
     }
-    .widget-card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
+    .ticket-details p {
+      margin: 8px 0;
+    }
+    .messages {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 15px;
+      background: #fff;
+      max-height: 400px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+    .message-item {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+    }
+    .message-item:last-child {
+      border-bottom: none;
+    }
+    .message-item strong {
       display: block;
+      margin-bottom: 4px;
     }
-    .widget-card .widget-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #ccc;
+    form.reply-form {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 15px;
+      background: #fafafa;
+    }
+    form.reply-form textarea {
+      width: 100%;
       padding: 10px;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      border-radius: 0 0 12px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      resize: vertical;
+      min-height: 80px;
+      margin-bottom: 12px;
+      font-size: 14px;
     }
-    .widget-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-    }
-    .catalog-link-card {
-      margin: 0 auto;
-      max-width: 600px;
-      padding: 20px;
-      background: #262626;
+    form.reply-form button {
+      background: #3b82f6;
+      border: none;
       color: #fff;
-      text-align: center;
-      font-size: 18px;
-      font-weight: 500;
-      border-radius: 12px;
+      padding: 10px 15px;
+      border-radius: 4px;
       cursor: pointer;
-      transition: background 0.3s, transform 0.3s;
+      font-size: 14px;
+      transition: background 0.3s;
     }
-    .catalog-link-card:hover {
-      background: #333;
-      transform: scale(1.02);
+    form.reply-form button:hover {
+      background: #2563eb;
     }
-    .catalog-link-card span {
-      display: inline-block;
-      vertical-align: middle;
+    .message-notice {
+      padding: 10px;
+      background: #e7f3fe;
+      border: 1px solid #b3d4fc;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      text-align: center;
     }
-    @media (max-width: 992px) {
-      .widgets-row {
-        justify-content: center;
-      }
-      .widget-card {
-        max-width: 300px;
-      }
+    .logout-btn {
+      display: block;
+      margin: 20px auto 0;
+      background: #777;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    @media (max-width: 600px) {
-      .widget-card img {
-        height: 140px;
-      }
-      .widget-card .widget-title {
-        font-size: 14px;
-      }
+    .logout-btn:hover {
+      background: #555;
     }
   </style>
 </head>
 <body>
-  <!-- Шапка -->
-  <header>
-    <div class="container">
-      <div class="header-inner">
-        <!-- Левая часть: логотип с картинкой и названием -->
-        <div class="header-left" onclick="location.href='index.html'">
-          <div class="logo-container">
-            <img src="images/gl.png" alt="Логотип" class="logo-image">
-            <span class="logo-text">GlovimPlaye</span>
-          </div>
-        </div>
-        <!-- Поиск -->
-        <div class="search-bar">
-          <input type="text" class="search-input" placeholder="Поиск игр и приложений...">
-          <button class="search-btn"><i class="fas fa-search"></i></button>
-        </div>
-        <!-- Правая часть для десктопа -->
-        <div class="header-right">
-          <button class="theme-toggle-btn" id="themeToggle">
-            <i class="fas fa-adjust"></i>
-            <span>Светлая тема</span>
-          </button>
-          <div class="balance" id="headerBalance">
-            <i class="fas fa-wallet"></i>
-            <span>0₽</span>
-          </div>
-        
-          <img id="headerProfileAvatar" class="profile-avatar" src="default-avatar.png" alt="Avatar" onclick="location.href='profile.html'">
-          
-        </div>
-        <!-- Кнопка гамбургера для мобильной версии -->
-        <button class="hamburger-btn" id="hamburgerBtn">
-          <i class="fas fa-bars"></i> <span>Меню</span>
-        </button>
-      </div>
-    </div>
-  </header>
+<div class="container">
+  <h1>Заявка в поддержку</h1>
+  <div id="notice"></div>
   
-
-<!-- Hero (баннер) секция с картинкой внутри -->
-<section class="hero-section">
-  <div class="container">
-    <img src="images/avatar.png" alt="Баннер GlovimPlaye" style="width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 20px;">
-    <h1>GlovimPlaye — маркетплейс игровых товаров и услуг</h1>
-    <p>GlovimPlaye — это инновационный маркетплейс, где геймеры могут покупать и продавать игровые товары, аккаунты и услуги. Платформа объединяет продавцов и покупателей, предлагая безопасные сделки, удобный интерфейс и широкий ассортимент товаров для самых популярных игр.
+  <!-- Информация о заявке -->
+  <div class="ticket-details" id="ticketDetails">
+    <!-- Здесь будут загружены данные заявки -->
+    <p><strong>Загрузка данных заявки...</strong></p>
   </div>
-  <!-- Дополнительная "карточка" для ссылки на каталог -->
-  <div class="catalog-link-card" onclick="location.href='profile.html'">
-    <span>Узнать больше о GlovimPlaye</span>
+  
+  <!-- Блок сообщений -->
+  <h2>История сообщений</h2>
+  <div class="messages" id="messagesList">
+    <!-- Здесь динамически будут добавляться сообщения -->
+    <p style="text-align:center;">Сообщений пока нет.</p>
   </div>
+  
+  <!-- Форма отправки нового ответа -->
+  <form class="reply-form" id="replyForm">
+    <textarea id="replyText" placeholder="Введите ваш ответ..." required></textarea>
+    <button type="submit">Отправить ответ</button>
+  </form>
+  
+  <button class="logout-btn" onclick="logout()">Выйти</button>
 </div>
-</section>
 
+<script>
+  // Firebase конфигурация (замените на свои данные)
+  var firebaseConfig = {
+    apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+    authDomain: "glovimplaye-b1023.firebaseapp.com",
+    databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+    projectId: "glovimplaye-b1023",
+    storageBucket: "glovimplaye-b1023.firebasestorage.app",
+    messagingSenderId: "553440591519",
+    appId: "1:553440591519:web:b7be45a9253689f322acaa"
+  };
+  firebase.initializeApp(firebaseConfig);
 
-</section>
-
-
-<div class="card-container"></div>
- <!-- Секция с большими виджетами -->
- <section class="widgets-section">
-  <div class="container">
-    <h2 class="section-title">Популярные игры</h2>
-    
-    <!-- Верхний ряд карточек -->
-    <div class="widgets-row">
-      <div class="widget-card" onclick="location.href='poe2.html'">
-        <img src="images/poe2.jpg" alt="Path of Exile 2">
-        <div class="widget-title">Path of Exile 2</div>
-      </div>
-      <div class="widget-card" onclick="location.href='cs2.html'">
-        <img src="images/csgooo.jpg"alt="Counter-Strike 2">
-        <div class="widget-title">Counter-Strike 2</div>
-      </div>
-      <div class="widget-card" onclick="location.href='brawlstars.html'">
-        <img src="images/bravl-ava.jpg" alt="Brawl Stars">
-        <div class="widget-title">Brawl Stars</div>
-      </div>
-    </div>
-    
-    <!-- Нижний ряд карточек -->
-    <div class="widgets-row">
-      <div class="widget-card" onclick="location.href='wotblitz.html'">
-        <img src="images/wotblitz.jpg" alt="World of Tanks Blitz">
-        <div class="widget-title">World of Tanks Blitz</div>
-      </div>
-      <div class="widget-card" onclick="location.href='wot.html'">
-        <img src="images/wot.jpg" alt="World of Tanks">
-        <div class="widget-title">World of Tanks</div>
-      </div>
-      <div class="widget-card" onclick="location.href='genshin.html'">
-        <img src="images/genshin.jpg" alt="Genshin Impact">
-        <div class="widget-title">Genshin Impact</div>
-      </div>
-      <div class="widget-card" onclick="location.href='mobilelegends.html'">
-        <img src="images/photo_2025-02-22_08-29-19.jpg" alt="Mobile Legends">
-        <div class="widget-title">Mobile Legends</div>
-      </div>
-    </div>
-    
-     <!-- Дополнительная "карточка" для ссылки на каталог -->
-     <div class="catalog-link-card" onclick="location.href='catalog.html'">
-      <span>Больше игр в нашем каталоге</span>
-    </div>
-  </div>
-</section>
-
- 
-
-  <!-- Основной контент -->
-  <div class="container">
-    <!-- Пример ваших горизонтальных скроллов -->
-    <h2 class="section-title">Игры</h2>
-    <div class="horizontal-scroll">
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-      <div class="game-card" onclick="location.href='roblox.html'">
-        <img src="images/roblox.jpg" alt="Roblox">
-        <div class="game-name">Roblox</div>
-      </div>
-      <div class="game-card" onclick="location.href='minecraft.html'">
-        <img src="images/main.jpg" alt="Minecraft">
-        <div class="game-name">Minecraft</div>
-      </div>
-      <div class="game-card" onclick="location.href='fortnite.html'">
-        <img src="images/fortna.jpg" alt="Fortnite">
-        <div class="game-name">Fortnite</div>
-      </div>
-      <div class="game-card" onclick="location.href='dota2.html'">
-        <img src="images/dota.jpg" alt="Dota 2">
-        <div class="game-name">Dota 2</div>
-      </div>
-      <div class="game-card" onclick="location.href='rust.html'">
-        <img src="images/rust.png" alt="Rust">
-        <div class="game-name">Rust <span class="new-badge">Новое</span></div>
-      </div>
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-      <div class="game-card" onclick="location.href='csgo.html'">
-        <img src="images/csgo.jpg" alt="Counter-Strike">
-        <div class="game-name">Counter-Strike</div>
-      </div>
-    </div>
-    
-    <h2 class="section-title">Мобильные игры</h2>
-    <div class="horizontal-scroll">
-      <div class="game-card" onclick="location.href='pubg-mobile.html'">
-        <img src="images/pabg mobael.jpg" alt="PUBG Mobile">
-        <div class="game-name">PUBG Mobile</div>
-      </div>
-      <div class="game-card" onclick="location.href='standoff2.html'">
-        <img src="images/standoff2.jpg" alt="Standoff 2">
-        <div class="game-name">Standoff 2</div>
-      </div>
-      <div class="game-card" onclick="location.href='callofduty.html'">
-        <img src="images/cal of duty.jpg" alt="Call of Duty">
-        <div class="game-name">Call of Duty</div>
-      </div>
-    </div>
-    
-    <h2 class="section-title">Приложения</h2>
-    <div class="horizontal-scroll">
-      <div class="game-card" onclick="location.href='discord.html'">
-        <img src="images/diccord.jpg" alt="Discord">
-        <div class="game-name">Discord</div>
-      </div>
-      <div class="game-card" onclick="location.href='spotify.html'">
-        <img src="images/spotifay.jpg" alt="Spotify">
-        <div class="game-name">Spotify</div>
-      </div>
-      <div class="game-card" onclick="location.href='telegram.html'">
-        <img src="images/telegram.jpg" alt="Telegram">
-        <div class="game-name">Telegram</div>
-      </div>
-      <div class="game-card" onclick="location.href='steam.html'">
-        <img src="images/steam.jpg" alt="Steam">
-        <div class="game-name">Steam</div>
-      </div>
-      <div class="game-card" onclick="location.href='tiktok.html'">
-        <img src="images/tiktik.jpg" alt="Tik Tok">
-        <div class="game-name">Tik Tok</div>
-      </div>
-      <div class="game-card" onclick="location.href='epic-gems.html'">
-        <img src="images/epgems.jpg" alt="Epic Gems">
-        <div class="game-name">Epic Gems</div>
-      </div>
-      <div class="game-card" onclick="location.href='playstation.html'">
-        <img src="images/Playstetion.png" alt="PlayStation">
-        <div class="game-name">PlayStation</div>
-      </div>
-    </div>
-  </div>
-
-
+  // Получаем параметр ticketId из URL
+  function getTicketId() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('ticketId');
+  }
   
-
-   
-
+  const ticketId = getTicketId();
+  if (!ticketId) {
+    document.getElementById('notice').innerHTML = '<div class="message-notice">Ошибка: отсутствует идентификатор заявки.</div>';
+  }
   
-  
-  <!-- Боковая панель (админ-секция) -->
-  <aside class="admin-sidebar" id="adminSidebar">
-    <div class="sidebar-logo" onclick="location.href='index.html'"></div>
-    <h3></h3>
-    
-    <!-- Здесь динамически будут загружаться админы с ролями -->
-  <!-- Подключите Font Awesome в <head>, если ещё не подключили -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-
-<!-- Боковое меню -->
- 
-  <nav class="menu-list">
-    <!-- Мои лоты -->
-    <a href="mylots.html" class="menu-item">
-      <div class="icon-wrap">
-        <!-- Иконка (пример: fa-file-alt) -->
-        <i class="fas fa-file-alt"></i>
-      </div>
-      <span>Мои лоты</span>
-      <div class="icon-wrap plus-icon">
-        <!-- Иконка плюс -->
-        <i class="fas fa-plus"></i>
-      </div>
-    </a>
-
-    <!-- Покупки -->
-    <a href="purchases.html" class="menu-item">
-      <div class="icon-wrap">
-        <i class="fas fa-download"></i>
-      </div>
-      <span>Покупки</span>
-    </a>
-
-    <!-- Продажи -->
-    <a href="sales.html" class="menu-item">
-      <div class="icon-wrap">
-        <i class="fas fa-upload"></i>
-      </div>
-      <span>Продажи</span>
-    </a>
-
-    <hr />
-
-    <!-- Сообщения -->
-    <a href="chat.html" class="menu-item">
-      <div class="icon-wrap">
-        <i class="fas fa-comments"></i>
-      </div>
-      <span>Сообщения</span>
-    </a>
-
-    <hr />
-
-    <!-- Каталог игр (пример активного пункта) -->
-    <a href="catalog.html" class="menu-item active">
-      <div class="icon-wrap">
-        <i class="fas fa-th-large"></i>
-      </div>
-      <span>Каталог игр</span>
-    </a>
-  </nav>
-</aside>
-
-    
-  
-  <!-- Нижняя панель (мобильная навигация) -->
-  <div class="bottom-nav">
-    <a href="index.html">
-      <i class="fas fa-home"></i>
-      <span>Главная</span>
-    </a>
-    <a href="add.html">
-      <i class="fas fa-plus"></i>
-      <span>Продать</span>
-    </a>
-    <a href="chat.html">
-      <i class="fas fa-comment-dots"></i>
-      <span>Чат</span>
-    </a>
-    <a href="profile.html" class="bottom-nav-profile">
-      <img src="default-avatar.png" alt="Avatar" class="avatar">
-      <span>Профиль</span>
-    </a>
-  </div>
-  
-  <!-- Футер -->
-  <footer>
-    <div class="container" style="align-items: center;">
-      <div style="max-width: 250px;">
-        <h3>GlovimPlaye</h3>
-        <p>Безопасная торговая площадка с низкими ценами</p>
-        <p>support@glovimplaye.com</p>
-      </div>
-      <div>
-        <h4>Способы оплаты</h4>
-        <p>💳 💸 🪙 🎮</p>
-      </div>
-      <div>
-        <h4>Информация</h4>
-        <p><a href="#">О компании</a></p>
-        <p><a href="#">Правила и гарантии</a></p>
-        <p><a href="#">Курсы валют</a></p>
-        <p><a href="#">Советы и гайды</a></p>
-      </div>
-      <div>
-        <h4>Наши соц.сети</h4>
-        <p><a href="https://t.me/" target="_blank">Telegram канал</a></p>
-        <p><a href="https://vk.com/" target="_blank">Группа ВКонтакте</a></p>
-        <p><a href="https://www.youtube.com/" target="_blank">YouTube канал</a></p>
-        <p><a href="https://discord.com/" target="_blank">Discord сервер</a></p>
-      </div>
-      <div>
-        <button class="footer-btn">Написать в техподдержку</button>
-      </div>
-    </div>
-    <p class="copyright">
-      © 2025 GlovimPlaye. Все права защищены.
-    </p>
-  </footer>
-  
-  <script>
-    // Firebase-конфигурация и инициализация
-    var firebaseConfig = {
-      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-      authDomain: "glovimplaye-b1023.firebaseapp.com",
-      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-      projectId: "glovimplaye-b1023",
-      storageBucket: "glovimplaye-b1023.firebasestorage.app",
-      messagingSenderId: "553440591519",
-      appId: "1:553440591519:web:b7be45a9253689f322acaa"
-    };
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
+  // Проверка авторизации: если пользователь не залогинен, перенаправляем на страницу логина
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (!user) {
+      window.location.href = "login.html";
     }
-    
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(function() {
-        console.log("Сессия установлена");
-        loadAdmins();
+  });
+
+  // Функция вывода уведомлений
+  function showNotice(text) {
+    var noticeDiv = document.getElementById('notice');
+    noticeDiv.innerHTML = '<div class="message-notice">' + text + '</div>';
+    setTimeout(() => { noticeDiv.innerHTML = ''; }, 5000);
+  }
+  
+  // Загрузка данных заявки
+  function loadTicket() {
+    firebase.database().ref("supportTickets/" + ticketId).once("value")
+      .then(snapshot => {
+        if (snapshot.exists()) {
+          let ticket = snapshot.val();
+          let createdAt = new Date(ticket.createdAt).toLocaleString("ru-RU");
+          document.getElementById('ticketDetails').innerHTML = `
+            <p><strong>Тема:</strong> ${ticket.subject}</p>
+            <p><strong>Сообщение:</strong> ${ticket.message}</p>
+            <p><strong>Дата создания:</strong> ${createdAt}</p>
+            <p><strong>Статус:</strong> ${ticket.status}</p>
+          `;
+        } else {
+          document.getElementById('ticketDetails').innerHTML = '<p>Заявка не найдена.</p>';
+        }
       })
-      .catch(function(error) {
-        console.error("Ошибка установки сессии:", error);
+      .catch(err => {
+        showNotice("Ошибка загрузки заявки: " + err.message);
       });
-      
-    function loadHeaderData(user) {
-      var userId = user.uid;
-      firebase.database().ref('users/' + userId).once('value')
-        .then(function(snapshot) {
-          var userData = snapshot.val();
-          if (userData) {
-            document.querySelector('#headerBalance span').innerText =
-              (userData.balance !== undefined ? userData.balance : 0) + '₽';
-            var avatarUrl = userData.avatar || user.photoURL || 'default-avatar.png';
-            document.getElementById('headerProfileAvatar').src = avatarUrl;
-          } else {
-            console.log("Данные пользователя не найдены");
-          }
-        })
-        .catch(function(error) {
-          console.error("Ошибка чтения данных пользователя:", error);
+  }
+  
+  // Загрузка сообщений (ответов) для заявки
+  function loadReplies() {
+    const repliesRef = firebase.database().ref("supportTickets/" + ticketId + "/replies");
+    repliesRef.on("value", snapshot => {
+      const messagesList = document.getElementById("messagesList");
+      messagesList.innerHTML = "";
+      if (snapshot.exists()) {
+        snapshot.forEach(childSnapshot => {
+          let reply = childSnapshot.val();
+          let replyTime = new Date(reply.timestamp).toLocaleString("ru-RU");
+          let replyItem = document.createElement("div");
+          replyItem.className = "message-item";
+          replyItem.innerHTML = `<strong>${reply.responderName} (${replyTime}):</strong>
+            <p>${reply.reply}</p>`;
+          messagesList.appendChild(replyItem);
         });
-    }
-    
-    function updateBottomNavAvatar(user) {
-      var avatarUrl = user.photoURL || 'default-avatar.png';
-      firebase.database().ref('users/' + user.uid).once('value')
-        .then(function(snapshot) {
-          var userData = snapshot.val();
-          if (userData && userData.avatar) {
-            avatarUrl = userData.avatar;
-          }
-          document.querySelector('.bottom-nav-profile img.avatar').src = avatarUrl;
-        })
-        .catch(function(error) {
-          console.error("Ошибка обновления аватарки в нижней панели:", error);
-        });
-    }
-    
-    function loadAdmins() {
-      var adminsRef = firebase.database().ref('users');
-      adminsRef.orderByChild('role').startAt('admin').endAt('admin\uf8ff').once('value')
-        .then(function(snapshot) {
-          var sidebar = document.querySelector('.admin-sidebar');
-          sidebar.querySelectorAll('.admin-account').forEach(el => el.remove());
-          snapshot.forEach(function(childSnapshot) {
-            var adminData = childSnapshot.val();
-            var adminDiv = document.createElement('div');
-            adminDiv.classList.add('admin-account');
-            adminDiv.addEventListener('click', function() {
-              window.location.href ='admin-seller.html?uid=' + childSnapshot.key;
-            });
-            
-            var adminImg = document.createElement('img');
-            adminImg.src = adminData.avatar || 'default-avatar.png';
-            adminImg.alt = adminData.nickname || 'Admin';
-            adminDiv.appendChild(adminImg);
-            
-            var adminName = document.createElement('div');
-            adminName.classList.add('admin-name');
-            adminName.textContent = adminData.nickname || 'Admin';
-            adminDiv.appendChild(adminName);
-            
-            var adminRole = document.createElement('div');
-            adminRole.classList.add('admin-role');
-            adminRole.textContent = adminData.roleLabel || adminData.role || 'Админ';
-            adminDiv.appendChild(adminRole);
-            
-            sidebar.appendChild(adminDiv);
-          });
-        })
-        .catch(function(error) {
-          console.error("Ошибка загрузки админов:", error);
-        });
-    }
-    
-    const items = [
-      { name: "Standoff 2", category: "Мобильные игры", link: "standoff2.html", image: "images/csgo.jpg" },
-      { name: "Mobile Legends", category: "Мобильные игры", link: "mobile-legends.html", image: "images/mobile_legends.jpg" },
-      { name: "PUBG Mobile", category: "Мобильные игры", link: "pubg-mobile.html", image: "images/pubg_mobile.jpg" },
-      { name: "Brawl Stars", category: "Мобильные игры", link: "brawl-stars.html", image: "images/brawl_stars.jpg" },
-      { name: "Counter-Strike", category: "PC-игры", link: "csgo.html", image: "images/csgo.jpg" },
-      { name: "Dota 2", category: "PC-игры", link: "dota2.html", image: "images/dota.jpg" },
-      { name: "Call of Duty", category: "PC-игры", link: "callofduty.html", image: "images/cal of duty.jpg" },
-      { name: "Fortnite", category: "PC-игры", link: "fortnite.html", image: "images/fortna.jpg" },
-      { name: "GTA 5 Online", category: "PC-игры", link: "gta5.html", image: "images/gta.jpg" },
-      { name: "Minecraft", category: "PC-игры", link: "minecraft.html", image: "images/main.jpg" },
-      { name: "Rust", category: "PC-игры", link: "rust.html", image: "images/rust.png" },
-      { name: "Roblox", category: "Мобильные игры", link: "roblox.html", image: "images/roblox.jpg" },
-      { name: "PUBG", category: "PC-игры", link: "pubg.html", image: "images/pabg.png" },
-      { name: "Discord", category: "Приложения", link: "discord.html", image: "images/diccord.jpg" },
-      { name: "Epic Gems", category: "Приложения", link: "epic-gems.html", image: "images/epgems.jpg" },
-      { name: "PlayStation", category: "Приложения", link: "playstation.html", image: "images/Playstetion.png" },
-      { name: "Spotify", category: "Приложения", link: "spotify.html", image: "images/spotifay.jpg" },
-      { name: "Steam", category: "Приложения", link: "steam.html", image: "images/steam.jpg" },
-      { name: "Telegram", category: "Приложения", link: "telegram.html", image: "images/telegram.jpg" },
-      { name: "Tik Tok", category: "Приложения", link: "tiktok.html", image: "images/tiktik.jpg" }
-    ];
-    
-    const searchInput = document.querySelector('.search-input');
-    const searchButton = document.querySelector('.search-btn');
-    const searchResultsContainer = document.getElementById('search-results');
-    
-    function showSearchResults(query) {
-      searchResultsContainer.innerHTML = '';
-      if (!query) {
-        searchResultsContainer.style.display = 'none';
-        return;
-      }
-      const lowerQuery = query.toLowerCase();
-      const filteredItems = items.filter(item =>
-        item.name.toLowerCase().includes(lowerQuery) ||
-        item.category.toLowerCase().includes(lowerQuery)
-      );
-      if (filteredItems.length === 0) {
-        searchResultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
       } else {
-        filteredItems.forEach(item => {
-          const resultItem = document.createElement('div');
-          resultItem.classList.add('search-result-item');
-          
-          const imgElement = document.createElement('img');
-          imgElement.src = item.image;
-          imgElement.alt = item.name;
-          
-          const textElement = document.createElement('div');
-          textElement.classList.add('result-text');
-          
-          const nameElement = document.createElement('div');
-          nameElement.classList.add('result-name');
-          nameElement.textContent = item.name;
-          
-          const categoryElement = document.createElement('div');
-          categoryElement.textContent = item.category;
-          
-          textElement.appendChild(nameElement);
-          textElement.appendChild(categoryElement);
-          resultItem.appendChild(imgElement);
-          resultItem.appendChild(textElement);
-          
-          resultItem.addEventListener('click', () => {
-            window.location.href = item.link;
-          });
-          
-          searchResultsContainer.appendChild(resultItem);
-        });
+        messagesList.innerHTML = '<p style="text-align:center;">Сообщений пока нет.</p>';
       }
-      searchResultsContainer.style.display = 'block';
+    });
+  }
+  
+  // Обработка отправки нового ответа
+  document.getElementById('replyForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    let replyText = document.getElementById('replyText').value.trim();
+    if (!replyText) {
+      showNotice("Введите текст ответа.");
+      return;
     }
-    
-    searchButton.addEventListener('click', () => {
-      const query = searchInput.value.trim();
-      showSearchResults(query);
+    const currentUser = firebase.auth().currentUser;
+    let replyData = {
+      responderId: currentUser.uid,
+      responderName: currentUser.displayName || "Пользователь",
+      reply: replyText,
+      timestamp: firebase.database.ServerValue.TIMESTAMP
+    };
+    firebase.database().ref("supportTickets/" + ticketId + "/replies").push(replyData)
+      .then(() => {
+        showNotice("Ваш ответ отправлен.");
+        document.getElementById('replyText').value = "";
+      })
+      .catch(err => {
+        showNotice("Ошибка отправки ответа: " + err.message);
+      });
+  });
+  
+  // Функция выхода
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      window.location.href = "login.html";
+    }).catch(err => {
+      showNotice("Ошибка выхода: " + err.message);
     });
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.trim();
-      showSearchResults(query);
-    });
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.search-bar') && !e.target.closest('#search-results')) {
-        searchResultsContainer.style.display = 'none';
-      }
-    });
-    
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        loadHeaderData(user);
-        updateBottomNavAvatar(user);
-      } else {
-        console.log("Пользователь не авторизован");
-      }
-    });
-    
-    // Переключение темы
-    const themeToggleBtn = document.getElementById('themeToggle');
-    function setTheme(theme) {
-      if(theme === 'light'){
-        document.body.classList.add('light-mode');
-        themeToggleBtn.querySelector('span').textContent = 'Темная тема';
-      } else {
-        document.body.classList.remove('light-mode');
-        themeToggleBtn.querySelector('span').textContent = 'Светлая тема';
-      }
-      localStorage.setItem('theme', theme);
-    }
-    const currentTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(currentTheme);
-    themeToggleBtn.addEventListener('click', () => {
-      const newTheme = document.body.classList.contains('light-mode') ? 'dark' : 'light';
-      setTheme(newTheme);
-    });
-    
-    // Обработчик для кнопки гамбургера: открытие/закрытие боковой панели (админ-секции)
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const adminSidebar = document.getElementById('adminSidebar');
-    hamburgerBtn.addEventListener('click', () => {
-      adminSidebar.classList.toggle('open');
-    });
-  </script>
+  }
+  
+  // Запускаем загрузку данных
+  loadTicket();
+  loadReplies();
+</script>
 </body>
 </html>

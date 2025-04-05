@@ -2,152 +2,611 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye | Запрос в поддержку</title>
+  <title>Glovimplaye — Чат</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <!-- Firebase v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <!-- Подключение Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
+  <!-- Подключение Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
   <style>
-    body {
-      background: #f5f5f5;
-      font-family: Arial, sans-serif;
+    :root {
+      --bg-main: #121212;
+      --bg-sidebar: #1e1e1e;
+      --bg-chat: #181818;
+      --accent-color: #ffb400;
+      --text-color: #e0e0e0;
+      --text-secondary: #9e9e9e;
+      --border-color: #2c2c2c;
+    }
+    
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-color);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    
+    /* Десктопная верстка */
+    .sidebar {
+      width: 300px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .sidebar-header {
       padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .container {
-      max-width: 600px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
+    
+    .sidebar-header .logo {
+      font-size: 22px;
       font-weight: bold;
-      color: #555;
-    }
-    input[type="text"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 8px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    input[type="file"] {
-      margin-bottom: 15px;
-    }
-    button {
-      background: #4fc3f7;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 4px;
+      color: var(--accent-color);
       cursor: pointer;
     }
-    button:hover {
-      background: #80deea;
+    
+    .sidebar-header .balance {
+      font-size: 16px;
+      color: var(--accent-color);
+    }
+    
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+    
+    .chat-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background 0.2s;
+      position: relative;
+    }
+    
+    .chat-item:hover {
+      background: var(--border-color);
+    }
+    
+    .chat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #333;
+      color: var(--accent-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-right: 15px;
+    }
+    
+    .notification-badge {
+      position: absolute;
+      top: 10px;
+      left: 50px;
+      background: red;
+      color: white;
+      font-size: 12px;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .chat-info .chat-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .chat-info .chat-last-msg {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-chat);
+    }
+    
+    .chat-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 18px;
+      font-weight: bold;
+      background: var(--bg-sidebar);
+    }
+    
+    .chat-body {
+      flex: 1;
+      position: relative;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    
+    .placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    
+    .placeholder i {
+      font-size: 48px;
+      margin-bottom: 10px;
+      color: var(--accent-color);
+    }
+    
+    .messages {
+      display: none;
+      flex-direction: column;
+    }
+    
+    .message {
+      background: #2c2c2c;
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      max-width: 65%;
+      word-wrap: break-word;
+      font-size: 14px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    
+    .message.mine {
+      background: #3a3a3a;
+      margin-left: auto;
+    }
+    
+    .message .sender {
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    
+    .message .time {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+      text-align: right;
+    }
+    
+    .chat-input {
+      padding: 15px 20px;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-sidebar);
+      display: none;
+    }
+    
+    .chat-input input {
+      width: 100%;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 4px;
+      outline: none;
+      font-size: 14px;
+      background: #333;
+      color: var(--text-color);
+    }
+    
+    .chat-input button {
+      margin-left: 10px;
+      padding: 12px 20px;
+      background: var(--accent-color);
+      border: none;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      color: #1e1e1e;
+    }
+    
+    .chat-input button:hover {
+      background: #ff9800;
+    }
+    
+    /* Мобильная верстка */
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        display: none;
+      }
+      
+      .mobile-header, .bottom-nav, .mobile-chat-list {
+        display: flex;
+      }
+      
+      .mobile-header {
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg-sidebar);
+        padding: 15px 20px;
+        border-bottom: 1px solid var(--border-color);
+      }
+      
+      .mobile-header .logo {
+        font-size: 20px;
+        font-weight: bold;
+        color: var(--accent-color);
+        cursor: pointer;
+      }
+      
+      .mobile-header .balance {
+        font-size: 16px;
+        color: var(--accent-color);
+      }
+      
+      .mobile-header .open-chat-list {
+        font-size: 18px;
+        color: var(--text-color);
+        cursor: pointer;
+      }
+      
+      .bottom-nav {
+        justify-content: space-around;
+        align-items: center;
+        background: var(--bg-sidebar);
+        padding: 10px 0;
+        border-top: 1px solid var(--border-color);
+      }
+      
+      .bottom-nav a {
+        text-decoration: none;
+        color: var(--text-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 12px;
+      }
+      
+      .bottom-nav a i {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+      
+      .mobile-chat-list {
+        flex-direction: column;
+        background: var(--bg-sidebar);
+        max-height: 60vh;
+        overflow-y: auto;
+        padding: 10px;
+        display: none;
+      }
+      
+      .mobile-chat-list.active {
+        display: flex;
+      }
+    }
+    
+    @media (min-width: 769px) {
+      .mobile-header, .bottom-nav, .mobile-chat-list {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Запрос в поддержку</h1>
-    <form id="supportForm">
-      <!-- Выбор категории проблемы -->
-      <label for="problemType">Проблема</label>
-      <select id="problemType" name="problemType" required>
-        <option value="" disabled selected>Выберите категорию...</option>
-        <option value="payment">Проблема с платежом</option>
-        <option value="account">Проблема с аккаунтом</option>
-        <option value="technical">Техническая проблема</option>
-        <option value="other">Другое</option>
-      </select>
-      
-      <!-- Вместо ника – поле с ID пользователя -->
-      <label for="userId">Ваш ID</label>
-      <input type="text" id="userId" name="userId" readonly required placeholder="Загрузка ID...">
-      
-      <!-- Тема запроса -->
-      <label for="subject">Тема запроса</label>
-      <input type="text" id="subject" name="subject" required placeholder="Краткое описание проблемы">
-      
-      <!-- Описание проблемы -->
-      <label for="message">Описание проблемы</label>
-      <textarea id="message" name="message" rows="5" required placeholder="Подробное описание проблемы"></textarea>
-      
-      <!-- Прикрепление файла (опционально) -->
-      <label for="attachment">Прикрепить файл (по желанию)</label>
-      <input type="file" id="attachment" name="attachment" accept="image/*, .pdf, .doc, .docx">
-      
-      <button type="submit">Отправить запрос</button>
-    </form>
+  <!-- Мобильный верхний хедер (виден только на мобильных) -->
+  <div class="mobile-header">
+    <div class="logo" onclick="window.location.href='profile.html'">Glovimplaye</div>
+    <div class="balance">+ 5.0 <i class="fas fa-coins"></i></div>
+    <div class="open-chat-list" onclick="toggleChatList()">
+      <i class="fas fa-bars"></i>
+    </div>
+  </div>
+  
+  <!-- Мобильный список чатов -->
+  <div class="mobile-chat-list" id="mobileChatList">
+    <div class="chat-item" onclick="selectChat('playerok'); toggleChatList();">
+      <div class="chat-icon">P</div>
+      <div id="playerokBadge" class="notification-badge"></div>
+      <div class="chat-info">
+        <div class="chat-title">Glovimplaye</div>
+        <div class="chat-last-msg" id="lastMsg-playerok">...</div>
+      </div>
+    </div>
+    <div class="chat-item" onclick="selectChat('support'); toggleChatList();">
+      <div class="chat-icon">S</div>
+      <div class="chat-info">
+        <div class="chat-title">Поддержка</div>
+        <div class="chat-last-msg" id="lastMsg-support">...</div>
+      </div>
+    </div>
+    <div class="chat-item" onclick="selectChat('global'); toggleChatList();">
+      <div class="chat-icon">G</div>
+      <div class="chat-info">
+        <div class="chat-title">Глобальный чат</div>
+        <div class="chat-last-msg" id="lastMsg-global">...</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Десктопный sidebar (виден на ПК) -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo" onclick="window.location.href='profile.html'">Glovimplaye</div>
+      <div class="balance">+ 5.0 <i class="fas fa-coins"></i></div>
+    </div>
+    <div class="chat-list">
+      <div class="chat-item" onclick="selectChat('playerok')">
+        <div class="chat-icon">P</div>
+        <div id="playerokBadge" class="notification-badge"></div>
+        <div class="chat-info">
+          <div class="chat-title">Glovimplaye</div>
+          <div class="chat-last-msg" id="lastMsg-playerok">...</div>
+        </div>
+      </div>
+      <div class="chat-item" onclick="selectChat('support')">
+        <div class="chat-icon">S</div>
+        <div class="chat-info">
+          <div class="chat-title">Поддержка</div>
+          <div class="chat-last-msg" id="lastMsg-support">...</div>
+        </div>
+      </div>
+      <div class="chat-item" onclick="selectChat('global')">
+        <div class="chat-icon">G</div>
+        <div class="chat-info">
+          <div class="chat-title">Глобальный чат</div>
+          <div class="chat-last-msg" id="lastMsg-global">...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Правая область: чат -->
+  <div class="main-area">
+    <div class="chat-header" id="chatHeader">
+      Выберите диалог
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="placeholder" id="placeholder">
+        <i class="far fa-comment-dots"></i>
+        <p>Выберите диалог для переписки</p>
+      </div>
+      <div class="messages" id="messagesContainer"></div>
+    </div>
+    <div class="chat-input" id="chatInput">
+      <input type="text" id="messageInput" placeholder="Введите сообщение..." autocomplete="off">
+      <button onclick="sendMessage()">Отправить</button>
+    </div>
+  </div>
+  
+  <!-- Нижняя навигация (видна только на мобильных) -->
+  <div class="bottom-nav">
+    <a href="index.html">
+      <i class="fas fa-home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="add.html">
+      <i class="fas fa-plus"></i>
+      <span>Продать</span>
+    </a>
+    <a href="chat.html">
+      <i class="fas fa-comments"></i>
+      <span>Чат</span>
+    </a>
+    <a href="profile.html">
+      <i class="fas fa-user"></i>
+      <span>Профиль</span>
+    </a>
   </div>
   
   <script>
-    // Инициализация Firebase
+    // Функция для переключения отображения мобильного списка чатов
+    function toggleChatList() {
+      const chatList = document.getElementById('mobileChatList');
+      chatList.classList.toggle('active');
+    }
+    
+    // Инициализация Firebase (замените на свои данные)
     var firebaseConfig = {
-      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
-      authDomain: "glovimplaye-b1023.firebaseapp.com",
-      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
-      projectId: "glovimplaye-b1023",
-      storageBucket: "glovimplaye-b1023.firebasestorage.app",
-      messagingSenderId: "553440591519",
-      appId: "1:553440591519:web:b7be45a9253689f322acaa"
-    };
+        apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+        authDomain: "glovimplaye-b1023.firebaseapp.com",
+        databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+        projectId: "glovimplaye-b1023",
+        storageBucket: "glovimplaye-b1023.firebasestorage.app",
+        messagingSenderId: "553440591519",
+        appId: "1:553440591519:web:b7be45a9253689f322acaa"
+      };
     firebase.initializeApp(firebaseConfig);
     
-    // Проверка авторизации: если пользователь авторизован – подставляем его UID в поле, иначе можно реализовать редирект на login.html
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        document.getElementById('userId').value = user.uid;
+    // Локальное хранилище сообщений по чатам
+    let chatsData = {
+      playerok: [],
+      support: [],
+      global: []
+    };
+    
+    let currentChat = null;
+    let playerokUnread = 0;
+    let supportUnread = 0;
+    
+    const placeholder = document.getElementById('placeholder');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const chatInput = document.getElementById('chatInput');
+    const chatHeader = document.getElementById('chatHeader');
+    const playerokBadge = document.getElementById('playerokBadge');
+    const lastMsgSupport = document.getElementById('lastMsg-support');
+    
+    function selectChat(chatId) {
+      currentChat = chatId;
+      if (chatId === 'playerok') {
+        chatHeader.textContent = "Чат: Glovimplaye";
+      } else if (chatId === 'support') {
+        chatHeader.textContent = "Чат: Поддержка";
+      } else if (chatId === 'global') {
+        chatHeader.textContent = "Глобальный чат";
+      }
+      placeholder.style.display = "none";
+      messagesContainer.style.display = "flex";
+      // Для поддержки и основного чата показываем поле ввода
+      chatInput.style.display = (chatId === 'global') ? "none" : "flex";
+      messagesContainer.innerHTML = "";
+      if (chatsData[chatId] && chatsData[chatId].length) {
+        chatsData[chatId].forEach(msg => {
+          displayMessage(msg);
+        });
+      }
+      // Сброс счетчиков непрочитанных сообщений
+      if (chatId === 'playerok') {
+        playerokUnread = 0;
+        updatePlayerokBadge();
+      }
+      if (chatId === 'support') {
+        supportUnread = 0;
+        updateSupportBadge();
+      }
+    }
+    
+    function displayMessage(msg) {
+      const div = document.createElement('div');
+      div.classList.add('message');
+      if (msg.isMine) div.classList.add('mine');
+      let timeStr = "";
+      if (msg.timestamp) {
+        const date = new Date(msg.timestamp);
+        timeStr = date.toLocaleTimeString().slice(0,5);
+      }
+      div.innerHTML = `
+        <div class="sender">${msg.sender}</div>
+        <div>${msg.text}</div>
+        <div class="time">${timeStr}</div>
+      `;
+      messagesContainer.appendChild(div);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      // Обновляем последний текст в списке чатов
+      const lastMsgElement = document.getElementById('lastMsg-' + currentChat);
+      if (lastMsgElement) {
+        lastMsgElement.textContent = msg.text;
+      }
+    }
+    
+    function sendMessage() {
+      if (!currentChat) {
+        alert("Сначала выберите диалог!");
+        return;
+      }
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (!text) return;
+      const now = new Date();
+      const newMsg = {
+        sender: "Вы",
+        text: text,
+        timestamp: now.getTime(),
+        isMine: true
+      };
+      if (!chatsData[currentChat]) {
+        chatsData[currentChat] = [];
+      }
+      chatsData[currentChat].push(newMsg);
+      displayMessage(newMsg);
+      input.value = "";
+      // Отправляем сообщение в Firebase (для чатов, отличных от глобального)
+      if (currentChat !== 'global') {
+        firebase.database().ref("chats/" + currentChat).push(newMsg)
+          .catch(err => console.error("Ошибка отправки сообщения:", err));
+      }
+    }
+    
+    // Функция для обновления бейджа непрочитанных сообщений в чате playerok
+    function updatePlayerokBadge() {
+      if (playerokUnread > 0) {
+        playerokBadge.textContent = playerokUnread;
+        playerokBadge.style.display = 'flex';
       } else {
-        // Можно перенаправить неавторизованного пользователя
-        // window.location.href = "login.html";
+        playerokBadge.style.display = 'none';
+      }
+    }
+    
+    // Для поддержки можно добавить аналогичный бейдж (если нужно)
+    function updateSupportBadge() {
+      const supportBadge = document.getElementById('supportBadge');
+      if (supportBadge) {
+        if (supportUnread > 0) {
+          supportBadge.textContent = supportUnread;
+          supportBadge.style.display = 'flex';
+        } else {
+          supportBadge.style.display = 'none';
+        }
+      }
+    }
+    
+    // Отслеживание новых сообщений для чата "playerok"
+    firebase.database().ref("chats/playerok").on("child_added", function(snapshot) {
+      const msg = snapshot.val();
+      chatsData.playerok.push(msg);
+      if (currentChat !== 'playerok') {
+        playerokUnread++;
+        updatePlayerokBadge();
+      } else {
+        displayMessage(msg);
       }
     });
     
-    // Обработчик отправки формы
-    document.getElementById('supportForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Собираем данные формы
-      var formData = {
-        problemType: document.getElementById('problemType').value,
-        userId: document.getElementById('userId').value,
-        subject: document.getElementById('subject').value,
-        message: document.getElementById('message').value,
-        attachment: document.getElementById('attachment').files[0] 
-                      ? document.getElementById('attachment').files[0].name 
-                      : null,
-        createdAt: firebase.database.ServerValue.TIMESTAMP,
-        status: "pending"  // начальный статус запроса
-      };
-      
-      // Записываем данные запроса в базу данных в узел "supportRequests"
-      firebase.database().ref('supportRequests').push(formData)
-        .then(() => {
-          alert("Ваш запрос в поддержку отправлен!");
-          // Сохраняем значение userId и очищаем форму
-          var userId = document.getElementById('userId').value;
-          document.getElementById('supportForm').reset();
-          document.getElementById('userId').value = userId;
-        })
-        .catch(error => {
-          console.error("Ошибка отправки запроса:", error);
-          alert("Ошибка отправки запроса. Попробуйте позже.");
-        });
+    // Отслеживание новых сообщений для чата "support"
+    firebase.database().ref("chats/support").on("child_added", function(snapshot) {
+      const msg = snapshot.val();
+      chatsData.support.push(msg);
+      // Если текущий чат не "support", увеличиваем счетчик непрочитанных
+      if (currentChat !== 'support') {
+        supportUnread++;
+        updateSupportBadge();
+        // Можно отправить уведомление, например, в Telegram
+        sendTelegramNotification(`Новое сообщение поддержки: ${msg.text}`);
+      } else {
+        displayMessage(msg);
+      }
+    });
+    
+    // Функция отправки уведомления в Telegram
+    function sendTelegramNotification(messageText) {
+      const botToken = "7865781632:AAERyXSt18Ll82wDbicwsCYaHmHaFdBYljQ";
+      const chatId = "1002424657816";
+      const encodedText = encodeURIComponent(messageText);
+      const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedText}`;
+      fetch(url)
+        .then(response => response.json())
+        .then(data => console.log("Telegram notification sent:", data))
+        .catch(error => console.error("Error sending Telegram notification:", error));
+    }
+    
+    // Если в URL передан параметр для выбора чата, выбираем его
+    window.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const chatUser = urlParams.get('user');
+      if (chatUser && chatsData.hasOwnProperty(chatUser)) {
+        selectChat(chatUser);
+      }
     });
   </script>
 </body>

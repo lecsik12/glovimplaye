@@ -2,454 +2,71 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye | Профиль</title>
+  <title>GlovimPlaye | Товары</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+  
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-
-  <!-- Font Awesome для иконок -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
+  
+  <!-- Простой CSS для списка товаров -->
   <style>
-    :root {
-      --bg-color: #0e0e0e;
-      --header-bg: linear-gradient(135deg, #000, #393838);
-      --accent-color: #d3be05;
-      --accent-hover: #f1f1ec;
-      --text-color: #ccc;
-      --card-bg: #1e1e1e;
-      --border-radius: 8px;
-      --btn-gradient: linear-gradient(45deg, #4fc3f7, #80deea);
-    }
-    /* Сброс стилей */
-    *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
     body {
-      background: var(--bg-color);
-      color: var(--text-color);
-      font-family: 'Montserrat', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-      padding-bottom: 70px;
-      background-size: cover;
-      background-position: center;
-    }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-    /* Верхний хедер */
-    header {
-      background: var(--header-bg);
-      padding: 15px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      box-shadow: 0px 4px 8px rgba(0,0,0,0.4);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    header .logo {
-      font-size: 28px;
-      font-weight: bold;
-      color: var(--accent-color);
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-    header .logo:hover {
-      transform: scale(1.05);
-    }
-    .hamburger-btn {
-      background: none;
-      border: none;
-      color: var(--accent-color);
-      font-size: 24px;
-      cursor: pointer;
-    }
-    /* Баннер профиля */
-    .profile-banner {
-      position: relative;
-      width: 100%;
-      height: 250px;
-      background-color: #181818;
-      overflow: hidden;
-    }
-    .profile-banner-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: center/cover no-repeat;
-      filter: blur(8px);
-      z-index: 1;
-    }
-    .profile-banner-content {
-      position: relative;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      gap: 20px;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
       padding: 20px;
-      height: 100%;
     }
-    .profile-avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 4px solid rgba(255,255,255,0.2);
-      object-fit: cover;
+    .product-list {
+      max-width: 900px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
     }
-    .profile-user-info {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      color: #fff;
+    .product-card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.3s;
+      cursor: pointer;
     }
-    .profile-name {
-      font-size: 24px;
-      margin-bottom: 5px;
+    .product-card:hover {
+      transform: scale(1.02);
     }
-    .profile-status {
-      color: #4fc3f7;
+    .product-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
       margin-bottom: 10px;
     }
-    /* Блок для отображения Лоты и Отзывы в одну строку – кликабелен */
-    .profile-lots-reviews {
-      font-size: 16px;
-      color: #fff;
-      cursor: pointer;
-      user-select: none;
+    .product-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
     }
-    .profile-lots-reviews span {
-      text-decoration: underline;
-    }
-    /* Коллапсируемые панели */
-    .collapse-panel {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.5s ease;
-      background: rgba(0,0,0,0.7);
-      padding: 0 15px;
-      margin: 10px 20px;
-      border-radius: var(--border-radius);
-    }
-    .collapse-panel.open {
-      /* Достаточно большое значение max-height для вмещания контента */
-      max-height: 300px;
-      padding: 15px 20px;
-    }
-    /* Пример стилей для содержимого панели */
-    .panel-content {
+    .product-card p {
       font-size: 14px;
-      color: #fff;
+      color: #555;
     }
-    /* Блок действий: теперь только кнопка ID */
-    .profile-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      justify-content: center;
-      margin: 20px auto;
-      max-width: 600px;
-    }
-    .profile-actions button {
-      flex: 1;
-      padding: 15px 20px;
-      border: none;
-      border-radius: var(--border-radius);
+    .product-card .price {
+      font-weight: bold;
+      margin-top: 10px;
       font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s, box-shadow 0.3s;
-      color: #fff;
-      min-width: 150px;
-    }
-    .id-btn {
-      background: #555;
-    }
-    .id-btn:hover {
-      background: #777;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    /* Скрытый блок с ID пользователя */
-    .hidden-id {
-      margin: 20px auto;
-      padding: 15px;
-      background: #333;
-      border-radius: var(--border-radius);
-      display: none;
-      max-width: 600px;
-      text-align: center;
-    }
-    /* Модальные окна (аватар и фон) */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.6);
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-content {
-      background: var(--card-bg);
-      border-radius: var(--border-radius);
-      padding: 20px;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      position: relative;
-    }
-    .close-modal {
-      position: absolute;
-      right: 15px;
-      top: 10px;
-      font-size: 24px;
-      cursor: pointer;
-    }
-    .custom-file-upload {
-      display: inline-block;
-      padding: 10px 20px;
-      cursor: pointer;
-      background: var(--accent-color);
-      color: #fff;
-      border-radius: 6px;
-      transition: background 0.3s;
-      margin-bottom: 15px;
-    }
-    .custom-file-upload:hover {
-      background: var(--accent-hover);
-    }
-    .modal input[type="file"] {
-      display: none;
-    }
-    .upload-preview {
-      margin-top: 15px;
-    }
-    .upload-preview img {
-      width: 100px;
-      height: 100px;
-      border-radius: 6px;
-      border: 3px solid var(--accent-color);
-      object-fit: cover;
-    }
-    /* Нижняя панель (мобильная навигация) */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      background: var(--header-bg);
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0;
-      box-shadow: 0 -4px 10px rgba(0,0,0,0.6);
-      z-index: 20;
-    }
-    .bottom-nav a {
-      text-decoration: none;
-      color: var(--text-color);
-      text-align: center;
-      flex-grow: 1;
-      font-size: 14px;
-    }
-    .bottom-nav a i {
-      display: block;
-      font-size: 22px;
-      margin-bottom: 2px;
-    }
-    @media (min-width: 768px) {
-      .bottom-nav { display: none; }
-    }
-    /* Боковая панель (гамбургер-меню) */
-    .hamburger-menu {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 250px;
-      height: 100%;
-      background: var(--card-bg);
-      box-shadow: -4px 0 10px rgba(0,0,0,0.6);
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      z-index: 30;
-      padding: 20px;
-    }
-    .hamburger-menu.open {
-      transform: translateX(0);
-    }
-    .hamburger-menu h3 {
-      margin-bottom: 20px;
-      color: var(--accent-color);
-      text-align: center;
-    }
-    .menu-item {
-      padding: 10px;
-      border-bottom: 1px solid #333;
-      cursor: pointer;
-      transition: background 0.3s;
-      font-size: 16px;
-      color: #fff;
-    }
-    .menu-item:hover {
-      background: #222;
-    }
-    /* Анимация появления */
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    /* Мобильная оптимизация: на узких экранах блок действий переходит в колонку */
-    @media (max-width: 480px) {
-      .profile-actions {
-        flex-direction: column;
-      }
+      color: #ff4500;
     }
   </style>
 </head>
 <body>
-  <!-- Верхний хедер -->
-  <header>
-    <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
-    <button class="hamburger-btn" id="hamburgerBtn">
-      <i class="fas fa-bars"></i>
-    </button>
-  </header>
-  
-  <!-- Боковая панель (гамбургер-меню) -->
-  <aside class="hamburger-menu" id="hamburgerMenu">
-    <h3>Меню</h3>
-    <!-- Пункт меню с балансом -->
-    <div class="menu-item" onclick="alert('Ваш баланс: ' + document.getElementById('balanceAmount').innerText + ' ₽')">
-      Баланс: <span id="balanceAmountDisplay">0</span> ₽
-    </div>
-    <div class="menu-item" onclick="payAndUploadAvatar()">Загрузить аватар (100₽)</div>
-    <div class="menu-item" onclick="payAndUploadBackground()">Загрузить фон (100₽)</div>
-    <div class="menu-item" onclick="editProfile()">Редактировать профиль</div>
-    <div class="menu-item" onclick="logout()">Выйти</div>
-  </aside>
-  
-  <!-- Баннер профиля -->
-  <section class="profile-banner">
-    <div class="profile-banner-bg" id="profileBannerBg"></div>
-    <div class="profile-banner-content">
-      <img id="profileAvatar" src="default-avatar.png" alt="Avatar" class="profile-avatar">
-      <div class="profile-user-info">
-        <h1 class="profile-name" id="profileNickname">Загрузка...</h1>
-        <div class="profile-status" id="profileStatus">Онлайн</div>
-        <!-- Одна строка для Лоты и Отзывы; по клику открывается соответствующая панель -->
-        <div class="profile-lots-reviews">
-          Лоты <span id="lotsCount" onclick="togglePanel('lotsPanel')">0</span> | 
-          Отзывы <span id="reviewsCount" onclick="togglePanel('reviewsPanel')">0</span>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Панель для Лотов (скрыта по умолчанию) -->
-  <div id="lotsPanel" class="collapse-panel">
-    <div class="panel-content">
-      <!-- Здесь разместите информацию о лотах -->
-      <p>Список лотов будет здесь...</p>
-      <button onclick="togglePanel('lotsPanel')">Закрыть</button>
-    </div>
+  <h1>Все товары</h1>
+  <div class="product-list" id="productList">
+    <!-- Товары будут загружаться сюда -->
   </div>
 
-  <!-- Панель для Отзывов (скрыта по умолчанию) -->
-  <div id="reviewsPanel" class="collapse-panel">
-    <div class="panel-content">
-      <!-- Здесь разместите отзывы -->
-      <p>Список отзывов будет здесь...</p>
-      <button onclick="togglePanel('reviewsPanel')">Закрыть</button>
-    </div>
-  </div>
-  
-  <!-- Блок действий: только кнопка ID -->
-  <section class="profile-actions">
-    <button class="id-btn" id="toggleIdBtn">Показать ID</button>
-  </section>
-  
-  <!-- Скрытый блок с ID пользователя -->
-  <div class="hidden-id" id="userIdContainer">
-    <p>ID пользователя: <span id="userIdDisplay"></span></p>
-  </div>
-  
-  <!-- Модальное окно для загрузки аватара -->
-  <div id="avatarModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeModal('avatarModal')">&times;</span>
-      <h3>Загрузить аватар</h3>
-      <label for="modalAvatarInput" class="custom-file-upload">
-        <i class="fas fa-cloud-upload-alt"></i> Выберите файл
-      </label>
-      <input type="file" id="modalAvatarInput" accept="image/*">
-      <br>
-      <button id="modalUploadBtn" style="margin-top:15px; padding:10px 20px; background: var(--accent-color); border: none; border-radius:6px; color:#fff; cursor:pointer;">
-        Загрузить
-      </button>
-      <div class="upload-preview" id="modalUploadPreview"></div>
-    </div>
-  </div>
-  
-  <!-- Модальное окно для загрузки фонового изображения -->
-  <div id="backgroundModal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" onclick="closeModal('backgroundModal')">&times;</span>
-      <h3>Загрузить фон</h3>
-      <label for="modalBackgroundInput" class="custom-file-upload">
-        <i class="fas fa-image"></i> Выберите файл
-      </label>
-      <input type="file" id="modalBackgroundInput" accept="image/*">
-      <br>
-      <button id="modalBackgroundUploadBtn" style="margin-top:15px; padding:10px 20px; background: var(--accent-color); border: none; border-radius:6px; color:#fff; cursor:pointer;">
-        Загрузить
-      </button>
-      <div class="upload-preview" id="modalBackgroundPreview"></div>
-    </div>
-  </div>
-  
-  <!-- Нижняя панель (мобильная навигация) -->
-  <div class="bottom-nav">
-    <a href="index.html">
-      <i class="fas fa-home"></i>
-      <span>Главная</span>
-    </a>
-    <a href="add.html">
-      <i class="fas fa-plus"></i>
-      <span>Продать</span>
-    </a>
-    <a href="chat.html">
-      <i class="fas fa-comments"></i>
-      <span>Чат</span>
-    </a>
-    <a href="profile.html">
-      <i class="fas fa-user"></i>
-      <span>Профиль</span>
-    </a>
-  </div>
-  
   <script>
-    // Функция для переключения (открытия/закрытия) панелей
-    function togglePanel(panelId) {
-      const panel = document.getElementById(panelId);
-      panel.classList.toggle('open');
-    }
-
-    // Инициализация Firebase
+    // Инициализация Firebase (замените на свои данные)
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -461,222 +78,39 @@
     };
     firebase.initializeApp(firebaseConfig);
 
-    // Инициализация Supabase
-    const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
-    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    // Функция для отображения товара
+    function displayProduct(product, key) {
+      const productList = document.getElementById('productList');
+      
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      // При клике на карточку можно перенаправить пользователя на страницу товара (например, product.html?pid=key)
+      card.onclick = () => { window.location.href = `product.html?pid=${key}`; };
 
-    // Проверка авторизации и загрузка профиля
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        loadUserProfile(user);
-      } else {
-        window.location.href = "login.html";
-      }
-    });
+      // Если у товара есть фото (массив photoURLs), выводим первое
+      const imgSrc = product.photoURLs && product.photoURLs.length ? product.photoURLs[0] : 'default-product.jpg';
 
-    // Загрузка данных профиля
-    async function loadUserProfile(user) {
-      const userId = user.uid;
-      document.getElementById('userIdDisplay').innerText = userId;
-
-      // Пример статистики – здесь можно подгрузить реальные данные
-      document.getElementById('lotsCount').textContent = 0;
-      document.getElementById('reviewsCount').textContent = 0;
-
-      const snapshot = await firebase.database().ref('users/' + userId).once('value');
-      let userData = snapshot.val();
-      if (!userData) return;
-
-      // Никнейм
-      document.getElementById('profileNickname').innerText = userData.nickname || "Без ника";
-
-      // Баланс (скрыт в div#balanceAmount, выводим через гамбургер)
-      let balance = userData.balance || "0";
-      document.getElementById('balanceAmountDisplay').innerText = balance;
-      if(!document.getElementById('balanceAmount')) {
-        let hidden = document.createElement('div');
-        hidden.id = 'balanceAmount';
-        hidden.style.display = 'none';
-        hidden.innerText = balance;
-        document.body.appendChild(hidden);
-      } else {
-        document.getElementById('balanceAmount').innerText = balance;
-      }
-
-      // Аватар
-      let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
-      document.getElementById('profileAvatar').src = avatarUrl;
-
-      // Фон – если нет, подставляем дефолтное изображение
-      let bgUrl = userData.backgroundImage || 'default-bg.jpg';
-      document.getElementById('profileBannerBg').style.backgroundImage = `url(${bgUrl})`;
-
-      // Статус (пример)
-      let isOnline = userData.online !== undefined ? userData.online : true;
-      document.getElementById('profileStatus').innerText = isOnline ? "Онлайн" : "Оффлайн";
+      card.innerHTML = `
+        <img src="${imgSrc}" alt="${product.name}">
+        <h3>${product.name}</h3>
+        <p>${product.description.substring(0, 100)}...</p>
+        <div class="price">${product.price} ₽</div>
+      `;
+      productList.appendChild(card);
     }
 
-    // Переключатель видимости блока с ID
-    const toggleBtn = document.getElementById('toggleIdBtn');
-    const userIdContainer = document.getElementById('userIdContainer');
-    toggleBtn.addEventListener('click', () => {
-      if (userIdContainer.style.display === "none" || userIdContainer.style.display === "") {
-        userIdContainer.style.display = "block";
-        toggleBtn.innerText = "Скрыть ID";
-      } else {
-        userIdContainer.style.display = "none";
-        toggleBtn.innerText = "Показать ID";
-      }
-    });
-
-    // Закрытие модальных окон
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = "none";
-      if(modalId === 'avatarModal') {
-        document.getElementById('modalUploadPreview').innerHTML = "";
-        document.getElementById('modalAvatarInput').value = "";
-      } else if(modalId === 'backgroundModal') {
-        document.getElementById('modalBackgroundPreview').innerHTML = "";
-        document.getElementById('modalBackgroundInput').value = "";
-      }
-    }
-
-    // Функция списания средств
-    async function deductAmount(amount) {
-      const user = firebase.auth().currentUser;
-      if(!user) return false;
-      const userId = user.uid;
-      const ref = firebase.database().ref('users/' + userId);
-      const snapshot = await ref.once('value');
-      let userData = snapshot.val();
-      let currentBalance = parseFloat(userData.balance || 0);
-      if(currentBalance < amount) {
-        alert('Недостаточно средств для выполнения операции.');
-        return false;
-      }
-      let newBalance = currentBalance - amount;
-      await ref.update({ balance: newBalance });
-      return true;
-    }
-
-    // Платная функция загрузки аватара
-    function payAndUploadAvatar() {
-      deductAmount(100).then(success => {
-        if(success) {
-          openModal('avatarModal');
-        }
-      });
-    }
-
-    // Платная функция загрузки фонового изображения
-    function payAndUploadBackground() {
-      deductAmount(100).then(success => {
-        if(success) {
-          openModal('backgroundModal');
-        }
-      });
-    }
-
-    // Открытие модального окна
-    function openModal(modalId) {
-      document.getElementById(modalId).style.display = "flex";
-    }
-
-    // Обработчик загрузки аватара
-    document.getElementById('modalUploadBtn').addEventListener('click', async () => {
-      const fileInput = document.getElementById('modalAvatarInput');
-      const file = fileInput.files[0];
-      if (!file) {
-        alert('Пожалуйста, выберите изображение для загрузки.');
-        return;
-      }
-
-      const bucketName = 'avatars';
-      const filePath = `${Date.now()}_${file.name}`;
-
-      const { data, error } = await supabaseClient.storage
-        .from(bucketName)
-        .upload(filePath, file);
-
-      if (error) {
-        alert('Ошибка загрузки: ' + JSON.stringify(error));
-        return;
-      }
-
-      const { data: publicData } = await supabaseClient.storage
-        .from(bucketName)
-        .getPublicUrl(filePath);
-
-      if (publicData && publicData.publicUrl) {
-        document.getElementById('profileAvatar').src = publicData.publicUrl;
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
-          avatar: publicData.publicUrl
-        }).then(() => {
-          alert('Аватар успешно обновлён!');
-          closeModal('avatarModal');
-        }).catch(err => {
-          console.error('Ошибка обновления профиля в Firebase:', err);
+    // Загружаем товары из узла 'products'
+    firebase.database().ref('products').once('value')
+      .then(snapshot => {
+        snapshot.forEach(childSnapshot => {
+          const key = childSnapshot.key;
+          const product = childSnapshot.val();
+          displayProduct(product, key);
         });
-      } else {
-        alert('Не удалось получить публичный URL загруженного файла.');
-      }
-    });
-
-    // Обработчик загрузки фонового изображения
-    document.getElementById('modalBackgroundUploadBtn').addEventListener('click', async () => {
-      const fileInput = document.getElementById('modalBackgroundInput');
-      const file = fileInput.files[0];
-      if (!file) {
-        alert('Пожалуйста, выберите изображение для загрузки.');
-        return;
-      }
-
-      const bucketName = 'avatars';
-      const filePath = `${Date.now()}_${file.name}`;
-
-      const { data, error } = await supabaseClient.storage
-        .from(bucketName)
-        .upload(filePath, file);
-
-      if (error) {
-        alert('Ошибка загрузки: ' + JSON.stringify(error));
-        return;
-      }
-
-      const { data: publicData } = await supabaseClient.storage
-        .from(bucketName)
-        .getPublicUrl(filePath);
-
-      if (publicData && publicData.publicUrl) {
-        document.getElementById('profileBannerBg').style.backgroundImage = `url(${publicData.publicUrl})`;
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
-          backgroundImage: publicData.publicUrl
-        }).then(() => {
-          alert('Фон успешно обновлён!');
-          closeModal('backgroundModal');
-        }).catch(err => {
-          console.error('Ошибка обновления фона в Firebase:', err);
-        });
-      } else {
-        alert('Не удалось получить публичный URL загруженного файла.');
-      }
-    });
-
-    // Функции редактирования профиля и выхода
-    function editProfile() { alert('Редактирование профиля'); }
-    function logout() {
-      firebase.auth().signOut().then(() => {
-        window.location.href = "login.html";
+      })
+      .catch(error => {
+        console.error("Ошибка загрузки товаров:", error);
       });
-    }
-
-    // Открытие/закрытие гамбургер-меню
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const hamburgerMenu = document.getElementById('hamburgerMenu');
-    hamburgerBtn.addEventListener('click', () => {
-      hamburgerMenu.classList.toggle('open');
-    });
   </script>
 </body>
 </html>

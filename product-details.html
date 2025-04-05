@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
   <style>
-    /* Общие стили, как на главной */
+    /* Общие стили */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -61,7 +61,7 @@
       transform: scale(1.05);
     }
     
-    /* Новый вертикальный порядок: сначала информация о товаре, затем форма заказа */
+    /* Оформление заказа */
     .checkout-container {
       background: #1e1e1e;
       border-radius: 12px;
@@ -347,8 +347,7 @@
     </div>
   </div>
   
-  <!-- Модальное окно просмотра аккаунта продавца (удалено, так как при нажатии на продавца происходит переход) -->
-  
+  <!-- Скрипты -->
   <script>
     // Инициализация Firebase (замените на свои данные)
     var firebaseConfig = {
@@ -509,7 +508,7 @@
       openModal();
     });
 
-    // Подтверждение покупки
+    // Подтверждение покупки с последующим перенаправлением в чат с продавцом
     function confirmPurchase() {
       closeModal();
       processPaymentWithBalance()
@@ -552,7 +551,8 @@
                       firebase.database().ref('products/' + productId).remove()
                         .then(() => {
                           console.log("Товар удалён после покупки.");
-                          showSensitiveData();
+                          // Перенаправление в чат с продавцом с передачей orderId для идентификации чата
+                          window.location.href = "chat.html?seller=" + currentSeller + "&orderId=" + orderId;
                         })
                         .catch(err => {
                           console.error("Ошибка при удалении товара:", err);
@@ -580,7 +580,7 @@
         });
     }
 
-    // Функция показа зашифрованных данных товара для покупателя
+    // Функция показа зашифрованных данных товара (если требуется)
     function showSensitiveData() {
       const productId = getParameterByName('id');
       firebase.database().ref('products/' + productId).once('value')
@@ -608,7 +608,6 @@
 
     // Функция для перехода на страницу просмотра аккаунта продавца
     function openSellerModal() {
-      // Перенаправляем на страницу seller.html с передачей идентификатора продавца
       window.location.href = "seller.html?id=" + currentSeller;
     }
   </script>

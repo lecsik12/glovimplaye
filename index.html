@@ -140,7 +140,7 @@
       gap: 15px;
     }
     .chat-icon, .notifications-icon {
-      color: #fffffb;
+      color: #ebebeb;
       font-size: 1.2em;
       transition: transform 0.3s;
     }
@@ -167,7 +167,7 @@
         top: 10px;
         right: 10px;
         font-size: 1.8em;
-        color: #f0ebeb;
+        color: #ffffff;
         cursor: pointer;
       }
     }
@@ -512,7 +512,7 @@
       </div>
       <!-- Правый блок: для ПК -->
       <div class="header-right">
-        <a href="chat.html" class="chat-icon" title="Чат"><i class="fas fa-comments"></i></a>
+        <a href="chat.html" class="fas fa-comment-dots" title="Чат"><i class=""></i></a>
         <a href="notifications.html" class="notifications-icon" title="Уведомления"><i class="fas fa-bell"></i></a>
         <a href="profile.html" class="profile">
           <img id="headerProfileAvatar" src="default-avatar.png" alt="Profile">
@@ -528,14 +528,7 @@
   <!-- Фиксированный блок результатов поиска -->
   <div class="search-results" id="search-results"></div>
 
-  <!-- Hero секция без видео -->
-  <section class="hero-section">
-    <div class="container">
-      <h1>GlovimPlaye – безопасный маркетплейс</h1>
-      <p>Покупайте и продавайте с уверенностью!</p>
-      <a href="index.html" class="cta-btn">Начать сейчас</a>
-    </div>
-  </section>
+
 
   <!-- События в играх -->
   <section class="events-section container">
@@ -598,10 +591,23 @@
       </div>
     </div>
   </section>
+
+
+
+
+
+
+
+
   
   <!-- Основной контент -->
   <div class="container">
-    <h2 class="section-title">Игры</h2>
+    <h2 class="section-title">
+      Игры 
+      <a href="sell.html" class="arrow-link">
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </h2>
     <div class="horizontal-scroll">
       <div class="game-card" onclick="location.href='csgo.html'">
         <img src="images/csgo.jpg" alt="Counter-Strike">
@@ -619,7 +625,7 @@
         <img src="images/fortna.jpg" alt="Fortnite">
         <div class="game-name">Fortnite</div>
       </div>
-      <div class="game-card" onclick="location.href='dota2.html'">
+      <div class="game-card" onclick="location.href='dota.html'">
         <img src="images/dota.jpg" alt="Dota 2">
         <div class="game-name">Dota 2</div>
       </div>
@@ -629,7 +635,12 @@
       </div>
     </div>
     
-    <h2 class="section-title">Мобильные игры</h2>
+    <h2 class="section-title">
+      Игры для мобильных
+      <a href="sell.html" class="arrow-link">
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </h2>
     <div class="horizontal-scroll">
       <div class="game-card" onclick="location.href='pubg-mobile.html'">
         <img src="images/pabg mobael.jpg" alt="PUBG Mobile">
@@ -645,7 +656,12 @@
       </div>
     </div>
     
-    <h2 class="section-title">Приложения</h2>
+    <h2 class="section-title">
+      Приложения
+      <a href="sell.html" class="arrow-link">
+        <i class="fas fa-arrow-right"></i>
+      </a>
+    </h2>
     <div class="horizontal-scroll">
       <div class="game-card" onclick="location.href='discord.html'">
         <img src="images/diccord.jpg" alt="Discord">
