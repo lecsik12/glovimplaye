@@ -52,6 +52,7 @@
       display: flex;
       overflow: hidden;
     }
+    /* Сайдбар – здесь только поле поиска и результаты */
     .sidebar {
       width: 300px;
       background: #2a2a2a;
@@ -104,6 +105,7 @@
       font-weight: bold;
       color: #fff;
     }
+    /* Чат – правая панель */
     .chat-main {
       flex: 1;
       display: flex;
@@ -211,13 +213,13 @@
   </header>
 
   <div class="chat-container">
-    <!-- Сайдбар: список пользователей -->
+    <!-- Сайдбар: только поиск, без списка по умолчанию -->
     <div class="sidebar">
       <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Поиск по нику..." />
+        <input type="text" id="searchInput" placeholder="Введите ник для поиска..." />
       </div>
       <div class="user-list" id="userList">
-        <!-- Список пользователей загружается сюда -->
+        <!-- Результаты поиска появятся здесь -->
       </div>
     </div>
     <!-- Чат -->
@@ -229,7 +231,7 @@
       <div class="messages" id="messages">
         <div class="no-chat-selected" id="noChatSelected">
           <i class="fas fa-comments" style="font-size:50px; color:#4fc3f7;"></i>
-          <p>Выберите диалог для начала общения</p>
+          <p>Найдите собеседника по нику</p>
         </div>
       </div>
       <div class="chat-input" id="chatInput" style="display: none;">
@@ -259,41 +261,49 @@
     let currentUser = null;
     let selectedUserId = null;
     let chatRoomId = null;
-    let usersData = [];
+    let usersData = []; // локальный массив найденных пользователей
 
-    // Проверка авторизации (при отсутствии выполняется анонимный вход)
+    // Проверка авторизации: если пользователь не авторизован, выполняется анонимный вход
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
         firebase.auth().signInAnonymously().catch(err => console.error("Ошибка анонимного входа:", err));
       } else {
         currentUser = user;
-        loadUsers();
       }
     });
 
-    // Загрузка списка пользователей с профилями (ник и аватар)
-    function loadUsers() {
-      const userListDiv = document.getElementById("userList");
-      firebase.database().ref("users").on("value", snapshot => {
+    // Поиск пользователей по нику – при вводе текста выполняется запрос ко всем аккаунтам,
+    // затем результаты фильтруются и выводятся в блоке .user-list.
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      if(query === "") {
+        document.getElementById("userList").innerHTML = "";
+        return;
+      }
+      // Получаем всех пользователей из базы и фильтруем по nickname
+      firebase.database().ref("users").once("value", snapshot => {
         usersData = [];
-        userListDiv.innerHTML = "";
         snapshot.forEach(childSnap => {
           const uid = childSnap.key;
-          if (uid === currentUser.uid) return; // Исключаем себя
+          if(uid === currentUser.uid) return; // Исключаем себя
           const userObj = childSnap.val();
           userObj.uid = uid;
-          usersData.push(userObj);
+          // Если nickname содержит искомый текст, добавляем в массив
+          if((userObj.nickname || "").toLowerCase().includes(query)) {
+            usersData.push(userObj);
+          }
         });
         renderUserList(usersData);
       });
-    }
+    });
 
-    // Отображение списка пользователей с учетом фильтрации по нику
+    // Отображение результатов поиска
     function renderUserList(users) {
       const userListDiv = document.getElementById("userList");
       userListDiv.innerHTML = "";
-      if (users.length === 0) {
-        userListDiv.innerHTML = "<p style='padding:10px;'>Нет пользователей</p>";
+      if(users.length === 0) {
+        userListDiv.innerHTML = "<p style='padding:10px;'>Ничего не найдено</p>";
         return;
       }
       users.forEach(userObj => {
@@ -310,20 +320,26 @@
       });
     }
 
-    // Функция выбора собеседника
+    // Выбор собеседника по клику на результат поиска
     function selectUser(uid, nickname, avatar) {
       selectedUserId = uid;
+      // Формируем уникальный идентификатор чата
       chatRoomId = currentUser.uid < selectedUserId ? currentUser.uid + "_" + selectedUserId : selectedUserId + "_" + currentUser.uid;
       
+      // Очищаем блок результатов поиска
+      document.getElementById("userList").innerHTML = "";
+      searchInput.value = "";
+      
+      // Отображаем шапку чата с данными собеседника
       document.getElementById("chatHeader").style.display = "flex";
       document.getElementById("chatTitle").innerText = nickname;
       document.getElementById("chatAvatar").src = avatar || "default-avatar.png";
       document.getElementById("chatInput").style.display = "flex";
       document.getElementById("noChatSelected").style.display = "none";
 
+      // Очищаем окно сообщений и подписываемся на чат
       const messagesDiv = document.getElementById("messages");
       messagesDiv.innerHTML = "";
-      
       firebase.database().ref("chats/" + chatRoomId).off();
       firebase.database().ref("chats/" + chatRoomId).on("child_added", snapshot => {
         const msg = snapshot.val();
@@ -331,12 +347,12 @@
       });
     }
 
-    // Отображение одного сообщения
+    // Отображение сообщения в чате
     function displayMessage(msg) {
       const messagesDiv = document.getElementById("messages");
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
-      if (msg.sender === currentUser.uid) {
+      if(msg.sender === currentUser.uid) {
         messageDiv.classList.add("self");
       }
       const timeString = new Date(msg.timestamp || Date.now()).toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"});
@@ -356,7 +372,7 @@
     function sendMessage() {
       const input = document.getElementById("messageInput");
       const text = input.value.trim();
-      if (!text || !chatRoomId) return;
+      if(!text || !chatRoomId) return;
       const messageData = {
         sender: currentUser.uid,
         text: text,
@@ -365,14 +381,6 @@
       firebase.database().ref("chats/" + chatRoomId).push(messageData);
       input.value = "";
     }
-
-    // Поиск пользователей по нику: фильтрация локального массива usersData
-    const searchInput = document.getElementById("searchInput");
-    searchInput.addEventListener("input", () => {
-      const query = searchInput.value.toLowerCase();
-      const filteredUsers = usersData.filter(userObj => (userObj.nickname || "").toLowerCase().includes(query));
-      renderUserList(filteredUsers);
-    });
   </script>
 </body>
 </html>

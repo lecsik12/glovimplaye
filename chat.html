@@ -1,87 +1,275 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Чат | GlovimPlaye</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-  
+
+  <!-- Font Awesome для иконок -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+  />
+
   <style>
-    /* Стили для страницы чата */
-    body { font-family: 'Montserrat', sans-serif; background: #0e0e0e; color: #ccc; margin:0; padding:0; }
-    header { background: #161616; padding: 15px 20px; text-align: center; position: sticky; top: 0; z-index: 10; }
-    .logo { font-size: 28px; font-weight: 600; color: #4fc3f7; cursor: pointer; }
+    :root {
+      --bg-color: #0e0e0e;
+      --header-bg: #161616;
+      --accent-color: #4fc3f7;
+      --text-color: #ccc;
+      --card-bg: #1e1e1e;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Montserrat", sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    header {
+      background: var(--header-bg);
+      padding: 15px 20px;
+      text-align: center;
+      border-bottom: 1px solid #333;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent-color);
+      cursor: pointer;
+    }
     .chat-container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
-      background: #1e1e1e;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+    /* Левая панель */
+    .sidebar {
+      width: 300px;
+      background: #2a2a2a;
+      border-right: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Поиск + результаты */
+    .search-bar {
+      padding: 10px;
+      background: #2a2a2a;
+      border-bottom: 1px solid #333;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      background: #3a3a3a;
+      color: var(--text-color);
+      outline: none;
+    }
+    .search-results {
+      background: #2a2a2a;
+      border-top: 1px solid #333;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .search-item {
+      padding: 8px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .search-item:hover {
+      background: #3a3a3a;
+    }
+    /* Список последних чатов */
+    .recent-chats {
+      flex: 1;
+      overflow-y: auto;
+    }
+    .chat-user-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .chat-user-item:hover {
+      background: #3a3a3a;
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+      background: #555;
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .user-name {
+      font-weight: bold;
+      color: #fff;
+    }
+    /* Правая часть (чат) */
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-header {
+      background: #2a2a2a;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+    .chat-header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 10px;
+      background: #555;
+    }
+    .chat-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
     }
     .messages {
-      height: 400px;
-      overflow-y: scroll;
-      border: 1px solid #333;
-      padding: 10px;
-      margin-bottom: 20px;
+      flex: 1;
+      padding: 10px 20px;
+      overflow-y: auto;
+      background: var(--card-bg);
+      display: flex;
+      flex-direction: column;
     }
-    .message { margin-bottom: 10px; }
-    .message.self { text-align: right; }
-    .message .text {
-      display: inline-block;
+    .no-chat-selected {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #777;
+      flex-direction: column;
+      text-align: center;
+    }
+    .message {
+      max-width: 60%;
+      margin-bottom: 10px;
+      word-wrap: break-word;
+    }
+    .message .bubble {
+      background: #3a3a3a;
       padding: 10px;
       border-radius: 8px;
-      background: #4fc3f7;
-      color: #0e0e0e;
-      max-width: 70%;
+      display: inline-block;
     }
-    .message.self .text { background: #80deea; }
-    form { display: flex; }
-    input[type="text"] {
-      flex-grow: 1;
+    .message.self {
+      align-self: flex-end;
+      text-align: right;
+    }
+    .message.self .bubble {
+      background: var(--accent-color);
+      color: var(--bg-color);
+    }
+    .timestamp {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+    .chat-input {
+      display: flex;
+      padding: 10px 20px;
+      background: #2a2a2a;
+      border-top: 1px solid #333;
+    }
+    .chat-input input {
+      flex: 1;
       padding: 10px;
       border: none;
       border-radius: 4px;
+      background: #3a3a3a;
+      color: var(--text-color);
+      outline: none;
     }
-    button {
+    .chat-input button {
+      margin-left: 10px;
       padding: 10px 20px;
       border: none;
       border-radius: 4px;
-      background: #4fc3f7;
-      color: #0e0e0e;
-      margin-left: 10px;
+      background: var(--accent-color);
+      color: var(--bg-color);
       cursor: pointer;
+      transition: background 0.3s;
     }
-    footer { background: #161616; padding: 20px; text-align: center; color: #aaa; margin-top: 20px; }
+    .chat-input button:hover {
+      background: #80deea;
+    }
+    footer {
+      background: var(--header-bg);
+      text-align: center;
+      padding: 10px;
+      color: #aaa;
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
   </header>
-  
+
   <div class="chat-container">
-    <div class="messages" id="messages"></div>
-    <form id="messageForm">
-      <input type="text" id="messageInput" placeholder="Введите сообщение..." autocomplete="off" required>
-      <button type="submit">Отправить</button>
-    </form>
+    <!-- Левая панель: поиск + последние чаты -->
+    <div class="sidebar">
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Введите ник..." />
+        <div class="search-results" id="searchResults" style="display:none;"></div>
+      </div>
+      <div class="recent-chats" id="recentChatsList">
+        <!-- Список «последних чатов» (пока пуст) -->
+      </div>
+    </div>
+    
+    <!-- Правая часть: чат -->
+    <div class="chat-main">
+      <div class="chat-header" id="chatHeader" style="display: none;">
+        <img src="default-avatar.png" id="chatAvatar" alt="Аватар">
+        <div class="chat-title" id="chatTitle">Имя собеседника</div>
+      </div>
+      <div class="messages" id="messages">
+        <div class="no-chat-selected" id="noChatSelected">
+          <i class="fas fa-comments" style="font-size:50px; color:#4fc3f7;"></i>
+          <p>Найдите собеседника по нику<br>После отправки сообщения он появится в списке слева</p>
+        </div>
+      </div>
+      <div class="chat-input" id="chatInput" style="display: none;">
+        <input type="text" id="messageInput" placeholder="Введите сообщение..." />
+        <button id="sendBtn">Отправить</button>
+      </div>
+    </div>
   </div>
-  
+
   <footer>
     <p>© 2025 GlovimPlaye. Все права защищены.</p>
   </footer>
-  
+
   <script>
-    // Инициализация Firebase
+    // Инициализация Firebase (замените на свои данные)
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -93,76 +281,162 @@
     };
     firebase.initializeApp(firebaseConfig);
 
-    // Проверка авторизации
-    firebase.auth().onAuthStateChanged(function(user) {
+    let currentUser = null;
+    let selectedUserId = null;
+    let chatRoomId = null;
+
+    // Массив «последних чатов» (пользователи, которым мы уже писали)
+    let recentChats = [];
+
+    // При загрузке страницы проверяем авторизацию
+    firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
-        window.location.href = "login.html";
+        // Анонимный вход
+        firebase.auth().signInAnonymously().catch(err => console.error("Ошибка анонимного входа:", err));
       } else {
-        initChat();
+        currentUser = user;
       }
     });
 
-    // Функция получения GET-параметров
-    function getParameterByName(name, url = window.location.href) {
-      name = name.replace(/[\[\]]/g, '\\$&');
-      var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-          results = regex.exec(url);
-      if (!results) return null;
-      if (!results[2]) return '';
-      return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    // Поиск по нику – при вводе запроса делаем запрос в Firebase и фильтруем
+    const searchInput = document.getElementById("searchInput");
+    const searchResultsDiv = document.getElementById("searchResults");
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      if(!query) {
+        searchResultsDiv.style.display = "none";
+        searchResultsDiv.innerHTML = "";
+        return;
+      }
+      firebase.database().ref("users").once("value", snapshot => {
+        let found = [];
+        snapshot.forEach(childSnap => {
+          const uid = childSnap.key;
+          // Пропускаем себя
+          if(uid === (currentUser && currentUser.uid)) return;
+          const userObj = childSnap.val();
+          userObj.uid = uid;
+          if((userObj.nickname || "").toLowerCase().includes(query)) {
+            found.push(userObj);
+          }
+        });
+        renderSearchResults(found);
+      });
+    });
+
+    // Отображение результатов поиска
+    function renderSearchResults(users) {
+      searchResultsDiv.innerHTML = "";
+      if(users.length === 0) {
+        searchResultsDiv.innerHTML = "<div style='padding:8px;'>Ничего не найдено</div>";
+        searchResultsDiv.style.display = "block";
+        return;
+      }
+      users.forEach(userObj => {
+        const divItem = document.createElement("div");
+        divItem.classList.add("search-item");
+        divItem.innerHTML = userObj.nickname || "Без ника";
+        divItem.addEventListener("click", () => {
+          selectUser(userObj.uid, userObj.nickname, userObj.avatar);
+          // Скрываем результаты
+          searchResultsDiv.style.display = "none";
+          searchResultsDiv.innerHTML = "";
+          searchInput.value = "";
+        });
+        searchResultsDiv.appendChild(divItem);
+      });
+      searchResultsDiv.style.display = "block";
     }
 
-    let chatRoomId;
-    let currentUser;
-    let sellerId = getParameterByName('seller');
-    let orderId = getParameterByName('orderId');
+    // Выбор собеседника
+    function selectUser(uid, nickname, avatar) {
+      selectedUserId = uid;
+      chatRoomId = currentUser.uid < uid ? currentUser.uid + "_" + uid : uid + "_" + currentUser.uid;
 
-    function initChat() {
-      currentUser = firebase.auth().currentUser;
-      // Определяем уникальный идентификатор чата: если передан orderId, используем его, иначе формируем на основе uid пользователей
-      if (orderId) {
-        chatRoomId = orderId;
-      } else {
-        chatRoomId = currentUser.uid < sellerId ? currentUser.uid + "_" + sellerId : sellerId + "_" + currentUser.uid;
-      }
-      // Подписка на новые сообщения в чате
-      const messagesRef = firebase.database().ref('chats/' + chatRoomId);
-      messagesRef.on('child_added', function(snapshot) {
-        const message = snapshot.val();
-        displayMessage(message);
+      document.getElementById("chatHeader").style.display = "flex";
+      document.getElementById("chatTitle").innerText = nickname;
+      document.getElementById("chatAvatar").src = avatar || "default-avatar.png";
+      document.getElementById("chatInput").style.display = "flex";
+      document.getElementById("noChatSelected").style.display = "none";
+
+      // Очищаем окно сообщений
+      const messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML = "";
+
+      // Снимаем старый слушатель, подписываемся на новый чат
+      firebase.database().ref("chats/" + chatRoomId).off();
+      firebase.database().ref("chats/" + chatRoomId).on("child_added", (snapshot) => {
+        const msg = snapshot.val();
+        displayMessage(msg);
       });
     }
 
-    // Обработка отправки сообщения
-    document.getElementById("messageForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const messageInput = document.getElementById("messageInput");
-      const text = messageInput.value;
-      if (text.trim() === "") return;
+    // Отображение сообщения
+    function displayMessage(msg) {
+      const messagesDiv = document.getElementById("messages");
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message");
+      if(msg.sender === (currentUser && currentUser.uid)) {
+        messageDiv.classList.add("self");
+      }
+      const timeString = new Date(msg.timestamp || Date.now()).toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"});
+      messageDiv.innerHTML = `
+        <div class="bubble">${msg.text}</div>
+        <div class="timestamp">${timeString}</div>
+      `;
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Кнопка отправки сообщения
+    document.getElementById("sendBtn").addEventListener("click", sendMessage);
+    document.getElementById("messageInput").addEventListener("keypress", e => {
+      if(e.key === "Enter") sendMessage();
+    });
+
+    function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const text = input.value.trim();
+      if(!text || !chatRoomId) return;
       const messageData = {
         sender: currentUser.uid,
         text: text,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
-      firebase.database().ref('chats/' + chatRoomId).push(messageData);
-      messageInput.value = "";
-    });
+      firebase.database().ref("chats/" + chatRoomId).push(messageData);
+      input.value = "";
 
-    // Отображение сообщения на экране
-    function displayMessage(message) {
-      const messagesDiv = document.getElementById("messages");
-      const messageDiv = document.createElement("div");
-      messageDiv.classList.add("message");
-      if (message.sender === currentUser.uid) {
-        messageDiv.classList.add("self");
+      // Добавляем собеседника в «последние чаты», если его там ещё нет
+      if(!recentChats.find(u => u.uid === selectedUserId)) {
+        // Нужно получить ещё раз его данные, чтобы отобразить в списке
+        firebase.database().ref("users/" + selectedUserId).once("value", snap => {
+          const userData = snap.val() || {};
+          userData.uid = selectedUserId;
+          recentChats.push(userData);
+          renderRecentChats();
+        });
       }
-      const textDiv = document.createElement("div");
-      textDiv.classList.add("text");
-      textDiv.innerText = message.text;
-      messageDiv.appendChild(textDiv);
-      messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }
+
+    // Отображение «последних чатов» в левой колонке
+    function renderRecentChats() {
+      const recentChatsList = document.getElementById("recentChatsList");
+      recentChatsList.innerHTML = "";
+      // Последние чаты в порядке добавления (при желании можно менять логику сортировки)
+      recentChats.forEach(userObj => {
+        const item = document.createElement("div");
+        item.classList.add("chat-user-item");
+        item.addEventListener("click", () => selectUser(userObj.uid, userObj.nickname, userObj.avatar));
+        item.innerHTML = `
+          <img src="${userObj.avatar || 'default-avatar.png'}" alt="Avatar" class="user-avatar">
+          <div class="user-info">
+            <div class="user-name">${userObj.nickname || "Без ника"}</div>
+          </div>
+        `;
+        recentChatsList.appendChild(item);
+      });
     }
   </script>
 </body>
 </html>
+
