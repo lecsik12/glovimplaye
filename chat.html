@@ -237,6 +237,30 @@
       display: none;
       z-index: 1000;
     }
+
+    /* Медиа запросы для мобильных устройств */
+    @media (max-width: 600px) {
+      .sidebar {
+        width: 100%;
+        height: 40%;
+        border-right: none;
+        border-bottom: 1px solid #333;
+      }
+      .chat-main {
+        height: 60%;
+      }
+      .chat-header, .chat-input {
+        padding: 8px 10px;
+      }
+      .chat-title {
+        font-size: 16px;
+      }
+      .user-avatar {
+        width: 30px;
+        height: 30px;
+        margin-right: 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -244,7 +268,7 @@
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
   </header>
 
-  <!-- Блок уведомлений для GlovimPlaye -->
+  <!-- Встроенные уведомления -->
   <div id="adminNotifications"></div>
 
   <div class="chat-container">
@@ -255,7 +279,7 @@
         <div class="search-results" id="searchResults" style="display:none;"></div>
       </div>
       <div class="recent-chats" id="recentChatsList">
-        <!-- Список «последних чатов» -->
+        <!-- Список последних чатов -->
       </div>
     </div>
     
@@ -300,14 +324,12 @@
     let chatRoomId = null;
     let recentChats = [];
 
-    // Фиксированный UID специального аккаунта GlovimPlaye
+    // Фиксированный UID для аккаунта GlovimPlaye (и админ-сообщений)
     const glovimplayeUID = "glovimplaye-special-uid";
-    // Используем этот же UID для админ-сообщений
     const adminUID = glovimplayeUID;
-    // Специальный узел для админ-чата
     const adminChatRoomId = "adminBroadcast";
 
-    // Функция для отображения ника с галочкой (для GlovimPlaye)
+    // Функция для отображения ника с галочкой для GlovimPlaye
     function getDisplayNameWithCheckmark(userObj) {
       let displayName = userObj.nickname || "Без ника";
       if (displayName === "GlovimPlaye") {
@@ -316,7 +338,7 @@
       return displayName;
     }
 
-    // Функция показа уведомлений
+    // Функция показа встроенных уведомлений (в блоке adminNotifications)
     function showAdminNotification(text) {
       const notifDiv = document.getElementById("adminNotifications");
       notifDiv.innerText = text;
@@ -324,12 +346,27 @@
       setTimeout(() => { notifDiv.style.display = "none"; }, 5000);
     }
 
-    // Функция сохранения recentChats в localStorage
+    // Функция показа нативного уведомления через Web Notifications API
+    function showBrowserNotification(title, message) {
+      if (Notification.permission === "granted") {
+        new Notification(title, {
+          body: message,
+          icon: "Images/avatar.png"  // можно заменить на свою иконку
+        });
+      }
+    }
+
+    // Запрос разрешения для нативных уведомлений при загрузке страницы
+    if (Notification.permission === "default") {
+      Notification.requestPermission().then(permission => {
+        console.log("Разрешение на уведомления:", permission);
+      });
+    }
+
+    // Функции сохранения и загрузки recentChats через localStorage
     function saveRecentChats() {
       localStorage.setItem("recentChats", JSON.stringify(recentChats));
     }
-
-    // Функция загрузки recentChats из localStorage
     function loadRecentChats() {
       const stored = localStorage.getItem("recentChats");
       if (stored) {
@@ -338,15 +375,13 @@
       }
     }
 
-    // При загрузке страницы проверяем авторизацию
+    // Авторизация и инициализация аккаунта
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
         firebase.auth().signInAnonymously().catch(err => console.error("Ошибка анонимного входа:", err));
       } else {
         currentUser = user;
-        // Загружаем список recentChats из localStorage (если он есть)
         loadRecentChats();
-        // Создаём или обновляем аккаунт GlovimPlaye и добавляем его в recentChats
         createGlovimPlayeAccount().then(() => {
           addGlovimPlayeToRecentChats();
           if (currentUser.uid === glovimplayeUID) {
@@ -361,16 +396,15 @@
     function createGlovimPlayeAccount() {
       return firebase.database().ref("users/" + glovimplayeUID).set({
         nickname: "GlovimPlaye",
-        avatar: "Images/avatar.png",
+        avatar: "Images/avatar.png"
       });
     }
 
-    // Добавляем аккаунт GlovimPlaye в recentChats
+    // Добавляем GlovimPlaye в список recentChats (всегда первым)
     function addGlovimPlayeToRecentChats() {
       firebase.database().ref("users/" + glovimplayeUID).once("value", snap => {
         const userData = snap.val();
         if (!userData) return;
-        // Убираем предыдущую запись и вставляем GlovimPlaye первым
         recentChats = recentChats.filter(u => u.uid !== glovimplayeUID);
         recentChats.unshift({
           uid: glovimplayeUID,
@@ -395,13 +429,15 @@
       }
     }
 
-    // Подписываемся на сообщения из админ-панели
+    // Подписка на сообщения админ-панели с уведомлением
     function subscribeToAdminMessages() {
       firebase.database().ref("chats/playerok").on("child_added", (snapshot) => {
         const msg = snapshot.val();
         if (msg.senderId === adminUID) {
           if (currentUser.uid === glovimplayeUID) {
+            // Показываем и встроенное, и нативное уведомление
             showAdminNotification("Новое сообщение из админ-панели: " + msg.text);
+            showBrowserNotification("Админ Панель", msg.text);
             displayMessage(msg);
           }
         }
@@ -468,7 +504,6 @@
       document.getElementById("chatInput").style.display = "flex";
       document.getElementById("noChatSelected").style.display = "none";
 
-      // Очищаем окно сообщений
       const messagesDiv = document.getElementById("messages");
       messagesDiv.innerHTML = "";
 
@@ -519,7 +554,8 @@
       }
       input.value = "";
 
-      // Если чат не админ и выбранный пользователь – не GlovimPlaye, перемещаем его сразу после GlovimPlaye
+      // При отправке сообщения, если чат не админ и выбранный пользователь не GlovimPlaye,
+      // перемещаем его в список recentChats сразу после GlovimPlaye
       if (chatRoomId !== adminChatRoomId && selectedUserId !== glovimplayeUID) {
         let chatIndex = recentChats.findIndex(u => u.uid === selectedUserId);
         if (chatIndex !== -1) {
