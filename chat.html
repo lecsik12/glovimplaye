@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Чат | GlovimPlaye</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -34,13 +34,14 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      position: relative;
+      -webkit-overflow-scrolling: touch;
     }
     header {
       background: var(--header-bg);
       padding: 15px 20px;
       text-align: center;
       border-bottom: 1px solid #333;
+      flex-shrink: 0;
     }
     .logo {
       font-size: 24px;
@@ -53,15 +54,15 @@
       display: flex;
       overflow: hidden;
     }
-    /* Левая панель */
+    /* Компоновка для десктопа */
     .sidebar {
       width: 300px;
       background: #2a2a2a;
       border-right: 1px solid #333;
       display: flex;
       flex-direction: column;
+      overflow-y: auto;
     }
-    /* Поиск + результаты */
     .search-bar {
       padding: 10px;
       background: #2a2a2a;
@@ -81,6 +82,7 @@
       border-top: 1px solid #333;
       max-height: 200px;
       overflow-y: auto;
+      display: none;
     }
     .search-item {
       padding: 8px;
@@ -91,7 +93,6 @@
     .search-item:hover {
       background: #3a3a3a;
     }
-    /* Список последних чатов */
     .recent-chats {
       flex: 1;
       overflow-y: auto;
@@ -123,11 +124,11 @@
       font-weight: bold;
       color: #fff;
     }
-    /* Правая часть (чат) */
     .chat-main {
       flex: 1;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     .chat-header {
       background: #2a2a2a;
@@ -135,6 +136,7 @@
       display: flex;
       align-items: center;
       border-bottom: 1px solid #333;
+      flex-shrink: 0;
     }
     .chat-header img {
       width: 40px;
@@ -163,8 +165,8 @@
       align-items: center;
       justify-content: center;
       color: #777;
-      flex-direction: column;
       text-align: center;
+      flex-direction: column;
     }
     .message {
       max-width: 60%;
@@ -195,6 +197,7 @@
       padding: 10px 20px;
       background: #2a2a2a;
       border-top: 1px solid #333;
+      flex-shrink: 0;
     }
     .chat-input input {
       flex: 1;
@@ -223,8 +226,9 @@
       text-align: center;
       padding: 10px;
       color: #aaa;
+      flex-shrink: 0;
     }
-    /* Уведомления для GlovimPlaye (администратора) */
+    /* Встроенные уведомления */
     #adminNotifications {
       position: fixed;
       top: 60px;
@@ -238,8 +242,11 @@
       z-index: 1000;
     }
 
-    /* Медиа запросы для мобильных устройств */
+    /* Адаптация для мобильных устройств: вертикальное расположение */
     @media (max-width: 600px) {
+      .chat-container {
+        flex-direction: column;
+      }
       .sidebar {
         width: 100%;
         height: 40%;
@@ -247,6 +254,7 @@
         border-bottom: 1px solid #333;
       }
       .chat-main {
+        width: 100%;
         height: 60%;
       }
       .chat-header, .chat-input {
@@ -260,6 +268,10 @@
         height: 30px;
         margin-right: 8px;
       }
+      /* Уменьшаем отступы в списке сообщений */
+      .messages {
+        padding: 8px 10px;
+      }
     }
   </style>
 </head>
@@ -268,22 +280,22 @@
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
   </header>
 
-  <!-- Встроенные уведомления -->
+  <!-- Встроенные уведомления (отображаются на экране) -->
   <div id="adminNotifications"></div>
 
   <div class="chat-container">
-    <!-- Левая панель: поиск + последние чаты -->
+    <!-- Боковая панель: поиск и список чатов -->
     <div class="sidebar">
       <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Введите ник..." />
-        <div class="search-results" id="searchResults" style="display:none;"></div>
+        <div class="search-results" id="searchResults"></div>
       </div>
       <div class="recent-chats" id="recentChatsList">
-        <!-- Список последних чатов -->
+        <!-- Здесь отображаются последние чаты -->
       </div>
     </div>
     
-    <!-- Правая часть: чат -->
+    <!-- Основное окно чата -->
     <div class="chat-main">
       <div class="chat-header" id="chatHeader" style="display: none;">
         <img src="default-avatar.png" id="chatAvatar" alt="Аватар">
@@ -292,7 +304,7 @@
       <div class="messages" id="messages">
         <div class="no-chat-selected" id="noChatSelected">
           <i class="fas fa-comments" style="font-size:50px; color:#4fc3f7;"></i>
-          <p>Найдите собеседника по нику<br>После отправки сообщения он появится в списке слева</p>
+          <p>Найдите собеседника по нику<br>После отправки сообщения он появится в списке</p>
         </div>
       </div>
       <div class="chat-input" id="chatInput" style="display: none;">
@@ -302,9 +314,7 @@
     </div>
   </div>
 
-  <footer>
-    <p>© 2025 GlovimPlaye. Все права защищены.</p>
-  </footer>
+ 
 
   <script>
     // Инициализация Firebase (замените на свои данные)
@@ -324,7 +334,7 @@
     let chatRoomId = null;
     let recentChats = [];
 
-    // Фиксированный UID для аккаунта GlovimPlaye (и админ-сообщений)
+    // Фиксированный UID для GlovimPlaye (и админ-сообщений)
     const glovimplayeUID = "glovimplaye-special-uid";
     const adminUID = glovimplayeUID;
     const adminChatRoomId = "adminBroadcast";
@@ -338,7 +348,7 @@
       return displayName;
     }
 
-    // Функция показа встроенных уведомлений (в блоке adminNotifications)
+    // Функция показа встроенных уведомлений
     function showAdminNotification(text) {
       const notifDiv = document.getElementById("adminNotifications");
       notifDiv.innerText = text;
@@ -351,19 +361,19 @@
       if (Notification.permission === "granted") {
         new Notification(title, {
           body: message,
-          icon: "Images/avatar.png"  // можно заменить на свою иконку
+          icon: "Images/avatar.png"  // замените путь на нужную иконку
         });
       }
     }
 
-    // Запрос разрешения для нативных уведомлений при загрузке страницы
+    // Запрос разрешения на нативные уведомления
     if (Notification.permission === "default") {
       Notification.requestPermission().then(permission => {
         console.log("Разрешение на уведомления:", permission);
       });
     }
 
-    // Функции сохранения и загрузки recentChats через localStorage
+    // Сохранение и загрузка recentChats в localStorage
     function saveRecentChats() {
       localStorage.setItem("recentChats", JSON.stringify(recentChats));
     }
@@ -392,7 +402,7 @@
       }
     });
 
-    // Создаём или обновляем аккаунт GlovimPlaye
+    // Создание или обновление аккаунта GlovimPlaye
     function createGlovimPlayeAccount() {
       return firebase.database().ref("users/" + glovimplayeUID).set({
         nickname: "GlovimPlaye",
@@ -400,7 +410,7 @@
       });
     }
 
-    // Добавляем GlovimPlaye в список recentChats (всегда первым)
+    // Добавление GlovimPlaye в recentChats (всегда первым)
     function addGlovimPlayeToRecentChats() {
       firebase.database().ref("users/" + glovimplayeUID).once("value", snap => {
         const userData = snap.val();
@@ -416,7 +426,7 @@
       });
     }
 
-    // Добавляем элемент админ-панели (виден только GlovimPlaye)
+    // Добавление элемента админ-панели
     function addAdminPanelItem() {
       if (!recentChats.find(u => u.uid === adminChatRoomId)) {
         recentChats.push({
@@ -429,13 +439,12 @@
       }
     }
 
-    // Подписка на сообщения админ-панели с уведомлением
+    // Подписка на сообщения админ-панели с уведомлениями
     function subscribeToAdminMessages() {
       firebase.database().ref("chats/playerok").on("child_added", (snapshot) => {
         const msg = snapshot.val();
         if (msg.senderId === adminUID) {
           if (currentUser.uid === glovimplayeUID) {
-            // Показываем и встроенное, и нативное уведомление
             showAdminNotification("Новое сообщение из админ-панели: " + msg.text);
             showBrowserNotification("Админ Панель", msg.text);
             displayMessage(msg);
@@ -444,7 +453,7 @@
       });
     }
 
-    // Поиск по нику
+    // Поиск пользователей по нику
     const searchInput = document.getElementById("searchInput");
     const searchResultsDiv = document.getElementById("searchResults");
     searchInput.addEventListener("input", () => {
@@ -492,7 +501,7 @@
       searchResultsDiv.style.display = "block";
     }
 
-    // Выбор собеседника
+    // Выбор собеседника и открытие чата
     function selectUser(uid, nickname, avatar) {
       selectedUserId = uid;
       chatRoomId = (uid === adminChatRoomId) ? adminChatRoomId :
@@ -514,7 +523,7 @@
       });
     }
 
-    // Отображение сообщения
+    // Отображение сообщения в окне чата
     function displayMessage(msg) {
       const messagesDiv = document.getElementById("messages");
       const messageDiv = document.createElement("div");
@@ -554,7 +563,7 @@
       }
       input.value = "";
 
-      // При отправке сообщения, если чат не админ и выбранный пользователь не GlovimPlaye,
+      // Если чат не админ и выбранный пользователь не GlovimPlaye,
       // перемещаем его в список recentChats сразу после GlovimPlaye
       if (chatRoomId !== adminChatRoomId && selectedUserId !== glovimplayeUID) {
         let chatIndex = recentChats.findIndex(u => u.uid === selectedUserId);
