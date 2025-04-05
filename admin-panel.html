@@ -22,7 +22,7 @@
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-    h1 {
+    h1, h2 {
       text-align: center;
       margin-bottom: 20px;
     }
@@ -62,7 +62,6 @@
       border-radius: 4px;
       margin-bottom: 12px;
     }
-    /* Стили для списка заявок */
     .requests-container {
       margin-top: 40px;
     }
@@ -118,7 +117,7 @@
     <button type="submit">Забанить пользователя</button>
   </form>
   
-  <!-- Форма для отправки сообщений в чат GlovimPlaye -->
+  <!-- Форма для отправки сообщения в чат GlovimPlaye (от имени администратора) -->
   <form id="globalMessageForm">
     <label for="globalMessage">Сообщение для чата GlovimPlaye</label>
     <textarea id="globalMessage" rows="4" placeholder="Введите текст сообщения"></textarea>
@@ -149,11 +148,15 @@
   };
   firebase.initializeApp(firebaseConfig);
   
+  // Константа для специального аккаунта администратора GlovimPlaye
+  const adminUID = "glovimplaye-special-uid";
+  
   // Проверка авторизации и прав администратора
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       firebase.database().ref('users/' + user.uid).once('value').then(snapshot => {
         let userData = snapshot.val();
+        // Здесь проверяем поле role, например, "admin"
         if (!userData || userData.role !== "admin") {
           alert("У вас нет прав для доступа к админ-панели.");
           window.location.href = "index.html";
@@ -251,9 +254,8 @@
       });
     });
   });
-
+  
   // --- Форма отправки сообщения в чат GlovimPlaye ---
-  // Здесь вместо записи в "globalChat" отправляем сообщение в узел "chats/playerok"
   document.getElementById('globalMessageForm').addEventListener('submit', function(e) {
     e.preventDefault();
     let msgText = document.getElementById('globalMessage').value.trim();
@@ -263,9 +265,10 @@
     }
     // Отправляем сообщение в узел "chats/playerok"
     let chatRef = firebase.database().ref("chats/playerok");
+    // Используем данные администратора
     let newMsg = {
-      senderId: "mainAccount",       // Идентификатор отправителя
-      senderName: "GlovimPlaye",       // Имя отправителя
+      senderId: adminUID,       // Фиксированный UID администратора
+      senderName: "GlovimPlaye",  // Имя администратора
       text: msgText,
       timestamp: firebase.database.ServerValue.TIMESTAMP
     };
@@ -384,3 +387,5 @@
 
 </body>
 </html>
+
+    

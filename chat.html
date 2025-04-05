@@ -11,10 +11,7 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <!-- Font Awesome для иконок -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
 
   <style>
     :root {
@@ -37,6 +34,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
     }
     header {
       background: var(--header-bg);
@@ -226,12 +224,28 @@
       padding: 10px;
       color: #aaa;
     }
+    /* Уведомления для GlovimPlaye (администратора) */
+    #adminNotifications {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      background: #ff4500;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 4px;
+      font-size: 14px;
+      display: none;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
   <header>
     <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
   </header>
+
+  <!-- Блок уведомлений для GlovimPlaye -->
+  <div id="adminNotifications"></div>
 
   <div class="chat-container">
     <!-- Левая панель: поиск + последние чаты -->
@@ -241,7 +255,7 @@
         <div class="search-results" id="searchResults" style="display:none;"></div>
       </div>
       <div class="recent-chats" id="recentChatsList">
-        <!-- Список «последних чатов» (пока пуст) -->
+        <!-- Список «последних чатов» -->
       </div>
     </div>
     
@@ -284,26 +298,122 @@
     let currentUser = null;
     let selectedUserId = null;
     let chatRoomId = null;
-
-    // Массив «последних чатов» (пользователи, которым мы уже писали)
     let recentChats = [];
+
+    // Фиксированный UID специального аккаунта GlovimPlaye
+    const glovimplayeUID = "glovimplaye-special-uid";
+    // Используем этот же UID для админ-сообщений
+    const adminUID = glovimplayeUID;
+    // Специальный узел для админ-чата
+    const adminChatRoomId = "adminBroadcast";
+
+    // Функция для отображения ника с галочкой (для GlovimPlaye)
+    function getDisplayNameWithCheckmark(userObj) {
+      let displayName = userObj.nickname || "Без ника";
+      if (displayName === "GlovimPlaye") {
+        displayName += ' <i class="fas fa-check-circle" style="color:#4fc3f7;"></i>';
+      }
+      return displayName;
+    }
+
+    // Функция показа уведомлений
+    function showAdminNotification(text) {
+      const notifDiv = document.getElementById("adminNotifications");
+      notifDiv.innerText = text;
+      notifDiv.style.display = "block";
+      setTimeout(() => { notifDiv.style.display = "none"; }, 5000);
+    }
+
+    // Функция сохранения recentChats в localStorage
+    function saveRecentChats() {
+      localStorage.setItem("recentChats", JSON.stringify(recentChats));
+    }
+
+    // Функция загрузки recentChats из localStorage
+    function loadRecentChats() {
+      const stored = localStorage.getItem("recentChats");
+      if (stored) {
+        recentChats = JSON.parse(stored);
+        renderRecentChats();
+      }
+    }
 
     // При загрузке страницы проверяем авторизацию
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
-        // Анонимный вход
         firebase.auth().signInAnonymously().catch(err => console.error("Ошибка анонимного входа:", err));
       } else {
         currentUser = user;
+        // Загружаем список recentChats из localStorage (если он есть)
+        loadRecentChats();
+        // Создаём или обновляем аккаунт GlovimPlaye и добавляем его в recentChats
+        createGlovimPlayeAccount().then(() => {
+          addGlovimPlayeToRecentChats();
+          if (currentUser.uid === glovimplayeUID) {
+            addAdminPanelItem();
+            subscribeToAdminMessages();
+          }
+        });
       }
     });
 
-    // Поиск по нику – при вводе запроса делаем запрос в Firebase и фильтруем
+    // Создаём или обновляем аккаунт GlovimPlaye
+    function createGlovimPlayeAccount() {
+      return firebase.database().ref("users/" + glovimplayeUID).set({
+        nickname: "GlovimPlaye",
+        avatar: "Images/avatar.png",
+      });
+    }
+
+    // Добавляем аккаунт GlovimPlaye в recentChats
+    function addGlovimPlayeToRecentChats() {
+      firebase.database().ref("users/" + glovimplayeUID).once("value", snap => {
+        const userData = snap.val();
+        if (!userData) return;
+        // Убираем предыдущую запись и вставляем GlovimPlaye первым
+        recentChats = recentChats.filter(u => u.uid !== glovimplayeUID);
+        recentChats.unshift({
+          uid: glovimplayeUID,
+          nickname: userData.nickname,
+          avatar: userData.avatar
+        });
+        renderRecentChats();
+        saveRecentChats();
+      });
+    }
+
+    // Добавляем элемент админ-панели (виден только GlovimPlaye)
+    function addAdminPanelItem() {
+      if (!recentChats.find(u => u.uid === adminChatRoomId)) {
+        recentChats.push({
+          uid: adminChatRoomId,
+          nickname: "Админ Панель",
+          avatar: "default-avatar.png"
+        });
+        renderRecentChats();
+        saveRecentChats();
+      }
+    }
+
+    // Подписываемся на сообщения из админ-панели
+    function subscribeToAdminMessages() {
+      firebase.database().ref("chats/playerok").on("child_added", (snapshot) => {
+        const msg = snapshot.val();
+        if (msg.senderId === adminUID) {
+          if (currentUser.uid === glovimplayeUID) {
+            showAdminNotification("Новое сообщение из админ-панели: " + msg.text);
+            displayMessage(msg);
+          }
+        }
+      });
+    }
+
+    // Поиск по нику
     const searchInput = document.getElementById("searchInput");
     const searchResultsDiv = document.getElementById("searchResults");
     searchInput.addEventListener("input", () => {
       const query = searchInput.value.trim().toLowerCase();
-      if(!query) {
+      if (!query) {
         searchResultsDiv.style.display = "none";
         searchResultsDiv.innerHTML = "";
         return;
@@ -312,11 +422,10 @@
         let found = [];
         snapshot.forEach(childSnap => {
           const uid = childSnap.key;
-          // Пропускаем себя
-          if(uid === (currentUser && currentUser.uid)) return;
+          if (currentUser && uid === currentUser.uid) return;
           const userObj = childSnap.val();
           userObj.uid = uid;
-          if((userObj.nickname || "").toLowerCase().includes(query)) {
+          if ((userObj.nickname || "").toLowerCase().includes(query)) {
             found.push(userObj);
           }
         });
@@ -327,7 +436,7 @@
     // Отображение результатов поиска
     function renderSearchResults(users) {
       searchResultsDiv.innerHTML = "";
-      if(users.length === 0) {
+      if (users.length === 0) {
         searchResultsDiv.innerHTML = "<div style='padding:8px;'>Ничего не найдено</div>";
         searchResultsDiv.style.display = "block";
         return;
@@ -335,10 +444,9 @@
       users.forEach(userObj => {
         const divItem = document.createElement("div");
         divItem.classList.add("search-item");
-        divItem.innerHTML = userObj.nickname || "Без ника";
+        divItem.innerHTML = getDisplayNameWithCheckmark(userObj);
         divItem.addEventListener("click", () => {
           selectUser(userObj.uid, userObj.nickname, userObj.avatar);
-          // Скрываем результаты
           searchResultsDiv.style.display = "none";
           searchResultsDiv.innerHTML = "";
           searchInput.value = "";
@@ -351,10 +459,11 @@
     // Выбор собеседника
     function selectUser(uid, nickname, avatar) {
       selectedUserId = uid;
-      chatRoomId = currentUser.uid < uid ? currentUser.uid + "_" + uid : uid + "_" + currentUser.uid;
+      chatRoomId = (uid === adminChatRoomId) ? adminChatRoomId :
+        (currentUser.uid < uid ? currentUser.uid + "_" + uid : uid + "_" + currentUser.uid);
 
       document.getElementById("chatHeader").style.display = "flex";
-      document.getElementById("chatTitle").innerText = nickname;
+      document.getElementById("chatTitle").innerHTML = getDisplayNameWithCheckmark({ nickname: nickname, uid: uid });
       document.getElementById("chatAvatar").src = avatar || "default-avatar.png";
       document.getElementById("chatInput").style.display = "flex";
       document.getElementById("noChatSelected").style.display = "none";
@@ -363,7 +472,6 @@
       const messagesDiv = document.getElementById("messages");
       messagesDiv.innerHTML = "";
 
-      // Снимаем старый слушатель, подписываемся на новый чат
       firebase.database().ref("chats/" + chatRoomId).off();
       firebase.database().ref("chats/" + chatRoomId).on("child_added", (snapshot) => {
         const msg = snapshot.val();
@@ -376,10 +484,10 @@
       const messagesDiv = document.getElementById("messages");
       const messageDiv = document.createElement("div");
       messageDiv.classList.add("message");
-      if(msg.sender === (currentUser && currentUser.uid)) {
+      if (msg.sender === (currentUser && currentUser.uid)) {
         messageDiv.classList.add("self");
       }
-      const timeString = new Date(msg.timestamp || Date.now()).toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"});
+      const timeString = new Date(msg.timestamp || Date.now()).toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
       messageDiv.innerHTML = `
         <div class="bubble">${msg.text}</div>
         <div class="timestamp">${timeString}</div>
@@ -388,41 +496,63 @@
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    // Кнопка отправки сообщения
+    // Отправка сообщения
     document.getElementById("sendBtn").addEventListener("click", sendMessage);
     document.getElementById("messageInput").addEventListener("keypress", e => {
-      if(e.key === "Enter") sendMessage();
+      if (e.key === "Enter") sendMessage();
     });
 
     function sendMessage() {
       const input = document.getElementById("messageInput");
       const text = input.value.trim();
-      if(!text || !chatRoomId) return;
+      if (!text || !chatRoomId) return;
       const messageData = {
         sender: currentUser.uid,
         text: text,
         timestamp: firebase.database.ServerValue.TIMESTAMP
       };
-      firebase.database().ref("chats/" + chatRoomId).push(messageData);
+
+      if (chatRoomId === adminChatRoomId) {
+        firebase.database().ref("adminBroadcast").push(messageData);
+      } else {
+        firebase.database().ref("chats/" + chatRoomId).push(messageData);
+      }
       input.value = "";
 
-      // Добавляем собеседника в «последние чаты», если его там ещё нет
-      if(!recentChats.find(u => u.uid === selectedUserId)) {
-        // Нужно получить ещё раз его данные, чтобы отобразить в списке
-        firebase.database().ref("users/" + selectedUserId).once("value", snap => {
-          const userData = snap.val() || {};
-          userData.uid = selectedUserId;
-          recentChats.push(userData);
+      // Если чат не админ и выбранный пользователь – не GlovimPlaye, перемещаем его сразу после GlovimPlaye
+      if (chatRoomId !== adminChatRoomId && selectedUserId !== glovimplayeUID) {
+        let chatIndex = recentChats.findIndex(u => u.uid === selectedUserId);
+        if (chatIndex !== -1) {
+          const userData = recentChats.splice(chatIndex, 1)[0];
+          const glovimIndex = recentChats.findIndex(u => u.uid === glovimplayeUID);
+          if (glovimIndex >= 0) {
+            recentChats.splice(glovimIndex + 1, 0, userData);
+          } else {
+            recentChats.unshift(userData);
+          }
           renderRecentChats();
-        });
+          saveRecentChats();
+        } else {
+          firebase.database().ref("users/" + selectedUserId).once("value", snap => {
+            const userData = snap.val() || {};
+            userData.uid = selectedUserId;
+            const glovimIndex = recentChats.findIndex(u => u.uid === glovimplayeUID);
+            if (glovimIndex >= 0) {
+              recentChats.splice(glovimIndex + 1, 0, userData);
+            } else {
+              recentChats.unshift(userData);
+            }
+            renderRecentChats();
+            saveRecentChats();
+          });
+        }
       }
     }
 
-    // Отображение «последних чатов» в левой колонке
+    // Отображение списка "последних чатов"
     function renderRecentChats() {
       const recentChatsList = document.getElementById("recentChatsList");
       recentChatsList.innerHTML = "";
-      // Последние чаты в порядке добавления (при желании можно менять логику сортировки)
       recentChats.forEach(userObj => {
         const item = document.createElement("div");
         item.classList.add("chat-user-item");
@@ -430,7 +560,7 @@
         item.innerHTML = `
           <img src="${userObj.avatar || 'default-avatar.png'}" alt="Avatar" class="user-avatar">
           <div class="user-info">
-            <div class="user-name">${userObj.nickname || "Без ника"}</div>
+            <div class="user-name">${getDisplayNameWithCheckmark(userObj)}</div>
           </div>
         `;
         recentChatsList.appendChild(item);
@@ -439,4 +569,3 @@
   </script>
 </body>
 </html>
-
