@@ -63,7 +63,6 @@
       background: rgba(255,255,255,0.2);
       border-radius: 50%;
     }
-    /* Кнопки переключения панели */
     .toggle-btn {
       width: 100%;
       padding: 10px;
@@ -79,7 +78,6 @@
     .toggle-btn:hover {
       background: #ff4500;
     }
-    /* Панель с формой (для пополнения и вывода) */
     .panel {
       display: none;
       border-top: 1px solid #eee;
@@ -134,6 +132,48 @@
       background: #f8d7da;
       border: 1px solid #f5c2c7;
     }
+    /* Стили модального окна */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      text-align: center;
+      position: relative;
+    }
+    .close-modal {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close-modal:hover,
+    .close-modal:focus {
+      color: #000;
+      text-decoration: none;
+    }
+    .wallet-info {
+      margin: 20px 0;
+    }
+    .wallet-info img {
+      width: 150px;
+      height: 150px;
+    }
   </style>
 </head>
 <body>
@@ -142,12 +182,11 @@
   </header>
   
   <div class="container">
-    <!-- Блок для отображения баланса текущего пользователя -->
+    <!-- Блок для отображения баланса -->
     <div id="myBalance" class="balance-display">Мой баланс: загрузка...</div>
     
-    <!-- Кнопка для открытия/закрытия панели пополнения -->
+    <!-- Форма пополнения баланса -->
     <button id="toggleTopUp" class="toggle-btn">Пополнить баланс</button>
-    <!-- Панель с формой пополнения -->
     <div id="topUpPanel" class="panel">
       <h2>Создать заявку на пополнение</h2>
       <form id="topUpForm">
@@ -165,9 +204,8 @@
       <div id="topUpMessage" class="message"></div>
     </div>
     
-    <!-- Кнопка для открытия/закрытия панели вывода средств -->
+    <!-- Форма вывода средств -->
     <button id="toggleWithdraw" class="toggle-btn">Вывести денги</button>
-    <!-- Панель с формой вывода средств -->
     <div id="withdrawPanel" class="panel">
       <h2>Создать заявку на вывод средств</h2>
       <form id="withdrawForm">
@@ -185,6 +223,33 @@
       <div id="withdrawMessage" class="message"></div>
     </div>
   </div>
+
+  <!-- Модальное окно для криптовалютного пополнения -->
+  <div id="cryptoModal" class="modal">
+    <div class="modal-content">
+      <span id="closeCryptoModal" class="close-modal">&times;</span>
+      <h2>Пополнение через криптовалюту</h2>
+      <!-- Вывод суммы к оплате -->
+      <p id="cryptoAmountInfo">Сумма к оплате: 0 ₽</p>
+      <!-- Выбор сети -->
+      <label for="cryptoNetworkModal">Выберите сеть:</label>
+      <select id="cryptoNetworkModal" required>
+        <option value="ERC20">Ethereum (ERC20)</option>
+        <option value="BEP20">Binance Smart Chain (BEP20)</option>
+        <option value="TRC20">Tron (TRC20)</option>
+        <option value="TRX">TRX</option>
+      </select>
+      <!-- Блок с информацией о кошельке и QR кодом -->
+      <div class="wallet-info">
+        <p>Отправьте средства на этот кошелек:</p>
+        <p><strong>TYbctrMQ6vKzq7FYurDVQg6qgkr8wcZdYT</strong></p>
+        <img src="images/trx tron.jpg" alt="QR код">
+      </div>
+      <!-- Кнопка подтверждения, что пользователь отправил платеж -->
+      <button id="confirmCryptoPayment" class="submit-btn">Я отправил</button>
+      <div id="cryptoMessage" class="message"></div>
+    </div>
+  </div>
   
   <script>
     // Firebase конфигурация (замените на свои данные)
@@ -199,12 +264,14 @@
     };
     firebase.initializeApp(firebaseConfig);
     
-    // Проверка авторизации: если пользователь не авторизован – перенаправление на страницу логина
+    // Глобальная переменная для хранения введённой суммы пополнения
+    let pendingTopUpAmount = null;
+    
+    // Проверка авторизации и загрузка баланса
     firebase.auth().onAuthStateChanged(function(user) {
       if (!user) {
         window.location.href = "login.html";
       } else {
-        // Загрузка баланса пользователя
         firebase.database().ref('users/' + user.uid + '/balance').once('value')
           .then(function(snapshot) {
             var balance = snapshot.val() || 0;
@@ -252,28 +319,14 @@
         return;
       }
       
-      const user = firebase.auth().currentUser;
-      if (!user) {
-        showMessage("topUpMessage", "Ошибка: пользователь не авторизован.", true);
-        return;
+      // Если выбран криптовалютный способ, сохраняем сумму и открываем модальное окно
+      if (method === "crypto") {
+        pendingTopUpAmount = amount;
+        openCryptoModal();
+      } else {
+        // Для банковской карты сразу создаём заявку
+        createTopUpRequest({ amount: amount, method: method });
       }
-      
-      const requestData = {
-        userId: user.uid,
-        amount: amount,
-        method: method,
-        status: "pending",
-        createdAt: firebase.database.ServerValue.TIMESTAMP
-      };
-      
-      firebase.database().ref("topUpRequests").push(requestData)
-        .then(function() {
-          showMessage("topUpMessage", "Заявка успешно создана. Ожидайте подтверждения.", false);
-          document.getElementById("topUpForm").reset();
-        })
-        .catch(function(error) {
-          showMessage("topUpMessage", "Ошибка при создании заявки: " + error.message, true);
-        });
     });
     
     // Обработка отправки формы вывода средств
@@ -293,7 +346,6 @@
         return;
       }
       
-      // Создание заявки в узле withdrawRequests
       const requestData = {
         userId: user.uid,
         amount: amount,
@@ -312,6 +364,41 @@
         });
     });
     
+    // Функция создания заявки на пополнение
+    function createTopUpRequest(extraData) {
+      const user = firebase.auth().currentUser;
+      if (!user) {
+        showMessage("topUpMessage", "Ошибка: пользователь не авторизован.", true);
+        return;
+      }
+      
+      let amount = extraData.amount || parseFloat(document.getElementById("amount").value);
+      const method = document.getElementById("paymentMethod").value;
+      
+      let requestData = {
+        userId: user.uid,
+        amount: amount,
+        method: method,
+        status: "pending",
+        createdAt: firebase.database.ServerValue.TIMESTAMP
+      };
+      
+      if (extraData) {
+        requestData = { ...requestData, ...extraData };
+      }
+      
+      firebase.database().ref("topUpRequests").push(requestData)
+        .then(function() {
+          showMessage("topUpMessage", "Заявка успешно создана. Ожидайте подтверждения.", false);
+          document.getElementById("topUpForm").reset();
+          pendingTopUpAmount = null;
+        })
+        .catch(function(error) {
+          showMessage("topUpMessage", "Ошибка при создании заявки: " + error.message, true);
+        });
+    }
+    
+    // Функция показа сообщений
     function showMessage(elementId, msg, isError) {
       const messageDiv = document.getElementById(elementId);
       messageDiv.innerText = msg;
@@ -321,6 +408,36 @@
         messageDiv.style.display = "none";
       }, 5000);
     }
+    
+    // Функции открытия и закрытия модального окна для криптовалютного пополнения
+    function openCryptoModal() {
+      // Отображаем сумму для оплаты в модальном окне
+      document.getElementById("cryptoAmountInfo").innerText = "Сумма к оплате: " + pendingTopUpAmount + " ₽";
+      document.getElementById("cryptoModal").style.display = "block";
+    }
+    function closeCryptoModal() {
+      document.getElementById("cryptoModal").style.display = "none";
+    }
+    
+    document.getElementById("closeCryptoModal").addEventListener("click", closeCryptoModal);
+    
+    // Обработка нажатия кнопки "Я отправил"
+    document.getElementById("confirmCryptoPayment").addEventListener("click", function() {
+      const network = document.getElementById("cryptoNetworkModal").value;
+      if (!network) {
+        showMessage("cryptoMessage", "Выберите сеть.", true);
+        return;
+      }
+      
+      // Формируем данные для криптовалютной заявки
+      const extraData = {
+        network: network,
+        amount: pendingTopUpAmount,
+        // Здесь можно добавить дополнительные данные, если необходимо
+      };
+      closeCryptoModal();
+      createTopUpRequest(extraData);
+    });
   </script>
 </body>
 </html>

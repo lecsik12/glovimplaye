@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Каталог | GlovimPlaye</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  
+ <!-- Фавикон -->
+ <link rel="icon" type="image/png" href="images/looooooogoooo.jpg" sizes="16x16">
+  
+
+  <!-- Font Awesome для иконок -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  
+  <style>
+    /* Базовые стили */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: #0e0e0e;
+      color: #ccc;
+      line-height: 1.6;
+      padding-bottom: 70px; /* для мобильной навигации */
+    }
+    a { text-decoration: none; color: inherit; }
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+    
+    /* Хедер */
+    header {
+      background: linear-gradient(135deg, #222020, #201e1e);
+      padding: 10px 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #f9f9f8;
+    }
+    .logo img {
+      width: 50px;
+      margin-right: 10px;
+    }
+    
+    /* Поисковик */
+    .header-bottom {
+      margin-top: 10px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .search-box {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+    }
+    .search-box input.search-input {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 25px;
+      outline: none;
+      width: 100%;
+      transition: box-shadow 0.3s;
+    }
+    .search-box input.search-input:focus {
+      box-shadow: 0 0 8px rgba(255,255,255,0.5);
+    }
+    
+    /* Вкладки */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 20px;
+      color: #ccc;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: #4fc3f7;
+      color: #0e0e0e;
+    }
+    
+    /* Контент вкладок */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .section-title {
+      font-size: 1.8rem;
+      margin: 20px 0 10px;
+      color: #4fc3f7;
+    }
+    
+    /* Горизонтальный скролл для карточек */
+    .horizontal-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .horizontal-scroll::-webkit-scrollbar { height: 6px; }
+    .horizontal-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+    .horizontal-scroll::-webkit-scrollbar-track { background: #1e1e1e; }
+    
+    /* Карточка игры/приложения */
+    .game-card {
+      width: 120px;
+      text-align: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .game-card img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: transform 0.2s;
+    }
+    .game-card img:hover { transform: scale(1.05); }
+    .game-name {
+      margin-top: 6px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+    .new-badge {
+      display: inline-block;
+      background: #ff4500;
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+    
+    /* Кнопка "Предложить" для каждого раздела */
+    .offer-section-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 16px;
+      background: #4fc3f7;
+      color: #0e0e0e;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.3s;
+      font-size: 0.9rem;
+    }
+    .offer-section-btn i {
+      margin-right: 5px;
+    }
+    .offer-section-btn:hover {
+      background: #80deea;
+      transform: translateY(-2px);
+    }
+    
+    /* Модальное окно для предложения */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 200;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+    .modal-content h2 {
+      margin-bottom: 15px;
+      color: #4fc3f7;
+    }
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 4px;
+      background: #2a2a2a;
+      color: #ccc;
+    }
+    .modal-content button {
+      padding: 8px 16px;
+      background: #4fc3f7;
+      color: #0e0e0e;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    .modal-content button:hover {
+      background: #80deea;
+    }
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 1.2em;
+      color: #ccc;
+      cursor: pointer;
+    }
+    
+    /* Мобильная нижняя навигация */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 60px;
+      background: #161616;
+      border-top: 1px solid #333;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 110;
+    }
+    .bottom-nav a {
+      color: #ccc;
+      font-size: 12px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .bottom-nav a i { font-size: 22px; margin-bottom: 3px; }
+    .bottom-nav a:hover { color: #4fc3f7; }
+    
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      .game-card { width: 100px; }
+      .game-card img { width: 100px; height: 100px; }
+      .section-title { font-size: 1.5rem; }
+      body { padding-bottom: 80px; }
+      .bottom-nav { display: flex; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Хедер -->
+  <header>
+    <div class="header-wrapper container">
+      <a href="index.html" class="logo">
+        <img src="images/logo (2).png" alt="Logo">
+        <span>GlovimPlaye</span>
+      </a>
+    </div>
+    <!-- Поисковик -->
+    <div class="header-bottom container">
+      <div class="search-box">
+        <input type="text" id="global-search" placeholder="Поиск..." class="search-input">
+      </div>
+    </div>
+  </header>
+  
+  <!-- Контейнер для результатов поиска -->
+  <div class="container" id="search-results-container" style="display:none;">
+    <h2 class="section-title">Результаты поиска</h2>
+    <div class="horizontal-scroll" id="search-results"></div>
+  </div>
+  
+  <!-- Вкладки -->
+  <div class="container" id="tabs-container">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="games">Игры</button>
+      <button class="tab-btn" data-tab="mobile-games">Мобильные игры</button>
+      <button class="tab-btn" data-tab="apps">Приложения</button>
+    </div>
+  </div>
+  
+  <!-- Контент вкладок -->
+  <div class="container" id="tabs-content">
+    <!-- Вкладка Игры -->
+    <div id="games" class="tab-content active">
+      <h2 class="section-title">Игры</h2>
+      <div class="horizontal-scroll">
+        <div class="game-card" onclick="location.href='csgo.html'">
+          <img src="images/csgo.jpg" alt="Counter-Strike">
+          <div class="game-name">Counter-Strike</div>
+        </div>
+        <div class="game-card" onclick="location.href='roblox.html'">
+          <img src="images/roblox.jpg" alt="Roblox">
+          <div class="game-name">Roblox</div>
+        </div>
+        <div class="game-card" onclick="location.href='minecraft.html'">
+          <img src="images/main.jpg" alt="Minecraft">
+          <div class="game-name">Minecraft</div>
+        </div>
+        <div class="game-card" onclick="location.href='fortnite.html'">
+          <img src="images/fortna.jpg" alt="Fortnite">
+          <div class="game-name">Fortnite</div>
+        </div>
+        <div class="game-card" onclick="location.href='dota2.html'">
+          <img src="images/dota.jpg" alt="Dota 2">
+          <div class="game-name">Dota 2</div>
+        </div>
+        <div class="game-card" onclick="location.href='rust.html'">
+          <img src="images/rust.png" alt="Rust">
+          <div class="game-name">Rust <span class="new-badge">Новое</span></div>
+        </div>
+      </div>
+      <!-- Кнопка "Предложить" для раздела "Игры" -->
+      <button class="offer-section-btn" onclick="openOfferModal('Игры')">
+        <i class="fas fa-plus"></i> Предложить
+      </button>
+    </div>
+    
+    <!-- Вкладка Мобильные игры -->
+    <div id="mobile-games" class="tab-content">
+      <h2 class="section-title">Мобильные игры</h2>
+      <div class="horizontal-scroll">
+        <div class="game-card" onclick="location.href='pubg-mobile.html'">
+          <img src="images/pabg mobael.jpg" alt="PUBG Mobile">
+          <div class="game-name">PUBG Mobile</div>
+        </div>
+        <div class="game-card" onclick="location.href='standoff2.html'">
+          <img src="images/standoff2.jpg" alt="Standoff 2">
+          <div class="game-name">Standoff 2</div>
+        </div>
+        <div class="game-card" onclick="location.href='callofduty.html'">
+          <img src="images/cal of duty.jpg" alt="Call of Duty">
+          <div class="game-name">Call of Duty</div>
+        </div>
+      </div>
+      <!-- Кнопка "Предложить" для раздела "Мобильные игры" -->
+      <button class="offer-section-btn" onclick="openOfferModal('Мобильные игры')">
+        <i class="fas fa-plus"></i> Предложить
+      </button>
+    </div>
+    
+    <!-- Вкладка Приложения -->
+    <div id="apps" class="tab-content">
+      <h2 class="section-title">Приложения</h2>
+      <div class="horizontal-scroll">
+        <div class="game-card" onclick="location.href='discord.html'">
+          <img src="images/diccord.jpg" alt="Discord">
+          <div class="game-name">Discord</div>
+        </div>
+        <div class="game-card" onclick="location.href='spotify.html'">
+          <img src="images/spotifay.jpg" alt="Spotify">
+          <div class="game-name">Spotify</div>
+        </div>
+        <div class="game-card" onclick="location.href='telegram.html'">
+          <img src="images/telegram.jpg" alt="Telegram">
+          <div class="game-name">Telegram</div>
+        </div>
+        <div class="game-card" onclick="location.href='steam.html'">
+          <img src="images/steam.jpg" alt="Steam">
+          <div class="game-name">Steam</div>
+        </div>
+        <div class="game-card" onclick="location.href='tiktok.html'">
+          <img src="images/tiktik.jpg" alt="Tik Tok">
+          <div class="game-name">Tik Tok</div>
+        </div>
+        <div class="game-card" onclick="location.href='epic-gems.html'">
+          <img src="images/epgems.jpg" alt="Epic Gems">
+          <div class="game-name">Epic Gems</div>
+        </div>
+        <div class="game-card" onclick="location.href='playstation.html'">
+          <img src="images/Playstetion.png" alt="PlayStation">
+          <div class="game-name">PlayStation</div>
+        </div>
+      </div>
+      <!-- Кнопка "Предложить" для раздела "Приложения" -->
+      <button class="offer-section-btn" onclick="openOfferModal('Приложения')">
+        <i class="fas fa-plus"></i> Предложить
+      </button>
+    </div>
+  </div>
+  
+  <!-- Модальное окно для предложения -->
+  <div class="modal" id="offer-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeOfferModal()">&times;</button>
+      <h2>Предложить игру</h2>
+      <p id="offer-category"></p>
+      <input type="text" id="offer-title" placeholder="Название игры">
+      <textarea id="offer-description" rows="4" placeholder="Описание игры"></textarea>
+      <button onclick="submitOffer()">Отправить</button>
+    </div>
+  </div>
+  
+  <!-- Мобильная нижняя навигация -->
+  <div class="bottom-nav">
+    <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
+    <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
+    <a href="chat.html"><i class="fas fa-comment-dots"></i><span>Чат</span></a>
+    <a href="profile.html" class="bottom-nav-profile">
+      <img src="default-avatar.png" alt="Avatar" class="avatar">
+      <span>Профиль</span>
+    </a>
+  </div>
+  
+  <script>
+    // Переключатель вкладок
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const target = button.getAttribute('data-tab');
+        tabContents.forEach(content => content.classList.remove('active'));
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        document.getElementById(target).classList.add('active');
+        button.classList.add('active');
+      });
+    });
+    
+    // Поисковик (поиск среди всех карточек)
+    const searchInput = document.getElementById('global-search');
+    const searchResultsContainer = document.getElementById('search-results-container');
+    const searchResults = document.getElementById('search-results');
+    const tabsContainer = document.getElementById('tabs-container');
+    const tabsContentContainer = document.getElementById('tabs-content');
+    
+    function performSearch(query) {
+      query = query.trim().toLowerCase();
+      if (!query) {
+        searchResultsContainer.style.display = 'none';
+        tabsContainer.style.display = 'block';
+        tabsContentContainer.style.display = 'block';
+        return;
+      }
+      tabsContainer.style.display = 'none';
+      tabsContentContainer.style.display = 'none';
+      searchResults.innerHTML = '';
+      
+      const allCards = document.querySelectorAll('.game-card');
+      let found = false;
+      allCards.forEach(card => {
+        const nameText = card.querySelector('.game-name').textContent.toLowerCase();
+        if (nameText.includes(query)) {
+          found = true;
+          const clone = card.cloneNode(true);
+          searchResults.appendChild(clone);
+        }
+      });
+      
+      if (!found) {
+        searchResults.innerHTML = '<div style="padding: 10px; color: #ccc;">Ничего не найдено</div>';
+      }
+      searchResultsContainer.style.display = 'block';
+    }
+    
+    searchInput.addEventListener('input', () => {
+      performSearch(searchInput.value);
+    });
+    
+    // Функции для работы с модальным окном предложения
+    function openOfferModal(category) {
+      document.getElementById('offer-category').textContent = 'Категория: ' + category;
+      document.getElementById('offer-title').value = '';
+      document.getElementById('offer-description').value = '';
+      document.getElementById('offer-modal').style.display = 'flex';
+    }
+    
+    function closeOfferModal() {
+      document.getElementById('offer-modal').style.display = 'none';
+    }
+    
+    function submitOffer() {
+      const title = document.getElementById('offer-title').value.trim();
+      const description = document.getElementById('offer-description').value.trim();
+      if (!title || !description) {
+        alert('Пожалуйста, заполните все поля.');
+        return;
+      }
+      // Здесь можно добавить отправку данных на сервер или Firebase
+      alert('Предложение отправлено:\nНазвание: ' + title + '\nОписание: ' + description);
+      closeOfferModal();
+    }
+  </script>
+</body>
+</html>

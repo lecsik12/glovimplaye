@@ -106,7 +106,7 @@
     <button type="submit">Разбанить пользователя</button>
   </form>
   
-  <!-- Форма для бана пользователя с указанием временного бана -->
+  <!-- Форма для бана пользователя с указанием временного бана и причины -->
   <form id="banForm">
     <label for="banUserId">ID пользователя</label>
     <input type="text" id="banUserId" placeholder="Введите UID пользователя" required>
@@ -114,10 +114,13 @@
     <label for="banDuration">Длительность бана (дней, 0 – перманентный)</label>
     <input type="number" id="banDuration" placeholder="Например, 7" required>
     
+    <label for="banReason">Причина бана</label>
+    <input type="text" id="banReason" placeholder="Напишите причину бана" required>
+    
     <button type="submit">Забанить пользователя</button>
   </form>
   
-  <!-- Форма для отправки сообщения в чат GlovimPlaye (от имени администратора) -->
+  <!-- Форма для отправки сообщения в чат GlovimPlaye -->
   <form id="globalMessageForm">
     <label for="globalMessage">Сообщение для чата GlovimPlaye</label>
     <textarea id="globalMessage" rows="4" placeholder="Введите текст сообщения"></textarea>
@@ -147,9 +150,6 @@
     appId: "1:553440591519:web:b7be45a9253689f322acaa"
   };
   firebase.initializeApp(firebaseConfig);
-  
-  // Константа для специального аккаунта администратора GlovimPlaye
-  const adminUID = "glovimplaye-special-uid";
   
   // Проверка авторизации и прав администратора
   firebase.auth().onAuthStateChanged(function(user) {
@@ -223,23 +223,29 @@
     });
   });
   
-  // --- Форма бана пользователя (с временным баном) ---
+  // --- Форма бана пользователя (временный/перманентный) с указанием причины ---
   document.getElementById('banForm').addEventListener('submit', function(e) {
     e.preventDefault();
     let targetUid = document.getElementById('banUserId').value.trim();
     let banDuration = parseInt(document.getElementById('banDuration').value, 10);
-    
-    if (!targetUid || isNaN(banDuration) || banDuration < 0) {
-      showMessage("Пожалуйста, введите корректное значение для длительности бана.");
+    let banReason = document.getElementById('banReason').value.trim();
+
+    if (!targetUid || isNaN(banDuration) || banDuration < 0 || !banReason) {
+      showMessage("Пожалуйста, заполните все поля корректно.");
       return;
     }
-    
-    let banData = { banned: true };
+
+    let banData = {
+      banned: true,
+      banReason: banReason
+    };
     if (banDuration > 0) {
       let unbanTimestamp = Date.now() + banDuration * 24 * 60 * 60 * 1000;
       banData.unbanAt = unbanTimestamp;
+    } else {
+      banData.unbanAt = null; // перманентный бан
     }
-    
+
     let userRef = firebase.database().ref('users/' + targetUid);
     userRef.once('value').then(snapshot => {
       let userData = snapshot.val();
@@ -248,7 +254,7 @@
         return;
       }
       userRef.update(banData).then(() => {
-        showMessage("Пользователь забанен " + (banDuration > 0 ? ("на " + banDuration + " дней") : "навсегда") + ".");
+        showMessage("Пользователь забанен " + (banDuration > 0 ? ("на " + banDuration + " дней") : "навсегда") + ". Причина: " + banReason);
       }).catch(err => {
         showMessage("Ошибка при бане пользователя: " + err.message);
       });
@@ -263,12 +269,10 @@
       showMessage("Введите сообщение!");
       return;
     }
-    // Отправляем сообщение в узел "chats/playerok"
     let chatRef = firebase.database().ref("chats/playerok");
-    // Используем данные администратора
     let newMsg = {
-      senderId: adminUID,       // Фиксированный UID администратора
-      senderName: "GlovimPlaye",  // Имя администратора
+      senderId: "glovimplaye-special-uid",
+      senderName: "GlovimPlaye",
       text: msgText,
       timestamp: firebase.database.ServerValue.TIMESTAMP
     };
@@ -311,7 +315,6 @@
     let requestRef = firebase.database().ref("topUpRequests/" + requestKey);
     requestRef.update({ status: "approved" })
       .then(() => {
-        // После одобрения, обновляем баланс пользователя
         let userRef = firebase.database().ref("users/" + userId);
         userRef.once("value").then(snapshot => {
           let userData = snapshot.val() || {};
@@ -343,7 +346,7 @@
       });
   }
   
-  // --- Вывод служебных сообщений ---
+  // --- Функция для вывода служебных сообщений ---
   function showMessage(message) {
     let msgDiv = document.getElementById('adminMessage');
     msgDiv.innerHTML = '<div class="message">' + message + '</div>';
@@ -361,31 +364,7 @@
   
   // --- Запускаем загрузку заявок при загрузке страницы ---
   loadTopUpRequests();
-  
-  // --- Проверка статуса бана при авторизации ---
-  firebase.auth().onAuthStateChanged(function(user) {
-    if (user) {
-      let userRef = firebase.database().ref('users/' + user.uid);
-      userRef.once('value').then(snapshot => {
-        let userData = snapshot.val();
-        if (userData && userData.banned) {
-          if (userData.unbanAt && Date.now() < userData.unbanAt) {
-            alert("Ваш аккаунт заблокирован до " + new Date(userData.unbanAt).toLocaleString() + ".");
-            firebase.auth().signOut().then(() => window.location.href = "banned.html");
-          } else if (!userData.unbanAt) {
-            alert("Ваш аккаунт заблокирован навсегда.");
-            firebase.auth().signOut().then(() => window.location.href = "banned.html");
-          } else {
-            // Если срок бана истёк, снимаем бан
-            userRef.update({ banned: false, unbanAt: null });
-          }
-        }
-      });
-    }
-  });
 </script>
 
 </body>
 </html>
-
-    

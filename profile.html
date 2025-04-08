@@ -4,19 +4,15 @@
   <meta charset="UTF-8">
   <title>GlovimPlaye | Профиль</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-
   <!-- Font Awesome для иконок -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
   <style>
     :root {
       --bg-color: #0e0e0e;
@@ -43,6 +39,7 @@
       padding-bottom: 70px;
       background-size: cover;
       background-position: center;
+      position: relative;
     }
     a {
       text-decoration: none;
@@ -125,7 +122,7 @@
       color: #4fc3f7;
       margin-bottom: 10px;
     }
-    /* Блок для отображения Лоты и Отзывы в одну строку – кликабелен */
+    /* Блок для отображения Лоты и Отзывы в одну строку */
     .profile-lots-reviews {
       font-size: 16px;
       color: #fff;
@@ -146,16 +143,14 @@
       border-radius: var(--border-radius);
     }
     .collapse-panel.open {
-      /* Достаточно большое значение max-height для вмещания контента */
       max-height: 300px;
       padding: 15px 20px;
     }
-    /* Пример стилей для содержимого панели */
     .panel-content {
       font-size: 14px;
       color: #fff;
     }
-    /* Блок действий: теперь только кнопка ID */
+    /* Блок действий: кнопка ID */
     .profile-actions {
       display: flex;
       flex-wrap: wrap;
@@ -319,6 +314,45 @@
         flex-direction: column;
       }
     }
+    /* Стили для оверлея при бане внутри профиля */
+    .ban-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      border-radius: var(--border-radius);
+    }
+    .ban-overlay h1 {
+      font-size: 36px;
+      color: #ff4d4d;
+      margin-bottom: 20px;
+    }
+    .ban-overlay p {
+      font-size: 20px;
+      margin-bottom: 20px;
+    }
+    .ban-overlay button {
+      padding: 12px 20px;
+      background: #d3be05;
+      border: none;
+      border-radius: 6px;
+      color: #000;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .ban-overlay button:hover {
+      background: #f1f1ec;
+    }
   </style>
 </head>
 <body>
@@ -351,7 +385,6 @@
       <div class="profile-user-info">
         <h1 class="profile-name" id="profileNickname">Загрузка...</h1>
         <div class="profile-status" id="profileStatus">Онлайн</div>
-        <!-- Одна строка для Лоты и Отзывы; по клику открывается соответствующая панель -->
         <div class="profile-lots-reviews">
           Лоты <span id="lotsCount" onclick="togglePanel('lotsPanel')">0</span> | 
           Отзывы <span id="reviewsCount" onclick="togglePanel('reviewsPanel')">0</span>
@@ -363,7 +396,6 @@
   <!-- Панель для Лотов (скрыта по умолчанию) -->
   <div id="lotsPanel" class="collapse-panel">
     <div class="panel-content">
-      <!-- Здесь разместите информацию о лотах -->
       <p>Список лотов будет здесь...</p>
       <button onclick="togglePanel('lotsPanel')">Закрыть</button>
     </div>
@@ -372,13 +404,12 @@
   <!-- Панель для Отзывов (скрыта по умолчанию) -->
   <div id="reviewsPanel" class="collapse-panel">
     <div class="panel-content">
-      <!-- Здесь разместите отзывы -->
       <p>Список отзывов будет здесь...</p>
       <button onclick="togglePanel('reviewsPanel')">Закрыть</button>
     </div>
   </div>
   
-  <!-- Блок действий: только кнопка ID -->
+  <!-- Блок действий: кнопка ID -->
   <section class="profile-actions">
     <button class="id-btn" id="toggleIdBtn">Показать ID</button>
   </section>
@@ -441,9 +472,17 @@
       <span>Профиль</span>
     </a>
   </div>
+
+  <!-- Оверлей для забаненного пользователя (по умолчанию скрыт) -->
+  <div id="banOverlay" class="ban-overlay" style="display: none;">
+    <h1>Аккаунт заблокирован</h1>
+    <p id="banReason">Причина: неизвестна</p>
+    <p id="banTime">Бан: не установлен</p>
+    <button onclick="logout()">Выйти</button>
+  </div>
   
   <script>
-    // Функция для переключения (открытия/закрытия) панелей
+    // Функция для переключения панелей
     function togglePanel(panelId) {
       const panel = document.getElementById(panelId);
       panel.classList.toggle('open');
@@ -469,18 +508,42 @@
     // Проверка авторизации и загрузка профиля
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
+        checkBanStatus(user);
         loadUserProfile(user);
       } else {
         window.location.href = "login.html";
       }
     });
 
+    // Функция проверки статуса бана и, при наличии, отображения оверлея с причиной и сроком
+    function checkBanStatus(user) {
+      const userRef = firebase.database().ref('users/' + user.uid);
+      userRef.once('value').then(snapshot => {
+        const userData = snapshot.val();
+        if (userData && userData.banned) {
+          let reason = userData.banReason || "Не указана";
+          let banInfo = "";
+          if (userData.unbanAt) {
+            let unbanDate = new Date(userData.unbanAt);
+            banInfo = "Бан до: " + unbanDate.toLocaleString("ru-RU");
+          } else {
+            banInfo = "Бан установлен навсегда.";
+          }
+          document.getElementById("banReason").innerText = "Причина: " + reason;
+          document.getElementById("banTime").innerText = banInfo;
+          document.getElementById("banOverlay").style.display = "flex";
+        }
+      }).catch(err => {
+        console.error("Ошибка проверки статуса бана:", err);
+      });
+    }
+
     // Загрузка данных профиля
     async function loadUserProfile(user) {
       const userId = user.uid;
       document.getElementById('userIdDisplay').innerText = userId;
 
-      // Пример статистики – здесь можно подгрузить реальные данные
+      // Пример статистики – подгрузите реальные данные при необходимости
       document.getElementById('lotsCount').textContent = 0;
       document.getElementById('reviewsCount').textContent = 0;
 
@@ -494,7 +557,7 @@
       // Баланс (скрыт в div#balanceAmount, выводим через гамбургер)
       let balance = userData.balance || "0";
       document.getElementById('balanceAmountDisplay').innerText = balance;
-      if(!document.getElementById('balanceAmount')) {
+      if (!document.getElementById('balanceAmount')) {
         let hidden = document.createElement('div');
         hidden.id = 'balanceAmount';
         hidden.style.display = 'none';
@@ -508,7 +571,7 @@
       let avatarUrl = userData.avatar || user.photoURL || "default-avatar.png";
       document.getElementById('profileAvatar').src = avatarUrl;
 
-      // Фон – если нет, подставляем дефолтное изображение
+      // Фон – если нет, используем дефолтное изображение
       let bgUrl = userData.backgroundImage || 'default-bg.jpg';
       document.getElementById('profileBannerBg').style.backgroundImage = `url(${bgUrl})`;
 
@@ -545,13 +608,13 @@
     // Функция списания средств
     async function deductAmount(amount) {
       const user = firebase.auth().currentUser;
-      if(!user) return false;
+      if (!user) return false;
       const userId = user.uid;
       const ref = firebase.database().ref('users/' + userId);
       const snapshot = await ref.once('value');
       let userData = snapshot.val();
       let currentBalance = parseFloat(userData.balance || 0);
-      if(currentBalance < amount) {
+      if (currentBalance < amount) {
         alert('Недостаточно средств для выполнения операции.');
         return false;
       }
@@ -563,7 +626,7 @@
     // Платная функция загрузки аватара
     function payAndUploadAvatar() {
       deductAmount(0).then(success => {
-        if(success) {
+        if (success) {
           openModal('avatarModal');
         }
       });
@@ -572,7 +635,7 @@
     // Платная функция загрузки фонового изображения
     function payAndUploadBackground() {
       deductAmount(100).then(success => {
-        if(success) {
+        if (success) {
           openModal('backgroundModal');
         }
       });
@@ -591,23 +654,18 @@
         alert('Пожалуйста, выберите изображение для загрузки.');
         return;
       }
-
       const bucketName = 'avatars';
       const filePath = `${Date.now()}_${file.name}`;
-
       const { data, error } = await supabaseClient.storage
         .from(bucketName)
         .upload(filePath, file);
-
       if (error) {
         alert('Ошибка загрузки: ' + JSON.stringify(error));
         return;
       }
-
       const { data: publicData } = await supabaseClient.storage
         .from(bucketName)
         .getPublicUrl(filePath);
-
       if (publicData && publicData.publicUrl) {
         document.getElementById('profileAvatar').src = publicData.publicUrl;
         firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
@@ -631,23 +689,18 @@
         alert('Пожалуйста, выберите изображение для загрузки.');
         return;
       }
-
       const bucketName = 'avatars';
       const filePath = `${Date.now()}_${file.name}`;
-
       const { data, error } = await supabaseClient.storage
         .from(bucketName)
         .upload(filePath, file);
-
       if (error) {
         alert('Ошибка загрузки: ' + JSON.stringify(error));
         return;
       }
-
       const { data: publicData } = await supabaseClient.storage
         .from(bucketName)
         .getPublicUrl(filePath);
-
       if (publicData && publicData.publicUrl) {
         document.getElementById('profileBannerBg').style.backgroundImage = `url(${publicData.publicUrl})`;
         firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
