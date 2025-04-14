@@ -240,7 +240,7 @@
     }
     .mobile-header .header-search .search-box input {
       width: 100%;
-      padding: 10px 45px 10px 15px; /* отступ слева 15px, справа побольше под иконку */
+      padding: 10px 45px 10px 15px; /* отступ слева 15px, справа под иконку */
       border: 1px solid #ccc;
       border-radius: 25px;
       outline: none;
@@ -250,7 +250,7 @@
     .mobile-header .header-search .search-box input:focus {
       border-color: #888;
     }
-    /* Кнопка лупы внутри input */
+    /* Кнопка-лупа внутри поля поиска */
     .mobile-header .header-search .search-box button {
       position: absolute;
       right: 15px;
@@ -262,7 +262,7 @@
       font-size: 18px;
       cursor: pointer;
     }
-    /* Выпадающий блок результатов на телефоне */
+    /* Выпадающий блок результатов поиска */
     .mobile-header .header-search .search-box .search-results {
       position: absolute;
       background: #fff;
@@ -342,7 +342,7 @@
       background-size: cover;
       background-position: center;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: transform var(--transition-speed);
+      transition: transform 0.3s;
     }
     .promo-item:hover {
       transform: scale(1.04);
@@ -362,7 +362,7 @@
       width: 140px;
       text-align: center;
       cursor: pointer;
-      transition: transform var(--transition-speed);
+      transition: transform 0.3s;
     }
     .user-card:hover { transform: scale(1.07); }
     .user-avatar {
@@ -396,7 +396,7 @@
       max-width: 200px;
       overflow: hidden;
       box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-      transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+      transition: transform 0.3s, box-shadow 0.3s;
       position: relative;
       cursor: pointer;
     }
@@ -439,7 +439,7 @@
       padding: 6px 10px;
       border-radius: 20px;
       cursor: pointer;
-      transition: background-color var(--transition-speed);
+      transition: background-color 0.3s;
       font-size: 0.9rem;
     }
     .price-add button:hover {
@@ -456,7 +456,7 @@
       padding: 4px 8px;
       border-radius: 20px;
       cursor: pointer;
-      transition: background-color var(--transition-speed);
+      transition: background-color 0.3s;
       font-size: 0.9rem;
     }
     .product-likes:hover {
@@ -715,6 +715,41 @@
       .product-card .pc-bottom .buy-btn:hover {
         background-color: var(--button-hover);
       }
+      
+      /* Нижняя мобильная навигация */
+      .mobile-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--header-gradient);
+        border-top: 1px solid #ccc;
+        padding: 8px 0;
+        z-index: 100;
+      }
+      .mobile-nav a {
+        flex: 1;
+        text-align: center;
+        color: var(--text-light);
+        font-size: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .mobile-nav a i {
+        font-size: 18px;
+        margin-bottom: 2px;
+      }
+      /* Для профиля вместо иконки будем выводить аватарку */
+      .mobile-nav a.profile-nav img.avatar-mobile {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        margin-bottom: 2px;
+      }
     }
     
     /* Тёмная тема */
@@ -919,14 +954,26 @@
   
   <!-- Мобильная навигация (только на мобилке) -->
   <div class="mobile-nav">
-    <a href="/profile"><i class="fas fa-user"></i><span>Профиль</span></a>
-    <a href="/chat"><i class="fas fa-comment-dots"></i><span>Чат</span></a>
-    <a href="/add"><i class="fas fa-plus"></i><span>Продать</span></a>
-    <a href="/index"><i class="fas fa-home"></i><span>Главная</span></a>
+    <a href="/index">
+      <i class="fas fa-home"></i>
+      <span>Главная</span>
+    </a>
+    <a href="/chat">
+      <i class="fas fa-comment-dots"></i>
+      <span>Чат</span>
+    </a>
+    <a href="/add">
+      <i class="fas fa-plus"></i>
+      <span>Продать</span>
+    </a>
+    <a href="/profile" class="profile-nav">
+      <img src="images/avatar.jpg" alt="Avatar" class="avatar-mobile">
+      <span>Профиль</span>
+    </a>
   </div>
   
   <script>
-    // Переключение темы для ПК и мобилки
+    // Переключение темы для ПК и мобильных устройств
     function applyTheme(theme, iconId) {
       if (theme === 'dark') {
         document.body.classList.add('dark-mode');
@@ -973,9 +1020,12 @@
             var userData = snapshot.val() || {};
             var avatarUrl = userData.avatar || user.photoURL || "images/avatar.jpg";
             document.querySelector('.profile-btn img.avatar').src = avatarUrl;
+            // Также обновляем аватарку в нижней навигации
+            document.querySelector('.mobile-nav a.profile-nav img.avatar-mobile').src = avatarUrl;
           });
         } else {
           document.querySelector('.profile-btn img.avatar').src = "images/avatar.jpg";
+          document.querySelector('.mobile-nav a.profile-nav img.avatar-mobile').src = "images/avatar.jpg";
         }
       });
       
@@ -999,24 +1049,24 @@
       // Поисковая логика
       const items = [
         { name: "Standoff 2", category: "Мобильные игры", link: "/standoff2", image: "images/standoff2.jpg" },
-        { name: "PUBG Mobile", category: "Мобильные игры", link: "/pubg-mobile", image: "images/pabg mobael.jpg" },
-        { name: "Counter-Strike", category: "Компьютерные игры", link: "/csgo", image: "images/csgo.jpg" },
-        { name: "World of Tanks", category: "Компьютерные игры", link: "/wot", image: "images/wot.jpg" },
-        { name: "Brawl Stars", category: "Мобильные игры", link: "/brawl-stars", image: "images/brv.jpg" },
-        { name: "Dota 2", category: "PC-игры", link: "/dota2", image: "images/dota.jpg" },
-        { name: "Call of Duty", category: "PC-игры", link: "/callofduty", image: "images/cal of duty.jpg" },
-        { name: "Fortnite", category: "PC-игры", link: "/fortnite", image: "images/fortna.jpg" },
-        { name: "GTA 5 Online", category: "PC-игры", link: "/gta5", image: "images/gta.jpg" },
-        { name: "Minecraft", category: "PC-игры", link: "/minecraft", image: "images/main.jpg" },
-        { name: "Rust", category: "PC-игры", link: "/rust", image: "images/rust.png" },
-        { name: "Roblox", category: "Мобильные игры", link: "/roblox", image: "images/roblox.jpg" },
-        { name: "Discord", category: "Приложения", link: "/discord", image: "images/diccord.jpg" },
-        { name: "Epic Gems", category: "Приложения", link: "/epic-gems", image: "images/epgems.jpg" },
-        { name: "PlayStation", category: "Приложения", link: "/playstation", image: "images/Playstetion.png" },
-        { name: "Spotify", category: "Приложения", link: "/spotify", image: "images/spotifay.jpg" },
-        { name: "Steam", category: "Приложения", link: "/steam", image: "images/steam.jpg" },
-        { name: "Telegram", category: "Приложения", link: "/telegram", image: "images/telegram.jpg" },
-        { name: "Tik Tok", category: "Приложения", link: "/tiktok", image: "images/tiktik.jpg" }
+        ,{ name: "PUBG Mobile", category: "Мобильные игры", link: "/pubg-mobile", image: "images/pabg mobael.jpg" },
+       , { name: "Counter-Strike", category: "Компьютерные игры", link: "/csgo", image: "images/csgo.jpg" },
+       , { name: "World of Tanks", category: "Компьютерные игры", link: "/wot", image: "images/wot.jpg" },
+      , { name: "Brawl Stars", category: "Мобильные игры", link: "/brawl-stars", image: "images/brv.jpg" },
+      ,   { name: "Dota 2", category: "PC-игры", link: "/dota2", image: "images/dota.jpg" },
+      ,  { name: "Call of Duty", category: "PC-игры", link: "/callofduty", image: "images/cal of duty.jpg" },
+      ,  { name: "Fortnite", category: "PC-игры", link: "/fortnite", image: "images/fortna.jpg" },
+      ,  { name: "GTA 5 Online", category: "PC-игры", link: "/gta5", image: "images/gta.jpg" },
+      ,  { name: "Minecraft", category: "PC-игры", link: "/minecraft", image: "images/main.jpg" },
+      ,  { name: "Rust", category: "PC-игры", link: "/rust", image: "images/rust.png" },
+      ,  { name: "Roblox", category: "Мобильные игры", link: "/roblox", image: "images/roblox.jpg" },
+      ,  { name: "Discord", category: "Приложения", link: "/discord", image: "images/diccord.jpg" },
+      ,  { name: "Epic Gems", category: "Приложения", link: "/epic-gems", image: "images/epgems.jpg" },
+      ,  { name: "PlayStation", category: "Приложения", link: "/playstation", image: "images/Playstetion.png" },
+      ,  { name: "Spotify", category: "Приложения", link: "/spotify", image: "images/spotifay.jpg" },
+      ,  { name: "Steam", category: "Приложения", link: "/steam", image: "images/steam.jpg" },
+      ,  { name: "Telegram", category: "Приложения", link: "/telegram", image: "images/telegram.jpg" },
+      ,  { name: "Tik Tok", category: "Приложения", link: "/tiktok", image: "images/tiktik.jpg" }
       ];
   
       const searchInput = document.querySelector('.search-input');
@@ -1127,7 +1177,6 @@
   
         // Создаём контейнер карточки
         const card = document.createElement('div');
-        // Переход на страницу товара при клике на саму карточку (если не по лайкам/кнопке)
         card.addEventListener('click', function(e) {
           if (e.target.closest('.pc-likes') || e.target.closest('.product-likes') || e.target.closest('button')) return;
           window.location.href = `/product-details?id=${key}`;
