@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!DOCTYPE html><html lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>GlovimPlaye</title>
@@ -194,18 +193,6 @@
       font-size: 140px;
       text-align: center;
     }
-    
-
-
-
-
-
-
-
-
-
-
-
 /* Контейнер для карточек */
 .promo-container {
   display: flex;
@@ -334,27 +321,6 @@
 .promo-btn:hover {
   background: #f1f1f1;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     h1 {
       text-align: center;
       font-size: 32px;
@@ -415,9 +381,6 @@
     .catalog-button:hover {
       background-color: #d81b60;
     }
-
-
-
    /* Полноэкранный баннер */
    .social-banner {
      position: relative;
@@ -513,26 +476,6 @@
        gap: 15px;
      }
    } 
-   
-   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     /* **************** Секции карточек (горизонтальные карусели) **************** */
     .section-title {
       font-size: 18px;
@@ -655,6 +598,118 @@
         flex-direction: column;
       }
     }
+
+
+
+
+
+
+      /* ===== Баннер слайдер ===== */
+      .main-banner {
+        position: relative;
+        max-width: 1200px;
+        height: 300px;
+        margin: 30px auto;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+      }
+  
+      .banner-track {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.5s ease-in-out;
+      }
+  
+      .banner-slide {
+        min-width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+      }
+  
+      .banner-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 20px;
+        color: #fff;
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 6px 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        z-index: 2;
+        transition: background 0.3s;
+      }
+  
+      .banner-nav:hover {
+        background-color: rgba(0, 0, 0, 0.6);
+      }
+  
+      .nav-left {
+        left: 10px;
+      }
+  
+      .nav-right {
+        right: 10px;
+      }
+  
+      /* ===== Категории ===== */
+      .cat-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        padding: 30px 20px;
+      }
+  
+      .cat-btn {
+        background-color: #1c1c1c;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 25px;
+        padding: 12px 24px;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        transition: background 0.3s ease, transform 0.2s ease;
+        display: inline-block;
+      }
+  
+      .cat-btn:hover {
+        background-color: #292929;
+        transform: translateY(-2px);
+      }
+  
+      .cat-btn:active {
+        background-color: #333;
+      }
+  
+      /* ===== Промо баннеры ===== */
+      .promo-grid {
+        display: flex;
+        gap: 20px;
+        max-width: 1200px;
+        margin: 20px auto 40px;
+        padding: 0 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+  
+      .promo-item {
+        flex: 1 1 48%;
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        border-radius: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      }
+  
+      @media (max-width: 768px) {
+        .promo-item {
+          flex: 1 1 100%;
+        }
+      }
   </style>
 </head>
 <body>
@@ -685,546 +740,36 @@
         <div class="search-results" id="search-results"></div>
       </div>
     </div>
-
     
-    <div class="promo-container">
-      <!-- Горизонтальная карточка акции "Скидки" с фото -->
-      <div class="promo-card horizontal">
-        <div class="promo-card-inner">
-          <!-- Лицевая сторона -->
-          <div class="promo-card-front promo-sale">
-            <!-- Блок для фото -->
-            <div class="promo-image">
-              <img src="images/app.jpg" alt="Promo Image">
-            </div>
-            <!-- Контейнер для текстового содержимого -->
-            <div class="promo-content">
-              <h2>Скидки</h2>
-              <p>До -50% на лучшие игры!</p>
-            </div>
-            <div class="promo-icon">
-              <i class="fas fa-fire"></i>
-            </div>
-          </div>
-          <!-- Обратная сторона -->
-          <div class="promo-card-back">
-            <div class="promo-content">
-              <p>Не упустите шанс! Акция ограничена по времени.</p>
-              <a href="#" class="promo-btn">Узнать больше</a>
-            </div>
-          </div>
+      <!-- Верхний слайдер -->
+      <div class="main-banner">
+        <div class="banner-track" id="banner-track">
+          <div class="banner-slide" style="background-image: url('images/baner1.jpg');"></div>
+          <div class="banner-slide" style="background-image: url('images/baner2.jpg');"></div>
+          <div class="banner-slide" style="background-image: url('images/baner3.jpg');"></div>
         </div>
+        <div class="banner-nav nav-left" onclick="prevSlide()">‹</div>
+        <div class="banner-nav nav-right" onclick="nextSlide()">›</div>
       </div>
     
-      <!-- Горизонтальная карточка акции "5% за друга" (без фото, если не нужно) -->
-      <div class="promo-card horizontal">
-        <div class="promo-card-inner">
-          <!-- Лицевая сторона -->
-          <div class="promo-card-front promo-friend">
-            <!-- Если фото не требуется, можно убрать promo-image -->
-            <div class="promo-content">
-              <h2>5% за друга</h2>
-              <p>Пригласите друга и получите бонус!</p>
-            </div>
-            <div class="promo-icon">
-              <i class="fas fa-gift"></i>
-            </div>
-          </div>
-          <!-- Обратная сторона -->
-          <div class="promo-card-back">
-            <div class="promo-content">
-              <p>Приведите друга и наслаждайтесь бонусами!</p>
-              <a href="#" class="promo-btn">Узнать больше</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-
-
-
-    <h1>Популярные игры</h1>
-
-    <div class="carousel-container">
-      <div class="carousel-track">
-        <!-- Первый набор карточек -->
-        <div class="game-card" onclick="location.href='roblox.html'">
-          <img src="images/roblox.jpg" alt="Roblox">
-          <div class="game-name">Roblox</div>
-        </div>
-        <div class="game-card" onclick="location.href='minecraft.html'">
-          <img src="images/minecraft.jpg" alt="Minecraft">
-          <div class="game-name">Minecraft</div>
-        </div>
-        <div class="game-card" onclick="location.href='rust.html'">
-          <img src="images/rust.png" alt="Rust">
-          <div class="game-name">Rust</div>
-        </div>
-        <div class="game-card" onclick="location.href='csgo.html'">
-          <img src="images/csgo.jpg" alt="CS:GO">
-          <div class="game-name">CS:GO</div>
-        </div>
-        <div class="game-card" onclick="location.href='fortnite.html'">
-          <img src="images/fortnite.jpg" alt="Fortnite">
-          <div class="game-name">Fortnite</div>
-        </div>
-        <div class="game-card" onclick="location.href='valorant.html'">
-          <img src="images/valorant.jpg" alt="Valorant">
-          <div class="game-name">Valorant</div>
-        </div>
-    
-        <!-- Дублируем чтобы бесконечно ехало -->
-        <div class="game-card" onclick="location.href='roblox.html'">
-          <img src="images/roblox.jpg" alt="Roblox">
-          <div class="game-name">Roblox</div>
-        </div>
-        <div class="game-card" onclick="location.href='minecraft.html'">
-          <img src="images/minecraft.jpg" alt="Minecraft">
-          <div class="game-name">Minecraft</div>
-        </div>
-        <div class="game-card" onclick="location.href='rust.html'">
-          <img src="images/rust.png" alt="Rust">
-          <div class="game-name">Rust</div>
-        </div>
-        <div class="game-card" onclick="location.href='csgo.html'">
-          <img src="images/csgo.jpg" alt="CS:GO">
-          <div class="game-name">CS:GO</div>
-        </div>
-        <div class="game-card" onclick="location.href='fortnite.html'">
-          <img src="images/fortnite.jpg" alt="Fortnite">
-          <div class="game-name">Fortnite</div>
-        </div>
-        <div class="game-card" onclick="location.href='valorant.html'">
-          <img src="images/valorant.jpg" alt="Valorant">
-          <div class="game-name">Valorant</div>
-        </div>
-      </div>
-    </div>
-    
-    <a href="catalog.html" class="catalog-button">Каталог</a>
-    
-    
-
-    
-
-
-
-
-
-   
-
-
-
-
-
-
-
-    
-
-      <style>
-     
-        .process-section {
-          max-width: 1000px;
-          margin: 40px auto;
-          padding: 20px;
-          text-align: center;
-        }
-        
-        .process-section h2 {
-          font-size: 36px;
-          margin-bottom: 10px;
-          text-transform: uppercase;
-          letter-spacing: 2px;
-        }
-        
-        .process-section p.subheading {
-          font-size: 18px;
-          color: rgba(255,255,255,0.8);
-          margin-bottom: 40px;
-        }
-        
-        .process-cards {
-          display: flex;
-          justify-content: center;
-          gap: 40px;
-          flex-wrap: wrap;
-        }
-        
-        .process-card {
-          background: linear-gradient(135deg, #1f1f1f, #333);
-          border-radius: 20px;
-          padding: 40px 20px;
-          width: 450px;
-          cursor: pointer;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .process-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 12px 30px rgba(0,0,0,0.8);
-        }
-        
-        .process-card i {
-          font-size: 70px;
-          color: #fffef7;
-          margin-bottom: 30px;
-        }
-        
-        .process-card h3 {
-          font-size: 28px;
-          margin-bottom: 10px;
-          text-transform: uppercase;
-        }
-        
-        .process-card p {
-          font-size: 16px;
-          line-height: 1.5;
-          color: rgba(255,255,255,0.9);
-        }
-        
-        .show-scheme-btn {
-          margin-top: 20px;
-          background: #ffd700;
-          color: #000;
-          border: none;
-          padding: 10px 20px;
-          font-size: 16px;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background 0.3s ease;
-        }
-        
-        .show-scheme-btn:hover {
-          background: #e6c200;
-        }
-        
-        /* Модальное окно */
-        .modal {
-          display: none;
-          position: fixed;
-          z-index: 1000;
-          left: 0;
-          top: 0;
-          width: 100%;
-          height: 100%;
-          overflow: auto;
-          background-color: rgba(0,0,0,0.8);
-          padding: 40px;
-        }
-        
-        .modal-content {
-          background: #222;
-          margin: 5% auto;
-          padding: 20px;
-          border-radius: 10px;
-          max-width: 800px;
-          position: relative;
-          text-align: left;
-        }
-        
-        .modal-content h3 {
-          margin-top: 0;
-          font-size: 28px;
-          text-transform: uppercase;
-        }
-        
-        .modal-content .timeline {
-          margin-top: 20px;
-        }
-        
-        .modal-content .timeline::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          left: 20px;
-          width: 4px;
-          background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .modal-content .timeline-item {
-          position: relative;
-          padding: 20px 40px;
-          margin-bottom: 20px;
-          box-sizing: border-box;
-        }
-        
-        .modal-content .timeline-item::before {
-          content: "";
-          position: absolute;
-          top: 30px;
-          left: 10px;
-          width: 16px;
-          height: 16px;
-          background: #ffd700;
-          border-radius: 50%;
-          border: 4px solid #fff;
-          z-index: 1;
-        }
-        
-        .modal-content .timeline-content {
-          background: rgba(255,255,255,0.1);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255,255,255,0.2);
-          border-radius: 10px;
-          padding: 20px;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .modal-content .timeline-content:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-        }
-        
-        .modal-content .timeline-content i {
-          font-size: 40px;
-          color: #ffd700;
-          margin-bottom: 10px;
-        }
-        
-        .modal-content .step-number {
-          display: inline-block;
-          background: #ffd700;
-          color: #000;
-          width: 30px;
-          height: 30px;
-          line-height: 30px;
-          text-align: center;
-          border-radius: 50%;
-          font-weight: bold;
-          margin-bottom: 10px;
-        }
-        
-        .modal-content .timeline-content h4 {
-          font-size: 20px;
-          margin-bottom: 10px;
-          text-transform: uppercase;
-          color: #fff;
-        }
-        
-        .modal-content .timeline-content p {
-          font-size: 16px;
-          line-height: 1.5;
-          color: rgba(255,255,255,0.9);
-        }
-        
-        .close-modal {
-          position: absolute;
-          top: 10px;
-          right: 15px;
-          font-size: 28px;
-          font-weight: bold;
-          color: #fff;
-          cursor: pointer;
-        }
-        
-        @media (max-width: 600px) {
-          .process-cards {
-            flex-direction: column;
-          }
-          
-          .process-card {
-            width: 90%;
-          }
-        }
-      </style>
-    
-    
-      <!-- Секция "Как проходит сделка" -->
-      <section class="process-section">
-        <div class="container">
-          <h2>Как проходит сделка</h2>
-          <p class="subheading">Нажмите на карточку, чтобы увидеть подробную схему процесса</p>
-          <div class="process-cards">
-            <!-- Карточка "Покупка" -->
-            <div class="process-card">
-              <i class="fas fa-shopping-cart"></i>
-              <h3>Покупка</h3>
-              <p>Узнайте, как безопасно выбрать и оплатить товар.</p>
-              <button class="show-scheme-btn" onclick="openModal('buy')">Показать схему покупки</button>
-            </div>
-            <!-- Карточка "Продажа" -->
-            <div class="process-card">
-              <i class="fas fa-handshake"></i>
-              <h3>Продажа</h3>
-              <p>Узнайте, как быстро и безопасно продать ваш товар.</p>
-              <button class="show-scheme-btn" onclick="openModal('sell')">Показать схему продажи</button>
-            </div>
-          </div>
-        </div>
-      </section>
-    
-      <!-- Модальное окно для схемы покупки -->
-      <div id="modal-buy" class="modal">
-        <div class="modal-content">
-          <span class="close-modal" onclick="closeModal('buy')">&times;</span>
-          <h3>Схема процесса покупки</h3>
-          <!-- Вставляем HTML-схему покупки -->
-          <div class="timeline">
-            <div class="timeline-item">
-              <div class="timeline-content">
-                <span class="step-number">1</span>
-                <i class="fas fa-search"></i>
-                <h4>Выбор товара</h4>
-                <p>Найдите товар, который идеально соответствует вашим требованиям.</p>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-content">
-                <span class="step-number">2</span>
-                <i class="fas fa-shopping-cart"></i>
-                <h4>Оформление заказа</h4>
-                <p>Добавьте товар в корзину и оформите заказ с минимальными усилиями.</p>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-content">
-                <span class="step-number">3</span>
-                <i class="fas fa-credit-card"></i>
-                <h4>Оплата</h4>
-                <p>Произведите оплату через нашу защищённую систему.</p>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-content">
-                <span class="step-number">4</span>
-                <i class="fas fa-truck"></i>
-                <h4>Доставка</h4>
-                <p>Получите товар, доставленный прямо к вам домой.</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- Категории -->
+      <div class="cat-list">
+        <a href="/electronics" class="cat-btn">Электроника</a>
+        <a href="/clothes" class="cat-btn">Одежда</a>
+        <a href="/shoes" class="cat-btn">Обувь</a>
+        <a href="/tools" class="cat-btn">Инструменты</a>
+        <a href="/auto" class="cat-btn">Авто</a>
+        <a href="/accessories" class="cat-btn">Аксессуары</a>
       </div>
     
-      <!-- Модальное окно для схемы продажи -->
-      <div id="modal-sell" class="modal">
-        <div class="modal-content">
-          <span class="close-modal" onclick="closeModal('sell')">&times;</span>
-          <h3>Схема процесса продажи</h3>
-          <!-- Вставляем HTML-схему продажи -->
-          <div class="timeline">
-            <div class="timeline-item">
-              <div class="timeline-content">
-                <span class="step-number">1</span>
-                <i class="fas fa-camera"></i>
-                <h4>Подготовка товара</h4>
-                <p>Сделайте качественные фото и опишите ваш товар.</p>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-content">
-                <span class="step-number">2</span>
-                <i class="fas fa-edit"></i>
-                <h4>Размещение объявления</h4>
-                <p>Опубликуйте объявление на нашей платформе в пару кликов.</p>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-content">
-                <span class="step-number">3</span>
-                <i class="fas fa-phone"></i>
-                <h4>Общение</h4>
-                <p>Обсудите детали сделки с потенциальным покупателем.</p>
-              </div>
-            </div>
-            <div class="timeline-item">
-              <div class="timeline-content">
-                <span class="step-number">4</span>
-                <i class="fas fa-handshake"></i>
-                <h4>Сделка</h4>
-                <p>Заключите сделку и получите оплату безопасно и быстро.</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- Нижние баннеры -->
+      <div class="promo-grid">
+        <div class="promo-item" style="background-image: url('images/baner4.jpg');"></div>
+        <div class="promo-item" style="background-image: url('images/baner5.jpg');"></div>
       </div>
-    
-      <script>
-        // Функция открытия модального окна
-        function openModal(type) {
-          if (type === 'buy') {
-            document.getElementById('modal-buy').style.display = 'block';
-          } else if (type === 'sell') {
-            document.getElementById('modal-sell').style.display = 'block';
-          }
-        }
-        
-        // Функция закрытия модального окна
-        function closeModal(type) {
-          if (type === 'buy') {
-            document.getElementById('modal-buy').style.display = 'none';
-          } else if (type === 'sell') {
-            document.getElementById('modal-sell').style.display = 'none';
-          }
-        }
-        
-        // Закрытие модального окна при клике вне его содержимого
-        window.onclick = function(event) {
-          const modalBuy = document.getElementById('modal-buy');
-          const modalSell = document.getElementById('modal-sell');
-          if (event.target === modalBuy) {
-            modalBuy.style.display = 'none';
-          }
-          if (event.target === modalSell) {
-            modalSell.style.display = 'none';
-          }
-        }
-      </script>
     
    
-
- 
-  
-
-
-
-      <div class="social-banner">
-        <div class="overlay">
-          <div class="social-banner__content">
-            <h1>Мы в социальных сетях</h1>
-            <p>
-              Присоединяйтесь к нашему сообществу и будьте в курсе всех новостей и обновлений!
-            </p>
-            <div class="social-banner__icons">
-              <a href="#" class="icon-link" title="Новости в Telegram">
-                <img src="https://cdn-icons-png.flaticon.com/512/2111/2111646.png" alt="Telegram">
-              </a>
-              <a href="#" class="icon-link" title="Новости в VK">
-                <img src="https://cdn-icons-png.flaticon.com/512/145/145813.png" alt="VK">
-              </a>
-              <a href="#" class="icon-link" title="Новости в Discord">
-                <img src="https://cdn-icons-png.flaticon.com/512/2111/2111370.png" alt="Discord">
-              </a>
-              <a href="#" class="icon-link" title="Канал на YouTube">
-                <img src="https://cdn-icons-png.flaticon.com/512/1384/1384060.png" alt="YouTube">
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
     
-    
-        
-       
-
-
-
-
-
-
-    
-    
-    
-    <!-- Футер -->
-    <footer>
-      &copy; 2025 GlovimPlaye. Все права защищены.
-    </footer>
-  </div>
-  
   <!-- Скрипты -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -1276,93 +821,115 @@
           console.log("Пользователь не авторизован");
         }
       });
+   
+  // Поисковая логика
+  const items = [
+  { name: "Standoff 2", category: "Мобильные игры", link: "standoff2.html", image: "images/standoff2.jpg" },
+  { name: "PUBG Mobile", category: "Мобильные игры", link: "pubg-mobile.html", image: "images/pabg mobael.jpg" },
+  { name: "Counter-Strike", category: "Компьютерные игры", link: "csgo.html", image: "images/csgo.jpg" },
+  { name: "World of Tanks", category: "Компьютерные игры", link: "wot.html", image: "images/wot.jpg" },
+  { name: "Brawl Stars", category: "Мобильные игры", link: "brawl-stars.html", image: "images/brv.jpg" },
+  { name: "Dota 2", category: "PC-игры", link: "dota2.html", image: "images/dota.jpg" },
+  { name: "Call of Duty", category: "PC-игры", link: "callofduty.html", image: "images/cal of duty.jpg" },
+  { name: "Fortnite", category: "PC-игры", link: "fortnite.html", image: "images/fortna.jpg" },
+  { name: "GTA 5 Online", category: "PC-игры", link: "gta5.html", image: "images/gta.jpg" },
+  { name: "Minecraft", category: "PC-игры", link: "minecraft.html", image: "images/main.jpg" },
+  { name: "Rust", category: "PC-игры", link: "rust.html", image: "images/rust.png" },
+  { name: "Roblox", category: "Мобильные игры", link: "roblox.html", image: "images/roblox.jpg" },
+  { name: "Discord", category: "Приложения", link: "discord.html", image: "images/diccord.jpg" },
+  { name: "Epic Gems", category: "Приложения", link: "epic-gems.html", image: "images/epgems.jpg" },
+  { name: "PlayStation", category: "Приложения", link: "playstation.html", image: "images/Playstetion.png" },
+  { name: "Spotify", category: "Приложения", link: "spotify.html", image: "images/spotifay.jpg" },
+  { name: "Steam", category: "Приложения", link: "steam.html", image: "images/steam.jpg" },
+  { name: "Telegram", category: "Приложения", link: "telegram.html", image: "images/telegram.jpg" },
+  { name: "Tik Tok", category: "Приложения", link: "tiktok.html", image: "images/tiktik.jpg" }
+];
+
+const searchInput = document.querySelector('.search-input');
+const searchButton = document.querySelector('.search-btn');
+const searchResultsContainer = document.getElementById('search-results');
+
+function showSearchResults(query) {
+  searchResultsContainer.innerHTML = '';
+  if (!query) {
+    searchResultsContainer.style.display = 'none';
+    return;
+  }
+  const lowerQuery = query.toLowerCase();
+  const filteredItems = items.filter(item =>
+    item.name.toLowerCase().includes(lowerQuery) ||
+    item.category.toLowerCase().includes(lowerQuery)
+  );
+  if (filteredItems.length === 0) {
+    searchResultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
+  } else {
+    filteredItems.forEach(item => {
+      const resultItem = document.createElement('div');
+      resultItem.classList.add('search-result-item');
       
-      // Поисковая логика
-      const items = [
-        { name: "Standoff 2", category: "Мобильные игры", link: "standoff2.html", image: "images/standoff2.jpg" },
-        { name: "PUBG Mobile", category: "Мобильные игры", link: "pubg-mobile.html", image: "images/pabg mobael.jpg" },
-        { name: "Counter-Strike", category: "Компьютерные игры", link: "csgo.html", image: "images/csgo.jpg" },
-        { name: "World of Tanks", category: "Компьютерные игры", link: "wot.html", image: "images/wot.jpg" },
-        { name: "Brawl Stars", category: "Мобильные игры", link: "brawl-stars.html", image: "images/brv.jpg" },
-        { name: "Dota 2", category: "PC-игры", link: "dota2.html", image: "images/dota.jpg" },
-        { name: "Call of Duty", category: "PC-игры", link: "callofduty.html", image: "images/cal of duty.jpg" },
-        { name: "Fortnite", category: "PC-игры", link: "fortnite.html", image: "images/fortna.jpg" },
-        { name: "GTA 5 Online", category: "PC-игры", link: "gta5.html", image: "images/gta.jpg" },
-        { name: "Minecraft", category: "PC-игры", link: "minecraft.html", image: "images/main.jpg" },
-        { name: "Rust", category: "PC-игры", link: "rust.html", image: "images/rust.png" },
-        { name: "Roblox", category: "Мобильные игры", link: "roblox.html", image: "images/roblox.jpg" },
-        { name: "Discord", category: "Приложения", link: "discord.html", image: "images/diccord.jpg" },
-        { name: "Epic Gems", category: "Приложения", link: "epic-gems.html", image: "images/epgems.jpg" },
-        { name: "PlayStation", category: "Приложения", link: "playstation.html", image: "images/Playstetion.png" },
-        { name: "Spotify", category: "Приложения", link: "spotify.html", image: "images/spotifay.jpg" },
-        { name: "Steam", category: "Приложения", link: "steam.html", image: "images/steam.jpg" },
-        { name: "Telegram", category: "Приложения", link: "telegram.html", image: "images/telegram.jpg" },
-        { name: "Tik Tok", category: "Приложения", link: "tiktok.html", image: "images/tiktik.jpg" }
-      ];
+      const imgElement = document.createElement('img');
+      imgElement.src = item.image;
+      imgElement.alt = item.name;
       
-      const searchInput = document.querySelector('.search-input');
-      const searchButton = document.querySelector('.search-btn');
-      const searchResultsContainer = document.getElementById('search-results');
+      const textElement = document.createElement('div');
+      textElement.classList.add('result-text');
       
-      function showSearchResults(query) {
-        searchResultsContainer.innerHTML = '';
-        if (!query) {
-          searchResultsContainer.style.display = 'none';
-          return;
-        }
-        const lowerQuery = query.toLowerCase();
-        const filteredItems = items.filter(item =>
-          item.name.toLowerCase().includes(lowerQuery) ||
-          item.category.toLowerCase().includes(lowerQuery)
-        );
-        if (filteredItems.length === 0) {
-          searchResultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
-        } else {
-          filteredItems.forEach(item => {
-            const resultItem = document.createElement('div');
-            resultItem.classList.add('search-result-item');
-            
-            const imgElement = document.createElement('img');
-            imgElement.src = item.image;
-            imgElement.alt = item.name;
-            
-            const textElement = document.createElement('div');
-            textElement.classList.add('result-text');
-            
-            const nameElement = document.createElement('div');
-            nameElement.classList.add('result-name');
-            nameElement.textContent = item.name;
-            
-            const categoryElement = document.createElement('div');
-            categoryElement.textContent = item.category;
-            
-            textElement.appendChild(nameElement);
-            textElement.appendChild(categoryElement);
-            resultItem.appendChild(imgElement);
-            resultItem.appendChild(textElement);
-            
-            resultItem.addEventListener('click', () => { window.location.href = item.link; });
-            
-            searchResultsContainer.appendChild(resultItem);
-          });
-        }
-        searchResultsContainer.style.display = 'block';
-      }
+      const nameElement = document.createElement('div');
+      nameElement.classList.add('result-name');
+      nameElement.textContent = item.name;
       
-      searchButton.addEventListener('click', () => {
-        const query = searchInput.value.trim();
-        showSearchResults(query);
-      });
-      searchInput.addEventListener('input', () => {
-        const query = searchInput.value.trim();
-        showSearchResults(query);
-      });
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.search-box') && !e.target.closest('#search-results')) {
-          searchResultsContainer.style.display = 'none';
-        }
-      });
+      const categoryElement = document.createElement('div');
+      categoryElement.textContent = item.category;
+      
+      textElement.appendChild(nameElement);
+      textElement.appendChild(categoryElement);
+      resultItem.appendChild(imgElement);
+      resultItem.appendChild(textElement);
+      
+      resultItem.addEventListener('click', () => { window.location.href = item.link; });
+      
+      searchResultsContainer.appendChild(resultItem);
     });
-  </script>
-</body>
-</html>
+  }
+  searchResultsContainer.style.display = 'block';
+}
+
+searchButton.addEventListener('click', () => {
+  const query = searchInput.value.trim();
+  showSearchResults(query);
+});
+searchInput.addEventListener('input', () => {
+  const query = searchInput.value.trim();
+  showSearchResults(query);
+});
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-box') && !e.target.closest('#search-results')) {
+    searchResultsContainer.style.display = 'none';
+  }
+});
+
+
+
+  let currentIndex = 0;
+  const slides = document.getElementById('banner-track');
+  const totalSlides = slides.children.length;
+
+  function showSlide(index) {
+    slides.style.transform = `translateX(-${index * 100}%)`;
+  }
+
+  function nextSlide() {
+    currentIndex = (currentIndex + 1) % totalSlides;
+    showSlide(currentIndex);
+  }
+
+  function prevSlide() {
+    currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+    showSlide(currentIndex);
+  }
+
+  setInterval(nextSlide, 5000);
+</script>
+
+
+

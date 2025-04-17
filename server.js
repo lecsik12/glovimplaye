@@ -1,66 +1,60 @@
-// server.js
 const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios'); // Для реальных запросов к API платежной системы
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+
+// Настройка хранилища для multer: файлы будут сохраняться в папку 'uploads'
+const upload = multer({
+  dest: path.join(__dirname, 'uploads'),
+});
+
 const app = express();
+const port = 3000;
 
-// Разбор JSON в теле запроса
-app.use(bodyParser.json());
-
-// Статическая папка для клиентских файлов (например, HTML, CSS, JS)
+// Для демонстрации отдадим простой клиентский HTML для загрузки файлов
 app.use(express.static('public'));
 
-/**
- * Эндпоинт для создания платежного запроса.
- * Принимает: amount, method, transactionId, userId, email
- * Возвращает paymentLink (ссылку для оплаты)
- */
-app.post('/create-payment', async (req, res) => {
-  const { amount, method, transactionId, userId, email } = req.body;
-
-  // Здесь должен быть вызов API платежной системы (CryptoBot / CryptoPay)
-  // Для демонстрации формируем ссылку вручную:
-  let paymentLink = "";
-  if(method === 'cryptobot') {
-    // Пример ссылки для CryptoBot (здесь можно использовать ваш шаблон)
-    paymentLink = `https://t.me/CryptoBot?start=send_${amount}_RUB_${transactionId}`;
-  } else if(method === 'bankcard') {
-    // Если выбран способ банковской карты — формируется другая ссылка или происходит редирект на платежный шлюз
-    paymentLink = `https://yourbankgateway.example/pay?amount=${amount}&tx=${transactionId}`;
+// Эндпоинт для загрузки файлов Tdata (принимаем несколько файлов)
+app.post('/upload-tdata', upload.array('files', 100), (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: 'Нет файлов для загрузки.' });
   }
 
-  // Здесь можно сохранить транзакцию в БД для последующего отслеживания
-  console.log(`Создана транзакция:
-    ID пользователя: ${userId},
-    Email: ${email},
-    Сумма: ${amount},
-    Метод: ${method},
-    TransactionID: ${transactionId}`);
+  console.log('Загруженные файлы:', req.files.map(file => file.originalname));
 
-  res.json({ paymentLink });
+  // Здесь нужно реализовать обработку файлов Tdata.
+  // В реальной реализации вы бы использовали TDLib или другой инструмент для восстановления сессии.
+  // Для демонстрации вызываем функцию processTdata, которая имитирует обработку и генерирует код входа.
+  processTdata(req.files)
+    .then((loginCode) => {
+      res.json({ loginCode });
+    })
+    .catch((error) => {
+      console.error('Ошибка обработки Tdata:', error);
+      res.status(500).json({ error: 'Ошибка обработки Tdata.' });
+    });
 });
 
-/**
- * Эндпоинт для обработки webhook (обратного вызова) от платежной системы.
- * Здесь платежная система уведомляет сервер о статусе платежа.
- */
-app.post('/payment-callback', (req, res) => {
-  const { transactionId, status, amount } = req.body;
-  console.log(`Webhook получен:
-    TransactionID: ${transactionId},
-    Статус: ${status},
-    Сумма: ${amount}`);
-  
-  // Если статус "success" — обновите баланс пользователя в БД
-  if (status === 'success') {
-    // updateUserBalance(transactionId, amount);
-  }
-  
-  // Отправляем подтверждение платежной системе
-  res.status(200).send('OK');
+// Функция имитирующая обработку Tdata и генерацию кода входа.
+// В реальной реализации здесь нужно:
+//  - Проанализировать содержимое полученных файлов Tdata
+//  - Использовать TDLib или серверные библиотеки для восстановления сессии
+//  - Осуществить фактический вход в аккаунт Telegram
+function processTdata(files) {
+  return new Promise((resolve, reject) => {
+    // Например, можно прочитать файлы и подготовить их для TDLib (это лишь демонстрация!)
+    // console.log(files);
+    
+    // Имитируем задержку обработки (например, парсинг, вызовы к Telegram API и т.д.)
+    setTimeout(() => {
+      // Генерируем случайный 6-значный код для демонстрации
+      const loginCode = Math.floor(100000 + Math.random() * 900000).toString();
+      resolve(loginCode);
+    }, 2000);
+  });
+}
+
+app.listen(port, () => {
+  console.log(`Сервер запущен на http://localhost:${port}`);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
-});

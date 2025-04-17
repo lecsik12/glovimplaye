@@ -2,599 +2,452 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Правила</title>
+  <title>GlovimPay | Добавить товар</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Фавикон -->
+  <link rel="icon" type="image/png" href="images/logo (2).png" sizes="16x16">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <!-- CryptoJS for AES encryption -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Базовый сброс и общие стили */
-    * {
-      margin: 0; 
-      padding: 0;
+    :root {
+      --primary-color: #ff6b6b;
+      --primary-hover: #ff3b3b;
+      --bg-light: #fdfdff;
+      --bg-dark: #121212;
+      --text-light: #333;
+      --text-dark: #e0e0e0;
+      --card-shadow: rgba(0,0,0,0.2);
+      --transition-speed: 0.3s;
+      --sidebar-gradient: linear-gradient(135deg, #fffc7f, #ffae7d);
+      --header-gradient: linear-gradient(135deg, #a8ff78, #78ffd6);
+      --button-bg: #ffc107;
+      --button-hover: #ffca28;
+      --border-radius: 12px;
+    }
+    *, *::before, *::after {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f3f3;
-      color: #333;
-      padding: 20px;
-      line-height: 1.4;
+    html, body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background var(--transition-speed), color var(--transition-speed);
     }
-    h1, h2, h3 {
-      margin-bottom: 10px;
-      color: #222;
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
     }
-    p {
-      margin-bottom: 15px;
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; }
+
+/* Ограничение размера аватарки в сайдбаре */
+.profile-btn .avatar {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Ограничение размера аватарки в нижней мобильной навигации */
+.mobile-nav .profile-nav img {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+
+
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px; position: fixed; top: 0; bottom: 0; left: 0;
+      background: var(--sidebar-gradient); padding: 20px 10px;
+      box-shadow: 2px 0 8px var(--card-shadow);
+    }
+    .sidebar .logo {
+      display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px;
+    }
+    .sidebar .logo img { width: 50px; height: 50px; border-radius: 50%; }
+    .sidebar .logo h1 { font-size: 24px; font-weight: 600; color: var(--text-light); }
+    .sidebar nav a {
+      display: flex; align-items: center; padding: 12px 20px; margin: 5px 0;
+      background: #fff; border-radius: var(--border-radius); color: var(--text-light);
+      transition: background var(--transition-speed);
+    }
+    .sidebar nav a:hover { background: #f7f7f7; }
+    .nav-icon { width: 30px; text-align: center; margin-right: 10px; }
+
+    /* Desktop header */
+    header.desktop-header {
+      background: var(--header-gradient);
+      padding: 15px 20px;
+      border-radius: var(--border-radius);
+      width: calc(100% - 290px);
+      margin: 0 20px 20px 270px;
+      position: sticky; top: 10px; z-index: 10;
+      display: flex; align-items: center;
+    }
+    .desktop-header .search-box {
+      flex: 1; position: relative;
+    }
+    .desktop-header .search-box input {
+      width: 100%; padding: 10px 45px 10px 15px;
+      border: none; border-radius: 25px; background: #fff;
+    }
+    .desktop-header .search-box button {
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; font-size: 18px; color: #888;
+    }
+    #themeToggle {
+      background: none; border: none; font-size: 22px; margin-left: 15px; color: #fff;
     }
 
-    /* Контейнер для всего контента */
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    /* Mobile header */
+    header.mobile-header {
+      display: none; flex-direction: column;
+      position: fixed; top: 0; left: 0; right: 0;
+      background: var(--header-gradient); z-index: 11;
+    }
+    .mobile-header .header-top {
+      display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;
+    }
+    .mobile-header .header-top .logo img { width: 30px; height: 30px; }
+    .mobile-header .header-top .logo h1 { font-size: 20px; margin-left: 10px; }
+    .mobile-header .header-top button { background: none; border: none; font-size: 22px; }
+    .mobile-header .header-search {
+      padding: 10px 20px; position: relative;
+    }
+    .mobile-header .header-search input {
+      width: 100%; padding: 10px 45px 10px 15px;
+      border: none; border-radius: 25px; background: #fff;
+    }
+    .mobile-header .header-search button {
+      position: absolute; right: 25px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; font-size: 18px; color: #888;
     }
 
-    /* Заголовок главной страницы */
-    .container h1 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #ff7f50;
+    /* Main content */
+    .main-content {
+      margin-left: 250px; padding: 20px;
     }
 
-    /* Стили таблиц «Нарушение / Санкции» */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
+    /* Add-product form */
+    .form-container {
+      background: #fff; color: #333;
+      padding: 20px; border-radius: var(--border-radius);
+      box-shadow: 0 4px 8px var(--card-shadow);
+      max-width: 800px; margin: 140px auto 60px;
     }
-    thead tr {
-      background: #ff7f50;
-      color: #fff;
+    body.dark-mode .form-container {
+      background: #1e1e1e; color: #e0e0e0;
     }
-    th, td {
-      padding: 10px;
-      vertical-align: top;
-      border: 1px solid #ddd;
+    .form-container h2 {
+      text-align: center; margin-bottom: 20px; color: var(--primary-color);
     }
-    th {
-      text-align: left;
-      width: 40%;
+    #addProductForm {
+      display: flex; flex-direction: column; gap: 12px;
     }
-    tbody tr:nth-child(even) {
-      background: #f9f9f9;
+    #addProductForm label { font-weight: 600; }
+    #addProductForm input,
+    #addProductForm select,
+    #addProductForm textarea {
+      padding: 10px; border: 1px solid #ccc; border-radius: 6px;
+      font-size: 14px; background: transparent; color: inherit; width: 100%;
     }
-    tbody tr:nth-child(odd) {
-      background: #fff;
+    #addProductForm button {
+      align-self: flex-start; padding: 10px 20px;
+      background: var(--button-bg); color: #333; border: none;
+      border-radius: 20px; font-weight: 600;
+      transition: background var(--transition-speed);
     }
-    /* Подзаголовки (2.1, 2.2 и т.д.) */
-    h3 {
-      margin-top: 30px;
-      margin-bottom: 10px;
-      color: #ff7f50;
-    }
+    #addProductForm button:hover { background: var(--button-hover); }
 
-    /* Дополнительные отступы между секциями */
-    section {
-      margin-bottom: 40px;
+    /* Mobile nav */
+    .mobile-nav { display: none; }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin: 0; padding: 0; }
+      header.desktop-header { display: none; }
+      header.mobile-header { display: flex; }
+      body { padding-top: 120px; }
+
+      .form-container { margin: 160px 10px 80px; }
+
+      .mobile-nav {
+        display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--header-gradient); justify-content: space-around;
+        padding: 10px 0; box-shadow: 0 -2px 8px var(--card-shadow);
+        z-index: 10;
+      }
+      .mobile-nav a {
+        flex: 1; text-align: center; color: #fff; font-size: 12px;
+      }
+      .mobile-nav a i { font-size: 18px; margin-bottom: 4px; }
+      .mobile-nav a.profile-nav img {
+        width: 24px; height: 24px; border-radius: 50%; margin-bottom: 2px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Правила</h1>
 
-    <!-- 1. Общие правила -->
-    <section>
-      <h2>1. Общие правила</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Нарушение</th>
-            <th>Санкции</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <strong>1.1.</strong> Передача другому пользователю контактных данных (Telegram, Discord, ВКонтакте, телефон и др.) любым способом. Использование контактных данных, полученных от другого пользователя. Связь в игре после выполнения заказа.
-            </td>
-            <td>
-              Временная блокировка при первом и незлонамеренном нарушении. Блокировка аккаунта и отказ в выплатах при повторном нарушении.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.2.</strong> Недобросовестное использование системы отзывов (накрутка, шантаж, безосновательное изменение отзыва по старому заказу и т. д.).
-            </td>
-            <td>
-              Удаление отзыва. Блокировка аккаунта при повторном нарушении (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.3.</strong> Передача третьим лицам либо разглашение какой-либо информации (имя пользователя, идентификатор игрока, сумма и пр.) с целью нанесения вреда пользователю.
-            </td>
-            <td>
-              Блокировка всех аккаунтов. Отказ в выплатах. Блокировка всех новых аккаунтов нарушителя по мере их обнаружения.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.4.</strong> Попытка покупки или продажи аккаунта FunPay.
-            </td>
-            <td>
-              Блокировка всех аккаунтов (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.5.</strong> Размещение на аватаре ссылок или названий любых интернет-ресурсов, противозаконной, порнографической или политической информации (флаги, исторические деятели и т. д.).
-            </td>
-            <td>
-              Удаление аватара. Блокировка аккаунта при повторном нарушении (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.6.</strong> Упоминание в имени ссылок или названий любых интернет-ресурсов, противозаконной или политической информации.
-            </td>
-            <td>
-              Переименование.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.7.</strong> Нарушения в общем чате: сообщения о продаже, ссылки на предложения, обсуждение или реклама торговых интернет-ресурсов, размещение запросов на массовую покупку товаров в несоответствующем разделе, критика других продавцов или их предложений, спам, флуд, оскорбления, политические обсуждения, а также любые сообщения, нарушающие действующее законодательство.
-            </td>
-            <td>
-              Временная блокировка общего чата. При повторных нарушениях возможна блокировка аккаунта (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.8.</strong> Нарушение правил общения в личном чате или ином месте: оскорбления, угрозы, спам предложениями, флуд. Навязывание диалога с политическим подтекстом, отправка материалов эротического характера без согласия собеседника.
-            </td>
-            <td>
-              Предупреждение. При многократных нарушениях возможна временная блокировка аккаунта.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.9.</strong> Реклама, спам, массовая рассылка пользователям.
-            </td>
-            <td>
-              Временная или постоянная блокировка аккаунта (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.10.</strong> Мошенничество и обман других пользователей, умышленное вредительство.
-            </td>
-            <td>
-              Блокировка всех аккаунтов. Отказ в выплатах. Блокировка всех новых аккаунтов нарушителя по мере их обнаружения.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.11.</strong> Обмен денежных средств из одной платёжной системы в другую, перевод денежных средств с одних реквизитов на другие без цели совершения каких-либо заказов. Кардинг, прочие финансовые махинации.
-            </td>
-            <td>
-              Блокировка всех аккаунтов. Отказ в выплатах. Блокировка всех новых аккаунтов нарушителя по мере их обнаружения.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>1.12.</strong> Передача ссылок на файлообменники и хостинги изображений без явной необходимости (например, при сделке с аккаунтом, передача логина и пароля через изображение, залитое на файлообменник).
-            </td>
-            <td>
-              Предупреждение. Блокировка аккаунта при повторном нарушении (без отказа в выплатах).
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        При продаже в некоторых разделах сайта система предлагает участникам заказа перейти в Discord — для этого нужно просто нажать на ссылку. Однако обмен контактными данными в чате FunPay или в самом Discord (например, добавление друг друга в друзья) по-прежнему является нарушением.
-      </p>
-      <p>
-        Если вы хотите обменяться контактными данными с другим продавцом для совместного выполнения заказов, подайте заявку в службу поддержки.
-      </p>
-      <p>
-        Администрация оставляет за собой право на связь с продавцами под видом покупателей с целью выявления нарушений.
-      </p>
-      <p>
-        Администрация оставляет за собой право смягчить или отменить любое наложенное наказание, если оно нецелесообразно в каком-либо конкретном случае.
-      </p>
-    </section>
-
-    <!-- 2. Правила для продавцов -->
-    <section>
-      <h2>2. Правила для продавцов</h2>
-
-      <h3>2.1. Запрещённые действия</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Нарушение</th>
-            <th>Санкции</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <strong>2.1.1.</strong> Попытка передачи товара или оказания услуги без проведения платежа через FunPay. Обмен товарами или услугами.
-            </td>
-            <td>
-              Блокировка всех аккаунтов. Отказ в выплатах. Блокировка всех новых аккаунтов нарушителя по мере их обнаружения.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.2.</strong> Просьба к покупателю о подтверждении заказа до его фактического выполнения (при отсутствии признаков обмана).
-            </td>
-            <td>
-              Временная блокировка аккаунта. Отключение мгновенного вывода (при наличии).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.3.</strong> Недобросовестная борьба с конкурентами (например, покупка товаров с целью написания негативных отзывов, недостоверные жалобы и т. д.).
-            </td>
-            <td>
-              Временная блокировка основной учетной записи.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.4.</strong> Беспричинное игнорирование вопросов покупателей.
-            </td>
-            <td>
-              Предупреждение. Временная блокировка аккаунта при повторных нарушениях.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.5.</strong> Осознанное размещение недействительных предложений либо предложений с недействительной ценой.
-            </td>
-            <td>
-              Временная блокировка аккаунта. Возможна постоянная блокировка аккаунта (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.6.</strong> В некоторых разделах система может попросить вас написать английское описание к товару. Составление некорректного описания (например, из одной буквы) является нарушением.
-            </td>
-            <td>
-              Предупреждение. Удаление всех предложений или временная блокировка аккаунта при повторных нарушениях.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.7.</strong> При использовании функции «Автоматическая выдача» запрещается в поле «товары» вносить постороннюю информацию, в этом поле должны быть только товары.
-            </td>
-            <td>
-              Предупреждение. Временная блокировка аккаунта при повторных нарушениях.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.8.</strong> Функцию «Автоматическая выдача» запрещается использовать для товаров, при продаже которых требуется общение или предоставление дополнительных услуг (например, перепривязки).
-            </td>
-            <td>
-              Предупреждение. Временная блокировка аккаунта при повторных нарушениях.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.9.</strong> Нарушение правил, находящихся на странице размещения предложений (присутствуют в некоторых разделах). Игнорирование рассылок и уведомлений от администрации.
-            </td>
-            <td>
-              Удаление предложений, предупреждение. Временная блокировка аккаунта при повторных нарушениях.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.10.</strong> Дублирование предложений, засорение таблицы предложений. Размещение предложений о покупке.
-            </td>
-            <td>
-              Удаление предложений. Временная блокировка аккаунта при повторных нарушениях.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.11.</strong> Продажа товара или услуги через раздел, не предназначенный для этого (например, продажа игровой валюты через раздел предметов).
-            </td>
-            <td>
-              Доначисление комиссии. Блокировка аккаунта при повторном нарушении (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.12.</strong> Размещение объявлений на других площадках. При этом разрешается размещать объявления в социальных сетях, продавать в магазины и т. д.
-            </td>
-            <td>
-              Блокировка аккаунта. Отказ в выплатах.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.13.</strong> Размещение в предложениях изображений с противозаконной, экстремистской, порнографической или политической информацией (флаги, исторические деятели и т. д.), а также со ссылками, фотографиями людей, упоминанием сторонних интернет-ресурсов и изображений, не имеющих отношения к товару или торговому процессу.
-            </td>
-            <td>
-              Удаление изображений или предложений. Блокировка аккаунта при повторном нарушении (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.1.14.</strong> Размещение в предложениях любой информации (включая изображения), которая нарушает права и законные интересы третьих лиц.
-            </td>
-            <td>
-              Удаление предложений. Блокировка аккаунта при многократных нарушениях (без отказа в выплатах).
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3>2.2. Запрещённые категории товаров</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Нарушение</th>
-            <th>Санкции</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <strong>2.2.1.</strong> Продажа товаров, полученных неправомерным путём (взломом, брутом, кардингом и т. д.).
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 60 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.2.</strong> Обучение неправомерной деятельности или продажа информации о ней (способы дюпа, кардинга и т. д.).
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 60 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.3.</strong> Продажа персональных данных.
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 60 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.4.</strong> Продажа и распространение нелицензионного и/или вредоносного ПО.
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 30 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.5.</strong> Запрещена продажа аккаунтов социальных сетей и подписок на онлайн-кинотеатры, стриминговые сервисы, за исключением тех, для которых есть специальные разделы.
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 30 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.6.</strong> Продажа телефонных номеров (в том числе виртуальных).
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 30 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.7.</strong> Продажа аккаунтов оптом, кроме тех, которые вы зарегистрировали лично.
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 30 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.8.</strong> Продажа товаров и услуг эротического или порнографического содержания.
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 30 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.9.</strong> Продажа товаров и услуг, связанных со спамом и массовой рассылкой сообщений.
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 30 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.10.</strong> Продажа товаров и услуг, связанных со ставками и казино.
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 30 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.11.</strong> Продажа любых способов доната и накрутки.
-            </td>
-            <td>
-              Блокировка аккаунта и последующее прохождение процедуры идентификации для получения выплаты с него в течение 30 дней.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.12.</strong> Перепродажа оффлайн активаций, геймпассов.
-            </td>
-            <td>
-              Предупреждение. Временная блокировка аккаунта при повторных нарушениях.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.13.</strong> Проведение лотерей и розыгрышей, продажа «рандома».
-            </td>
-            <td>
-              Предупреждение. Блокировка аккаунта при повторном нарушении (без отказа в выплатах).
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>2.2.14.</strong> Продажа криптовалюты.
-            </td>
-            <td>
-              Предупреждение. Блокировка аккаунта при повторном нарушении (без отказа в выплатах).
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        Администрация оставляет за собой право проводить проверки размещаемых на площадке товаров.
-      </p>
-    </section>
-
-    <!-- 3. Ответственность продавцов -->
-    <section>
-      <h2>3. Ответственность продавцов</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Нарушение</th>
-            <th>Санкции</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <strong>3.1.1.</strong> Отказ в выполнении задач, поставленных сотрудником арбитража, игнорирование его сообщений, а также безучастность во время разрешения спора.
-            </td>
-            <td>
-              Возврат до 100% от суммы заказа.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.1.2.</strong> Отказ от консультирования покупателя касательно его заказа, игнорирование вопросов покупателя, отсутствие обслуживания.
-            </td>
-            <td>
-              Возврат до 100% от суммы заказа.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.2.1.</strong> Администрация игры применила к покупателю санкции, поскольку игровая валюта или предметы были получены нелегальным путём (мошенничество, использование ошибок игры и т. д.).
-            </td>
-            <td>
-              Возврат до 100% от суммы заказа.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.2.2.</strong> Администрация игры применила к покупателю санкции из-за покупки игровой валюты или предметов.
-            </td>
-            <td>
-              Возврат до 50% от суммы заказа.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.2.3.</strong> Продавец обязан покрывать внутриигровую комиссию за передачу валюты. Покупатель должен получить полную сумму, указанную в заказе. Исключениями являются разделы, где указано обратное (например, «Рубли Escape from Tarkov»).
-            </td>
-            <td>
-              Возврат суммы комиссии.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.2.4.</strong> Стоимость донат-валюты должна быть указана без учёта бонусов, акций или других дополнительных предложений. Дополнительную валюту от бонусов и акций покупатель должен получать сверх суммы, указанной в заказе.
-            </td>
-            <td>
-              Возврат стоимости заказа пропорционально сумме бонусов.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.3.1.</strong> Утрата покупателем аккаунта вследствие восстановления доступа к нему продавцом или первоначальным владельцем (через службу поддержки игры или каким-либо иным образом).
-            </td>
-            <td>
-              Возврат до 100% от суммы заказа.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.3.2.</strong> Блокировка аккаунта администрацией игры из-за самого́ факта покупки/продажи аккаунта.
-            </td>
-            <td>
-              Возврат до 50% от суммы заказа.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.4.1.</strong> Существенное изменение характеристик аккаунта, не оговорённое с покупателем (например, увеличение счётчика PK в Lineage 2, изменение порядочности в Dota 2 при прокачке MMR, пропажа игровых предметов с аккаунта и т. д.).
-            </td>
-            <td>
-              Возможна компенсация нанесённого ущерба.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.4.2.</strong> Выполнение услуги с отрицательным результатом (например, снижение рейтинга MMR в Dota 2 вместо его увеличения).
-            </td>
-            <td>
-              Возврат 100% от суммы заказа и компенсация нанесённого ущерба.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.4.3.</strong> Блокировка аккаунта из-за некачественно оказываемой услуги (например, из-за использования продавцом бота или другого запрещённого издателем игры ПО).
-            </td>
-            <td>
-              Возврат 100% от суммы заказа, дополнительная компенсация.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.4.4.</strong> Блокировка аккаунта из-за оказываемой услуги.
-            </td>
-            <td>
-              Возврат до 50% от суммы заказа.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.4.5.</strong> Необоснованный отказ продавца от дальнейшего выполнения услуги.
-            </td>
-            <td>
-              Оплачивается 50% выполненной работы.
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>3.4.6.</strong> Задержка оговорённых с покупателем сроков.
-            </td>
-            <td>
-              Оплата выполненной работы снижается прямо пропорционально задержке. Например, если сроки увеличены в 1.5 раза, то оплата снижается в 1.5 раза.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p>
-        Каждый спор между покупателем и продавцом индивидуален, поэтому окончательное решение о степени ответственности продавца может существенно отличаться от написанного выше. Договорённости в чате между продавцом и покупателем могут быть приняты во внимание.
-      </p>
-    </section>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <img src="images/logo (2).png" alt="Logo">
+      <h1>GlovimPay</h1>
+    </div>
+    <nav>
+      <a href="index.html"><span class="nav-icon"><i class="fas fa-home"></i></span>Главная</a>
+      <a href="catalog.html"><span class="nav-icon"><i class="fas fa-th-list"></i></span>Каталог</a>
+      <a href="add.html"><span class="nav-icon"><i class="fas fa-plus"></i></span>Продать</a>
+      <a href="chat.html"><span class="nav-icon"><i class="fas fa-comment-dots"></i></span>Чат</a>
+      <a href="profile.html" class="profile-btn">
+        <span class="nav-icon">
+          <img src="images/avatar.jpg" class="avatar" alt="Avatar">
+        </span>
+        <span class="nav-text">Профиль</span>
+      </a>
+    </nav>
   </div>
+
+  <!-- Desktop header -->
+  <header class="desktop-header">
+    <div class="search-box">
+      <input type="text" placeholder="Поиск игр и приложений">
+      <button class="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+    <button id="themeToggle"><i class="fas fa-sun"></i></button>
+  </header>
+
+  <!-- Mobile header -->
+  <header class="mobile-header">
+    <div class="header-top">
+      <div class="logo">
+        <img src="images/logo.png" alt="Logo">
+        <h1>Glovim</h1>
+      </div>
+      <button id="themeToggleMobile"><i class="fas fa-sun"></i></button>
+    </div>
+    <div class="header-search">
+      <input type="text" placeholder="Поиск игр и приложений">
+      <button class="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+  </header>
+
+  <!-- Add-product form -->
+  <div class="main-content" id="mainContent">
+    <div class="form-container">
+      <h2>Добавить товар</h2>
+      <form id="addProductForm">
+        <label for="category">Категория</label>
+        <select id="category" required>
+          <option value="">-- Выберите --</option>
+          <option value="csgo">CS:GO</option>
+          <option value="dota">Dota</option>
+          <option value="other">Другое</option>
+        </select>
+
+        <label for="subcategory">Подкатегория</label>
+        <select id="subcategory" required>
+          <option value="">-- Выберите --</option>
+          <option value="accounts">Аккаунты</option>
+          <option value="skins">Скины</option>
+          <option value="donate">Донат</option>
+          <option value="items">Товары</option>
+        </select>
+
+        <label for="productName">Название</label>
+        <input type="text" id="productName" required>
+
+        <label for="publicDescription">Описание</label>
+        <textarea id="publicDescription" rows="4" required></textarea>
+
+        <label for="sensitiveData">Чувствительные данные</label>
+        <textarea id="sensitiveData" rows="3" required></textarea>
+
+        <label for="price">Цена (₽)</label>
+        <input type="number" id="price" min="20" required>
+
+        <label for="stock">Наличие (шт.)</label>
+        <input type="number" id="stock" min="1" required>
+
+        <label for="productPhoto">Фото (max 3)</label>
+        <input type="file" id="productPhoto" accept="image/*" multiple>
+
+        <button type="submit">Добавить</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mobile nav -->
+  <div class="mobile-nav">
+    <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
+    <a href="chat.html"><i class="fas fa-comment-dots"></i><span>Чат</span></a>
+    <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
+    <a href="profile.html" class="profile-nav">
+      <img src="images/avatar.jpg" class="avatar" alt="Avatar">
+      <span>Профиль</span>
+    </a>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>О компании</h3>
+        <p>GlovimPay — инновационный сервис покупки/продажи. © 2025</p>
+      </div>
+      <div class="footer-section">
+        <h3>Правила</h3>
+        <ul>
+          <li><a href="/rules">Соглашение</a></li>
+          <li><a href="/privacy">Конфиденциальность</a></li>
+          <li><a href="/terms">Условия</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Мы в сети</h3>
+        <ul>
+          <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+          <li><a href="#"><i class="fab fa-youtube"></i> YouTube</a></li>
+          <li><a href="#"><i class="fab fa-telegram-plane"></i> Telegram</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Firebase и логика -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    // Переключение темы
+    function toggleTheme(btnId) {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.getElementById(btnId)?.querySelector('i');
+      if (icon) icon.classList.toggle('fa-sun'), icon.classList.toggle('fa-moon');
+    }
+    document.getElementById('themeToggle')?.addEventListener('click', () => toggleTheme('themeToggle'));
+    document.getElementById('themeToggleMobile')?.addEventListener('click', () => toggleTheme('themeToggleMobile'));
+
+    // Инициализация Firebase
+    const cfg = {
+      apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
+      authDomain: "glovimplaye-b1023.firebaseapp.com",
+      databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
+      projectId: "glovimplaye-b1023",
+      storageBucket: "glovimplaye-b1023.firebasestorage.app",
+      messagingSenderId: "553440591519",
+      appId: "1:553440591519:web:b7be45a9253689f322acaa"
+    };
+    firebase.initializeApp(cfg);
+
+    // Инициализация Supabase
+    const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
+    const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // замените на ваш ключ
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // Обработка формы
+    const addForm = document.getElementById('addProductForm');
+    addForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Сбор и валидация
+      const category = document.getElementById('category').value.trim().toLowerCase();
+      const subcategory = document.getElementById('subcategory').value.trim().toLowerCase();
+      const name = document.getElementById('productName').value.trim();
+      const publicDescription = document.getElementById('publicDescription').value.trim();
+      const sensitiveData = document.getElementById('sensitiveData').value;
+      const price = parseFloat(document.getElementById('price').value);
+      const stock = parseInt(document.getElementById('stock').value, 10);
+
+      if (price < 20) return alert('Цена не может быть меньше 20 ₽');
+      if (publicDescription.length < 15) return alert('Описание должно быть минимум 15 символов');
+      if (name.length < 5) return alert('Название минимум 5 символов');
+
+      const photos = document.getElementById('productPhoto').files;
+      if (photos.length > 3) return alert('Максимум 3 фото');
+
+      // Загрузка фото
+      const photoURLs = [];
+      for (let file of photos) {
+        const filePath = `${Date.now()}_${file.name}`;
+        const { data, error } = await supabaseClient.storage.from('products').upload(filePath, file);
+        if (error) return alert('Ошибка загрузки фото: ' + error.message);
+        const { data: u } = supabaseClient.storage.from('products').getPublicUrl(filePath);
+        photoURLs.push(u.publicUrl);
+      }
+
+      // Шифрование чувствительных данных
+      const encrypted = CryptoJS.AES.encrypt(JSON.stringify({ sensitiveData }), 'GlovimPlayeSecretKey').toString();
+      const commission = price * 0.05;
+
+      // Составляем объект товара
+      const newProduct = {
+        category,
+        subcategory,
+        name,
+        description: publicDescription,
+        encryptedData: encrypted,
+        price,
+        commission,
+        stock,
+        photoURLs,
+        createdAt: Date.now()
+      };
+
+      // Сохраняем в Firebase Realtime DB
+      firebase.database().ref('products').push(newProduct, err => {
+        if (err) return alert('Ошибка добавления: ' + err.message);
+        alert('Товар успешно добавлен!');
+        addForm.reset();
+      });
+    });
+
+// после firebase.initializeApp(cfg);
+firebase.auth().onAuthStateChanged(user => {
+  const desktopAvatar = document.querySelector('.profile-btn .avatar');
+  const mobileAvatar  = document.querySelector('.profile-nav img');
+  const defaultAvatar = 'images/avatar.jpg';
+
+  let url = defaultAvatar;
+  if (user) {
+    // пытаемся взять аватар из БД, иначе из профиля Google
+    firebase.database().ref('users/' + user.uid).once('value')
+      .then(snap => {
+        url = snap.val()?.avatar || user.photoURL || defaultAvatar;
+        if (desktopAvatar) desktopAvatar.src = url;
+        if (mobileAvatar)  mobileAvatar.src  = url;
+      })
+      .catch(() => {
+        url = user.photoURL || defaultAvatar;
+        if (desktopAvatar) desktopAvatar.src = url;
+        if (mobileAvatar)  mobileAvatar.src  = url;
+      });
+  } else {
+    // не залогинен — показываем дефолт
+    if (desktopAvatar) desktopAvatar.src = defaultAvatar;
+    if (mobileAvatar)  mobileAvatar.src  = defaultAvatar;
+  }
+});
+
+// можно также установить постоянство сессии
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+
+  </script>
 </body>
 </html>
+
+   

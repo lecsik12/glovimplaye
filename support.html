@@ -2,433 +2,958 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Glovimplaye — Чат</title>
+  <title>Glovim</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  <!-- Подключение Font Awesome для иконок -->
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   
-  <!-- Подключение Firebase -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  
   <style>
+    /* Базовые переменные для светлой темы */
     :root {
-      --bg-main: #121212;
-      --bg-sidebar: #1e1e1e;
-      --bg-chat: #181818;
-      --accent-color: #ffb400;
-      --text-color: #e0e0e0;
-      --text-secondary: #9e9e9e;
-      --border-color: #2c2c2c;
+      --primary-color: #ff6b6b; /* яркий красный/оранжевый */
+      --primary-hover: #ff3b3b;
+      --bg-light: #fdfdff;
+      --text-light: #333;
+      --card-shadow: rgba(0, 0, 0, 0.2);
+      --transition-speed: 0.3s;
+      --sidebar-gradient: linear-gradient(135deg, #fffc7f, #ffae7d);
+      --header-gradient: linear-gradient(135deg, #a8ff78, #78ffd6);
+      --button-bg: #ffc107;
+      --button-hover: #ffca28;
+      --border-radius-global: 12px;
+      
+      /* Новые переменные для новой стилистики карточек (на мобильных устройствах) */
+      --bg-dark: #191919;
+      --card-bg: #262626;
+      --highlight-color: #ff6b6b;
+      --highlight-color-hover: #ff3b3b;
+      --price-color: #ffa800;
+      --discount-color: #2ecc71;
+      --oldprice-color: #888;
     }
     
+    /* Общие стили */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
     }
-    
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: var(--bg-main);
-      color: var(--text-color);
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
+      background: var(--bg-light);
+      color: var(--text-light);
+      line-height: 1.6;
+      transition: background var(--transition-speed), color var(--transition-speed);
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
     }
     
-    /* Десктопная верстка */
+    /* Сайдбар (ПК) */
     .sidebar {
-      width: 300px;
-      background: var(--bg-sidebar);
-      border-right: 1px solid var(--border-color);
+      width: 250px;
+      background: var(--sidebar-gradient);
+      border-right: 1px solid #e0e0e0;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 20px 10px;
+      overflow-y: auto;
+      box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+      transition: background var(--transition-speed);
+    }
+    .sidebar .logo {
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    .sidebar .logo img {
+      width: 50px;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .sidebar .logo h1 {
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text-light);
+      letter-spacing: 0.5px;
+    }
+    .sidebar nav a {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      margin: 5px 0;
+      background: #fff;
+      border-radius: var(--border-radius-global);
+      color: var(--text-light);
+      border: 1px solid transparent;
+      transition: background var(--transition-speed), border var(--transition-speed);
+    }
+    .sidebar nav a:hover {
+      background: #f7f7f7;
+      border: 1px solid #e0e0e0;
+    }
+    .nav-icon {
+      display: inline-flex;
+      width: 30px;
+      justify-content: center;
+      margin-right: 10px;
+    }
+    .nav-text { flex: 1; }
+    .sidebar nav a.profile-btn img.avatar {
+      width: 30px;
+      height: 30px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-right: 10px;
+      border: 2px solid #fff;
     }
     
-    .sidebar-header {
+    /* Основной контент */
+    .main-content {
+      margin-left: 250px;
       padding: 20px;
-      border-bottom: 1px solid var(--border-color);
+      transition: margin var(--transition-speed);
+    }
+    
+    /* Хедер (ПК версия) – исходный вариант */
+    header.desktop-header {
+      background: var(--header-gradient);
+      padding: 15px 20px;
+      border: 2px solid #fff;
+      border-radius: var(--border-radius-global);
+      width: calc(100% - 40px);
+      margin: 0 20px 20px;
+      position: sticky;
+      top: 10px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      transition: background var(--transition-speed), border var(--transition-speed);
+    }
+    header.desktop-header .search-box {
+      max-width: 750px;
+      position: relative;
+      margin: 0 auto;
+      flex-grow: 1;
+    }
+    header.desktop-header .search-box input {
+      width: 100%;
+      padding: 10px 45px 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      outline: none;
+      transition: border 0.2s;
+      background: #fff;
+    }
+    header.desktop-header .search-box input:focus {
+      border-color: #888;
+    }
+    header.desktop-header .search-box button {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    header.desktop-header .search-results {
+      position: absolute;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      width: 100%;
+      left: 0;
+      top: 110%;
+      border-radius: 8px;
+      display: none;
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 99;
+      box-shadow: 0 4px 8px var(--card-shadow);
+      padding: 10px;
+    }
+    
+    /* Мобильный хедер – по сути то, что вы показываете на скриншоте */
+    header.mobile-header {
+      display: none; /* по умолчанию скрыт на ПК */
+      background: var(--header-gradient);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      flex-direction: column;
+      align-items: stretch;
+      padding: 0;
+      border: none;
+    }
+    .mobile-header .header-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px 20px;
     }
-    
-    .sidebar-header .logo {
-      font-size: 22px;
-      font-weight: bold;
-      color: var(--accent-color);
-      cursor: pointer;
-    }
-    
-    .sidebar-header .balance {
-      font-size: 16px;
-      color: var(--accent-color);
-    }
-    
-    .chat-list {
-      flex: 1;
-      overflow-y: auto;
-    }
-    
-    .chat-item {
+    .mobile-header .header-top .logo {
       display: flex;
       align-items: center;
-      padding: 15px 20px;
-      border-bottom: 1px solid var(--border-color);
+    }
+    .mobile-header .header-top .logo img {
+      width: 30px;
+    }
+    .mobile-header .header-top .logo h1 {
+      font-size: 20px;
+      margin-left: 10px;
+    }
+    .mobile-header .header-top button {
+      font-size: 22px;
+      background: none;
+      border: none;
       cursor: pointer;
-      transition: background 0.2s;
+    }
+    /* Строка поиска в мобильном хедере */
+    .mobile-header .header-search {
+      padding: 10px 20px;
+      background: var(--header-gradient);
       position: relative;
     }
-    
-    .chat-item:hover {
-      background: var(--border-color);
+    .mobile-header .header-search .search-box {
+      width: 100%;
+      margin: 0;
+      position: relative;
+    }
+    .mobile-header .header-search .search-box input {
+      width: 100%;
+      padding: 10px 45px 10px 15px; /* отступ слева 15px, справа побольше под иконку */
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      outline: none;
+      transition: border 0.2s;
+      background: #fff;
+    }
+    .mobile-header .header-search .search-box input:focus {
+      border-color: #888;
+    }
+    /* Кнопка лупы внутри input */
+    .mobile-header .header-search .search-box button {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #888;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    /* Выпадающий блок результатов на телефоне */
+    .mobile-header .header-search .search-box .search-results {
+      position: absolute;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      width: 100%;
+      left: 0;
+      top: 110%;
+      border-radius: 8px;
+      display: none;
+      max-height: 250px;
+      overflow-y: auto;
+      z-index: 99;
+      box-shadow: 0 4px 8px var(--card-shadow);
+      padding: 10px;
     }
     
-    .chat-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #333;
-      color: var(--accent-color);
+    /* Слайдер (ПК) */
+    .main-banner {
+      position: relative;
+      max-width: 1200px;
+      height: 380px;
+      margin: 30px auto;
+      border-radius: var(--border-radius-global);
+      overflow: hidden;
+      background: #c0c0c0;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .banner-track {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: bold;
-      margin-right: 15px;
+      width: 300%;
+      height: 100%;
+      transition: transform 0.6s ease;
+    }
+    .banner-slide {
+      width: calc(100% / 3);
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
     }
     
-    .notification-badge {
+    /* Категории (ПК) */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 40px 0;
+      gap: 20px;
+    }
+    .categories a {
+      display: inline-block;
+      padding: 12px 30px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 30px;
+      color: var(--text-light);
+      transition: transform var(--transition-speed);
+    }
+    .categories a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    
+    /* Промо-блоки (ПК) */
+    .promo-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+    .promo-item {
+      flex: 1;
+      min-width: 280px;
+      height: 220px;
+      border-radius: var(--border-radius-global);
+      background-size: cover;
+      background-position: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform var(--transition-speed);
+    }
+    .promo-item:hover {
+      transform: scale(1.04);
+    }
+    
+    /* Секция пользователей (ПК) */
+    .users-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px auto;
+      max-width: 1200px;
+    }
+    .user-card {
+      display: block;
+      width: 140px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform var(--transition-speed);
+    }
+    .user-card:hover { transform: scale(1.07); }
+    .user-avatar {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 5px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    .user-name {
+      font-size: 14px;
+      color: var(--text-light);
+      white-space: nowrap;
+    }
+    
+    /* Секция товаров (ПК) */
+    .product-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      justify-items: center;
+      margin-bottom: 40px;
+    }
+    /* Структура карточки для ПК (исходная) */
+    .product-card {
+      background-color: #fff;
+      color: #333;
+      border-radius: var(--border-radius-global);
+      width: 100%;
+      max-width: 200px;
+      overflow: hidden;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+      position: relative;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+    }
+    .product-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      opacity: 0.95;
+    }
+    .product-card h3 {
+      font-size: 1.1rem;
+      margin: 8px 10px 4px;
+    }
+    .product-card .category {
+      font-size: 0.85rem;
+      margin: 0 10px 8px;
+      color: #777;
+    }
+    .price-add {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      background-color: #f2f2f2;
+      border-top: 1px solid #ccc;
+    }
+    .price-add span.price {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #333;
+    }
+    .price-add button {
+      background-color: var(--button-bg);
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color var(--transition-speed);
+      font-size: 0.9rem;
+    }
+    .price-add button:hover {
+      background-color: var(--button-hover);
+    }
+    .product-likes {
       position: absolute;
       top: 10px;
-      left: 50px;
-      background: red;
-      color: white;
-      font-size: 12px;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .chat-info .chat-title {
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    
-    .chat-info .chat-last-msg {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-    
-    .main-area {
-      flex: 1;
+      right: 10px;
       display: flex;
-      flex-direction: column;
-      background: var(--bg-chat);
-    }
-    
-    .chat-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 18px;
-      font-weight: bold;
-      background: var(--bg-sidebar);
-    }
-    
-    .chat-body {
-      flex: 1;
-      position: relative;
-      overflow-y: auto;
-      padding: 20px;
-    }
-    
-    .placeholder {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      color: var(--text-secondary);
-    }
-    
-    .placeholder i {
-      font-size: 48px;
-      margin-bottom: 10px;
-      color: var(--accent-color);
-    }
-    
-    .messages {
-      display: none;
-      flex-direction: column;
-    }
-    
-    .message {
-      background: #2c2c2c;
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      max-width: 65%;
-      word-wrap: break-word;
-      font-size: 14px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .message.mine {
-      background: #3a3a3a;
-      margin-left: auto;
-    }
-    
-    .message .sender {
-      font-weight: bold;
-      margin-bottom: 6px;
-    }
-    
-    .message .time {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 6px;
-      text-align: right;
-    }
-    
-    .chat-input {
-      padding: 15px 20px;
-      border-top: 1px solid var(--border-color);
-      background: var(--bg-sidebar);
-      display: none;
-    }
-    
-    .chat-input input {
-      width: 100%;
-      padding: 12px 15px;
-      border: none;
-      border-radius: 4px;
-      outline: none;
-      font-size: 14px;
-      background: #333;
-      color: var(--text-color);
-    }
-    
-    .chat-input button {
-      margin-left: 10px;
-      padding: 12px 20px;
-      background: var(--accent-color);
-      border: none;
-      border-radius: 4px;
-      font-weight: bold;
+      align-items: center;
+      background-color: #ff6b6b;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 20px;
       cursor: pointer;
-      transition: background 0.3s;
-      color: #1e1e1e;
+      transition: background-color var(--transition-speed);
+      font-size: 0.9rem;
+    }
+    .product-likes:hover {
+      background-color: #ff3b3b;
+    }
+    .product-likes .heart {
+      margin-right: 5px;
+    }
+    .product-likes .like-count {
+      font-size: 0.85rem;
     }
     
-    .chat-input button:hover {
-      background: #ff9800;
+    /* Футер (ПК) */
+    footer {
+      background: #222;
+      color: #ddd;
+      padding: 40px 20px;
+      font-family: Arial, sans-serif;
+    }
+    .footer-content {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .footer-section { flex: 1 1 200px; }
+    .footer-section h3 {
+      color: #fff;
+      margin-bottom: 15px;
+    }
+    .footer-section p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .footer-section.links ul,
+    .footer-section.social ul {
+      list-style: none;
+      padding: 0;
+    }
+    .footer-section.links ul li,
+    .footer-section.social ul li {
+      margin-bottom: 10px;
+    }
+    .footer-section.links ul li a,
+    .footer-section.social ul li a {
+      text-decoration: none;
+      color: #ddd;
+      transition: color 0.3s;
+      font-size: 14px;
+    }
+    .footer-section.links ul li a:hover,
+    .footer-section.social ul li a:hover {
+      color: #ff7f50;
+    }
+    .footer-section.social ul li a i {
+      margin-right: 8px;
+      font-size: 18px;
     }
     
-    /* Мобильная верстка */
+    /* Мобильная оптимизация (до 768px) */
     @media (max-width: 768px) {
-      body {
-        flex-direction: column;
+      /* Скрываем ПК-элементы */
+      .sidebar { display: none; }
+      .main-content { margin: 0; padding: 0; }
+      
+      /* Хедер: показываем мобильный, скрываем десктопный */
+      header.desktop-header { display: none; }
+      header.mobile-header { display: flex; }
+      
+      /* Отступ сверху, чтобы хедер не перекрывал контент */
+      body { padding-top: 120px; }
+      
+      /* Главный баннер – уменьшенная высота */
+      .main-banner {
+        width: 100%;
+        height: 200px;
+        margin: 10px 0;
       }
       
-      .sidebar {
+      /* Категории – одна строка, горизонтальный скролл */
+      .categories {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 10px;
+        margin: 10px 0;
+        padding-bottom: 10px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .categories::-webkit-scrollbar {
         display: none;
       }
+      .categories a {
+        flex: 0 0 auto;
+        padding: 8px 20px;
+        font-size: 14px;
+      }
       
-      .mobile-header, .bottom-nav, .mobile-chat-list {
+      /* Промо-блоки – вывод в одну строку и уменьшенные */
+      .promo-grid {
         display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 10px;
+        margin: 10px 0;
+        padding-bottom: 10px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .promo-grid::-webkit-scrollbar {
+        display: none;
+      }
+      .promo-item {
+        flex: 0 0 auto;
+        width: 45%;
+        height: 120px;
       }
       
-      .mobile-header {
-        align-items: center;
-        justify-content: space-between;
-        background: var(--bg-sidebar);
-        padding: 15px 20px;
-        border-bottom: 1px solid var(--border-color);
-      }
-      
-      .mobile-header .logo {
-        font-size: 20px;
-        font-weight: bold;
-        color: var(--accent-color);
-        cursor: pointer;
-      }
-      
-      .mobile-header .balance {
-        font-size: 16px;
-        color: var(--accent-color);
-      }
-      
-      .mobile-header .open-chat-list {
-        font-size: 18px;
-        color: var(--text-color);
-        cursor: pointer;
-      }
-      
-      .bottom-nav {
-        justify-content: space-around;
-        align-items: center;
-        background: var(--bg-sidebar);
-        padding: 10px 0;
-        border-top: 1px solid var(--border-color);
-      }
-      
-      .bottom-nav a {
-        text-decoration: none;
-        color: var(--text-color);
+      /* Пользователи – в одну строку, горизонтальный скролл */
+      .users-row {
         display: flex;
-        flex-direction: column;
-        align-items: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 10px;
+        margin: 10px 0;
+        padding-bottom: 10px;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .users-row::-webkit-scrollbar {
+        display: none;
+      }
+      .user-card { width: 80px; }
+      .user-avatar {
+        height: 60px;
+        border-radius: 8px;
+      }
+      .user-name {
         font-size: 12px;
       }
       
-      .bottom-nav a i {
-        font-size: 18px;
-        margin-bottom: 5px;
+      /* Товары – новый дизайн карточек товара только на мобильных устройствах */
+      .product-container {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+        justify-items: center;
       }
-      
-      .mobile-chat-list {
-        flex-direction: column;
-        background: var(--bg-sidebar);
-        max-height: 60vh;
-        overflow-y: auto;
-        padding: 10px;
-        display: none;
-      }
-      
-      .mobile-chat-list.active {
+      .product-card {
+        all: unset;
+        box-sizing: border-box;
+        background: var(--card-bg);
+        color: #fff;
+        border-radius: var(--border-radius-global);
+        overflow: hidden;
+        width: 95%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        position: relative;
+        cursor: pointer;
         display: flex;
+        flex-direction: column;
+      }
+      .product-card:hover {
+        transform: none; /* убираем масштабирование, если хотите */
+      }
+      .product-card .pc-image {
+        width: 100%;
+        height: 140px;
+        overflow: hidden;
+        border-top-left-radius: var(--border-radius-global);
+        border-top-right-radius: var(--border-radius-global);
+      }
+      .product-card .pc-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+      }
+      .product-card:hover .pc-image img {
+        transform: scale(1.03);
+      }
+      .product-card .pc-info {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .product-card .pc-info h3 {
+        font-size: 1rem;
+        margin-bottom: 2px;
+      }
+      .product-card .pc-info .category {
+        font-size: 0.85rem;
+        color: #ccc;
+      }
+      .product-card .pc-info .description {
+        font-size: 0.85rem;
+        color: #ddd;
+        line-height: 1.3;
+        min-height: 36px;
+      }
+      .product-card .pc-price {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 4px 0;
+      }
+      .product-card .pc-price .current-price {
+        color: var(--price-color);
+        font-weight: bold;
+      }
+      .product-card .pc-price .old-price {
+        text-decoration: line-through;
+        color: var(--oldprice-color);
+        font-size: 0.8rem;
+      }
+      .product-card .pc-price .discount {
+        color: var(--discount-color);
+        font-size: 0.8rem;
+      }
+      .product-card .pc-bottom {
+        margin-top: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .product-card .pc-bottom .pc-likes {
+        display: flex;
+        align-items: center;
+        background-color: var(--highlight-color);
+        color: #fff;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        cursor: pointer;
+      }
+      .product-card .pc-bottom .pc-likes:hover {
+        background-color: var(--highlight-color-hover);
+      }
+      .product-card .pc-bottom .pc-likes i {
+        margin-right: 4px;
+      }
+      .product-card .pc-bottom .buy-btn {
+        background-color: var(--button-bg);
+        color: #333;
+        border: none;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: background-color var(--transition-speed);
+      }
+      .product-card .pc-bottom .buy-btn:hover {
+        background-color: var(--button-hover);
       }
     }
     
-    @media (min-width: 769px) {
-      .mobile-header, .bottom-nav, .mobile-chat-list {
-        display: none;
-      }
+    /* Тёмная тема */
+    body.dark-mode {
+      background: #121212;
+      color: #e0e0e0;
+    }
+    body.dark-mode a { color: inherit; }
+    body.dark-mode .sidebar {
+      background: linear-gradient(135deg, #1c1c1c, #262626);
+      border-right: 1px solid #333;
+    }
+    body.dark-mode .sidebar .logo h1 {
+      color: #e0e0e0;
+    }
+    body.dark-mode .sidebar nav a {
+      background: #1e1e1e;
+      border: 1px solid transparent;
+      color: #e0e0e0;
+    }
+    body.dark-mode .sidebar nav a:hover {
+      background: #333;
+      border-color: #444;
+    }
+    body.dark-mode header.desktop-header {
+      background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+      border: 2px solid #333;
+    }
+    body.dark-mode .search-box input {
+      background: #262626;
+      color: #e0e0e0;
+      border: 1px solid #444;
+    }
+    body.dark-mode .search-box input:focus {
+      border-color: #888;
+    }
+    body.dark-mode .search-results {
+      background: #262626;
+      border: 1px solid #444;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    }
+    body.dark-mode .search-result-item {
+      border-bottom: 1px solid #333;
+    }
+    body.dark-mode .search-result-item:hover {
+      background: #333;
+    }
+    body.dark-mode .product-card .pc-info {
+      background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+      color: #eee;
+    }
+    body.dark-mode .product-card .pc-bottom .buy-btn {
+      background-color: #ff6b6b;
+    }
+    body.dark-mode .product-card .pc-bottom .buy-btn:hover {
+      background-color: #ff3b3b;
+    }
+    body.dark-mode .product-card .pc-bottom .pc-likes {
+      background-color: #d44343;
     }
   </style>
 </head>
 <body>
-  <!-- Мобильный верхний хедер (виден только на мобильных) -->
-  <div class="mobile-header">
-    <div class="logo" onclick="window.location.href='profile.html'">Glovimplaye</div>
-    <div class="balance">+ 5.0 <i class="fas fa-coins"></i></div>
-    <div class="open-chat-list" onclick="toggleChatList()">
-      <i class="fas fa-bars"></i>
-    </div>
-  </div>
-  
-  <!-- Мобильный список чатов -->
-  <div class="mobile-chat-list" id="mobileChatList">
-    <div class="chat-item" onclick="selectChat('playerok'); toggleChatList();">
-      <div class="chat-icon">P</div>
-      <div id="playerokBadge" class="notification-badge"></div>
-      <div class="chat-info">
-        <div class="chat-title">Glovimplaye</div>
-        <div class="chat-last-msg" id="lastMsg-playerok">...</div>
-      </div>
-    </div>
-    <div class="chat-item" onclick="selectChat('support'); toggleChatList();">
-      <div class="chat-icon">S</div>
-      <div class="chat-info">
-        <div class="chat-title">Поддержка</div>
-        <div class="chat-last-msg" id="lastMsg-support">...</div>
-      </div>
-    </div>
-    <div class="chat-item" onclick="selectChat('global'); toggleChatList();">
-      <div class="chat-icon">G</div>
-      <div class="chat-info">
-        <div class="chat-title">Глобальный чат</div>
-        <div class="chat-last-msg" id="lastMsg-global">...</div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Десктопный sidebar (виден на ПК) -->
+  <!-- Сайдбар (ПК) -->
   <div class="sidebar">
-    <div class="sidebar-header">
-      <div class="logo" onclick="window.location.href='profile.html'">Glovimplaye</div>
-      <div class="balance">+ 5.0 <i class="fas fa-coins"></i></div>
+    <div class="logo">
+      <img src="images/logo (2).png" alt="Logo">
+      <h1>Glovim</h1>
     </div>
-    <div class="chat-list">
-      <div class="chat-item" onclick="selectChat('playerok')">
-        <div class="chat-icon">P</div>
-        <div id="playerokBadge" class="notification-badge"></div>
-        <div class="chat-info">
-          <div class="chat-title">Glovimplaye</div>
-          <div class="chat-last-msg" id="lastMsg-playerok">...</div>
-        </div>
-      </div>
-      <div class="chat-item" onclick="selectChat('support')">
-        <div class="chat-icon">S</div>
-        <div class="chat-info">
-          <div class="chat-title">Поддержка</div>
-          <div class="chat-last-msg" id="lastMsg-support">...</div>
-        </div>
-      </div>
-      <div class="chat-item" onclick="selectChat('global')">
-        <div class="chat-icon">G</div>
-        <div class="chat-info">
-          <div class="chat-title">Глобальный чат</div>
-          <div class="chat-last-msg" id="lastMsg-global">...</div>
-        </div>
-      </div>
-    </div>
+    <nav>
+      <a href="/index">
+        <span class="nav-icon"><i class="fas fa-home"></i></span>
+        <span class="nav-text">Главная</span>
+      </a>
+      <a href="/add">
+        <span class="nav-icon"><i class="fas fa-plus"></i></span>
+        <span class="nav-text">Продать</span>
+      </a>
+      <a href="/chat">
+        <span class="nav-icon"><i class="fas fa-comment-dots"></i></span>
+        <span class="nav-text">Чат</span>
+      </a>
+      <a href="/profile" class="profile-btn">
+        <span class="nav-icon"><img src="images/avatar.jpg" alt="Avatar" class="avatar"></span>
+        <span class="nav-text">Профиль</span>
+      </a>
+    </nav>
   </div>
   
-  <!-- Правая область: чат -->
-  <div class="main-area">
-    <div class="chat-header" id="chatHeader">
-      Выберите диалог
-    </div>
-    <div class="chat-body" id="chatBody">
-      <div class="placeholder" id="placeholder">
-        <i class="far fa-comment-dots"></i>
-        <p>Выберите диалог для переписки</p>
+  <!-- Основной контент -->
+  <div class="main-content">
+    <!-- Хедер (ПК версия) -->
+    <header class="desktop-header">
+      <div class="search-box">
+        <input type="text" class="search-input" placeholder="Поиск игр, приложений и прочего">
+        <button class="search-btn"><i class="fas fa-search"></i></button>
+        <div class="search-results" id="search-results"></div>
       </div>
-      <div class="messages" id="messagesContainer"></div>
+      <!-- Переключатель темы -->
+      <button id="themeToggle" style="background: none; border: none; cursor: pointer; font-size: 22px;">
+        <i id="themeIcon" class="fas fa-sun"></i>
+      </button>
+    </header>
+    
+    <!-- Хедер (мобильная версия) -->
+    <header class="mobile-header">
+      <div class="header-top">
+        <div class="logo">
+          <img src="images/logo (2).png" alt="Logo">
+          <h1>Glovim</h1>
+        </div>
+        <button id="themeToggleMobile" style="background: none; border: none; cursor: pointer; font-size: 22px;">
+          <i id="themeIconMobile" class="fas fa-sun"></i>
+        </button>
+      </div>
+      <div class="header-search">
+        <div class="search-box">
+          <!-- Сам инпут поиска -->
+          <input type="text" class="search-input" placeholder="Поиск игр, приложений и прочего">
+          <!-- Кнопка лупы -->
+          <button class="search-btn"><i class="fas fa-search"></i></button>
+          <!-- Результаты поиска -->
+          <div class="search-results" id="search-results-mobile"></div>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Слайдер (без стрелок) -->
+    <div class="main-banner">
+      <div class="banner-track" id="banner-track">
+        <div class="banner-slide" style="background-image: url('images/avatar-removebg-preview.png');"></div>
+        <div class="banner-slide" style="background-image: url('images/ChatGPT Image 9 апр. 2025 г., 19_52_14.png');"></div>
+        <div class="banner-slide" style="background-image: url('images/logo.png');"></div>
+      </div>
     </div>
-    <div class="chat-input" id="chatInput">
-      <input type="text" id="messageInput" placeholder="Введите сообщение..." autocomplete="off">
-      <button onclick="sendMessage()">Отправить</button>
+    
+    <!-- Категории -->
+    <div class="categories">
+      <a href="/electronics">Донат</a>
+      <a href="/clothes">Скини</a>
+      <a href="/shoes">Подписки</a>
+      <a href="/tools">Аккаунт</a>
+      <a href="/auto">Предмети</a>
+      <a href="/accessories">Аренда</a>
+      <a href="/accessories">Игры</a>
+      <a href="/accessories">Прочее</a>
     </div>
+    
+    <!-- Промо-блоки -->
+    <div class="promo-grid">
+      <div class="promo-item" style="background-image: url('images/baner4.jpg');"></div>
+      <div class="promo-item" style="background-image: url('images/baner5.jpg');"></div>
+    </div>
+    
+    <!-- Секция пользователей -->
+    <h2 style="text-align: center; margin: 20px 0;">Пользователи сайта</h2>
+    <div class="users-row" id="usersRow">
+      <!-- Пользовательские карточки будут загружаться динамически -->
+    </div>
+    
+    <!-- Секция товаров с лайками -->
+    <h2 style="text-align: center; margin: 20px 0; color: #fff;">Топ товары</h2>
+    <div id="productContainer" class="product-container">
+      <!-- Карточки товаров будут добавляться динамически -->
+    </div>
+    <div>
+      <p style="text-align: center; color: #fff;">GlovimPlaye</p>
+    </div>
+    
+    <!-- Футер -->
+    <footer>
+      <div class="footer-content">
+        <div class="footer-section about">
+          <h3>О компании</h3>
+          <p>
+            GlovimPlaye — это инновационный сервис для покупки и продажи товаров. Наша миссия —
+            предоставить удобную платформу для выгодных сделок и качественного обслуживания.
+          </p>
+          <p>© 2025 GlovimPlaye. Все права защищены.</p>
+        </div>
+        <div class="footer-section links">
+          <h3>Правила</h3>
+          <ul>
+            <li><a href="/rules">Пользовательское соглашение</a></li>
+            <li><a href="/privacy">Политика конфиденциальности</a></li>
+            <li><a href="/terms">Условия использования</a></li>
+          </ul>
+        </div>
+        <div class="footer-section social">
+          <h3>Мы в сети</h3>
+          <ul class="social-links">
+            <li><a href="https://www.instagram.com/yourusername" target="_blank"><i class="fab fa-instagram"></i> Instagram</a></li>
+            <li><a href="https://www.youtube.com/yourchannel" target="_blank"><i class="fab fa-youtube"></i> YouTube</a></li>
+            <li><a href="https://www.tiktok.com/@yourusername" target="_blank"><i class="fab fa-tiktok"></i> TikTok</a></li>
+            <li><a href="https://t.me/yourchannel" target="_blank"><i class="fab fa-telegram-plane"></i> Telegram</a></li>
+            <li><a href="https://www.facebook.com/yourpage" target="_blank"><i class="fab fa-facebook"></i> Facebook</a></li>
+          </ul>
+        </div>
+      </div>
+    </footer>
   </div>
   
-  <!-- Нижняя навигация (видна только на мобильных) -->
-  <div class="bottom-nav">
-    <a href="index.html">
-      <i class="fas fa-home"></i>
-      <span>Главная</span>
-    </a>
-    <a href="add.html">
-      <i class="fas fa-plus"></i>
-      <span>Продать</span>
-    </a>
-    <a href="chat.html">
-      <i class="fas fa-comments"></i>
-      <span>Чат</span>
-    </a>
-    <a href="profile.html">
-      <i class="fas fa-user"></i>
-      <span>Профиль</span>
-    </a>
+  <!-- Мобильная навигация (только на мобилке) -->
+  <div class="mobile-nav">
+    <a href="/profile"><i class="fas fa-user"></i><span>Профиль</span></a>
+    <a href="/chat"><i class="fas fa-comment-dots"></i><span>Чат</span></a>
+    <a href="/add"><i class="fas fa-plus"></i><span>Продать</span></a>
+    <a href="/index"><i class="fas fa-home"></i><span>Главная</span></a>
   </div>
   
   <script>
-    // Функция для переключения отображения мобильного списка чатов
-    function toggleChatList() {
-      const chatList = document.getElementById('mobileChatList');
-      chatList.classList.toggle('active');
+    // Переключение темы для ПК и мобилки
+    function applyTheme(theme, iconId) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+        document.getElementById(iconId).className = "fas fa-moon";
+      } else {
+        document.body.classList.remove('dark-mode');
+        document.getElementById(iconId).className = "fas fa-sun";
+      }
+      localStorage.setItem('theme', theme);
     }
+    // Обработчик для десктопного хедера
+    document.getElementById('themeToggle').addEventListener('click', function() {
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      applyTheme(currentTheme === 'light' ? 'dark' : 'light', 'themeIcon');
+    });
+    // Обработчик для мобильного хедера
+    document.getElementById('themeToggleMobile').addEventListener('click', function() {
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      applyTheme(currentTheme === 'light' ? 'dark' : 'light', 'themeIconMobile');
+    });
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    applyTheme(savedTheme, 'themeIcon');
+    applyTheme(savedTheme, 'themeIconMobile');
     
-    // Инициализация Firebase (замените на свои данные)
-    var firebaseConfig = {
+    document.addEventListener('DOMContentLoaded', function() {
+      // Инициализация Firebase
+      var firebaseConfig = {
         apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
         authDomain: "glovimplaye-b1023.firebaseapp.com",
         databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
@@ -437,176 +962,261 @@
         messagingSenderId: "553440591519",
         appId: "1:553440591519:web:b7be45a9253689f322acaa"
       };
-    firebase.initializeApp(firebaseConfig);
-    
-    // Локальное хранилище сообщений по чатам
-    let chatsData = {
-      playerok: [],
-      support: [],
-      global: []
-    };
-    
-    let currentChat = null;
-    let playerokUnread = 0;
-    let supportUnread = 0;
-    
-    const placeholder = document.getElementById('placeholder');
-    const messagesContainer = document.getElementById('messagesContainer');
-    const chatInput = document.getElementById('chatInput');
-    const chatHeader = document.getElementById('chatHeader');
-    const playerokBadge = document.getElementById('playerokBadge');
-    const lastMsgSupport = document.getElementById('lastMsg-support');
-    
-    function selectChat(chatId) {
-      currentChat = chatId;
-      if (chatId === 'playerok') {
-        chatHeader.textContent = "Чат: Glovimplaye";
-      } else if (chatId === 'support') {
-        chatHeader.textContent = "Чат: Поддержка";
-      } else if (chatId === 'global') {
-        chatHeader.textContent = "Глобальный чат";
+      if (!firebase.apps.length) { 
+        firebase.initializeApp(firebaseConfig); 
       }
-      placeholder.style.display = "none";
-      messagesContainer.style.display = "flex";
-      // Для поддержки и основного чата показываем поле ввода
-      chatInput.style.display = (chatId === 'global') ? "none" : "flex";
-      messagesContainer.innerHTML = "";
-      if (chatsData[chatId] && chatsData[chatId].length) {
-        chatsData[chatId].forEach(msg => {
-          displayMessage(msg);
-        });
-      }
-      // Сброс счетчиков непрочитанных сообщений
-      if (chatId === 'playerok') {
-        playerokUnread = 0;
-        updatePlayerokBadge();
-      }
-      if (chatId === 'support') {
-        supportUnread = 0;
-        updateSupportBadge();
-      }
-    }
-    
-    function displayMessage(msg) {
-      const div = document.createElement('div');
-      div.classList.add('message');
-      if (msg.isMine) div.classList.add('mine');
-      let timeStr = "";
-      if (msg.timestamp) {
-        const date = new Date(msg.timestamp);
-        timeStr = date.toLocaleTimeString().slice(0,5);
-      }
-      div.innerHTML = `
-        <div class="sender">${msg.sender}</div>
-        <div>${msg.text}</div>
-        <div class="time">${timeStr}</div>
-      `;
-      messagesContainer.appendChild(div);
-      messagesContainer.scrollTop = messagesContainer.scrollHeight;
-      // Обновляем последний текст в списке чатов
-      const lastMsgElement = document.getElementById('lastMsg-' + currentChat);
-      if (lastMsgElement) {
-        lastMsgElement.textContent = msg.text;
-      }
-    }
-    
-    function sendMessage() {
-      if (!currentChat) {
-        alert("Сначала выберите диалог!");
-        return;
-      }
-      const input = document.getElementById('messageInput');
-      const text = input.value.trim();
-      if (!text) return;
-      const now = new Date();
-      const newMsg = {
-        sender: "Вы",
-        text: text,
-        timestamp: now.getTime(),
-        isMine: true
-      };
-      if (!chatsData[currentChat]) {
-        chatsData[currentChat] = [];
-      }
-      chatsData[currentChat].push(newMsg);
-      displayMessage(newMsg);
-      input.value = "";
-      // Отправляем сообщение в Firebase (для чатов, отличных от глобального)
-      if (currentChat !== 'global') {
-        firebase.database().ref("chats/" + currentChat).push(newMsg)
-          .catch(err => console.error("Ошибка отправки сообщения:", err));
-      }
-    }
-    
-    // Функция для обновления бейджа непрочитанных сообщений в чате playerok
-    function updatePlayerokBadge() {
-      if (playerokUnread > 0) {
-        playerokBadge.textContent = playerokUnread;
-        playerokBadge.style.display = 'flex';
-      } else {
-        playerokBadge.style.display = 'none';
-      }
-    }
-    
-    // Для поддержки можно добавить аналогичный бейдж (если нужно)
-    function updateSupportBadge() {
-      const supportBadge = document.getElementById('supportBadge');
-      if (supportBadge) {
-        if (supportUnread > 0) {
-          supportBadge.textContent = supportUnread;
-          supportBadge.style.display = 'flex';
+      
+      // Замена аватара в профиле (если пользователь авторизован)
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          firebase.database().ref('users/' + user.uid).once('value').then(function(snapshot) {
+            var userData = snapshot.val() || {};
+            var avatarUrl = userData.avatar || user.photoURL || "images/avatar.jpg";
+            document.querySelector('.profile-btn img.avatar').src = avatarUrl;
+          });
         } else {
-          supportBadge.style.display = 'none';
+          document.querySelector('.profile-btn img.avatar').src = "images/avatar.jpg";
         }
+      });
+      
+      // Слайдер баннера (без стрелок)
+      let currentIndex = 0;
+      const slides = document.getElementById('banner-track');
+      const totalSlides = slides.children.length;
+      function updateSlidePosition() {
+        slides.style.transform = 'translateX(-' + (currentIndex * (100 / totalSlides)) + '%)';
       }
-    }
-    
-    // Отслеживание новых сообщений для чата "playerok"
-    firebase.database().ref("chats/playerok").on("child_added", function(snapshot) {
-      const msg = snapshot.val();
-      chatsData.playerok.push(msg);
-      if (currentChat !== 'playerok') {
-        playerokUnread++;
-        updatePlayerokBadge();
-      } else {
-        displayMessage(msg);
+      window.nextSlide = function() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateSlidePosition();
       }
-    });
-    
-    // Отслеживание новых сообщений для чата "support"
-    firebase.database().ref("chats/support").on("child_added", function(snapshot) {
-      const msg = snapshot.val();
-      chatsData.support.push(msg);
-      // Если текущий чат не "support", увеличиваем счетчик непрочитанных
-      if (currentChat !== 'support') {
-        supportUnread++;
-        updateSupportBadge();
-        // Можно отправить уведомление, например, в Telegram
-        sendTelegramNotification(`Новое сообщение поддержки: ${msg.text}`);
-      } else {
-        displayMessage(msg);
+      window.prevSlide = function() {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateSlidePosition();
       }
-    });
-    
-    // Функция отправки уведомления в Telegram
-    function sendTelegramNotification(messageText) {
-      const botToken = "7865781632:AAERyXSt18Ll82wDbicwsCYaHmHaFdBYljQ";
-      const chatId = "1002424657816";
-      const encodedText = encodeURIComponent(messageText);
-      const url = `https://api.telegram.org/bot${botToken}/sendMessage?chat_id=${chatId}&text=${encodedText}`;
-      fetch(url)
-        .then(response => response.json())
-        .then(data => console.log("Telegram notification sent:", data))
-        .catch(error => console.error("Error sending Telegram notification:", error));
-    }
-    
-    // Если в URL передан параметр для выбора чата, выбираем его
-    window.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const chatUser = urlParams.get('user');
-      if (chatUser && chatsData.hasOwnProperty(chatUser)) {
-        selectChat(chatUser);
+      setInterval(nextSlide, 5000);
+      
+      // Поисковая логика
+      const items = [
+        { name: "Standoff 2", category: "Мобильные игры", link: "/standoff2", image: "images/standoff2.jpg" },
+        { name: "PUBG Mobile", category: "Мобильные игры", link: "/pubg-mobile", image: "images/pabg mobael.jpg" },
+        { name: "Counter-Strike", category: "Компьютерные игры", link: "/csgo", image: "images/csgo.jpg" },
+        { name: "World of Tanks", category: "Компьютерные игры", link: "/wot", image: "images/wot.jpg" },
+        { name: "Brawl Stars", category: "Мобильные игры", link: "/brawl-stars", image: "images/brv.jpg" },
+        { name: "Dota 2", category: "PC-игры", link: "/dota2", image: "images/dota.jpg" },
+        { name: "Call of Duty", category: "PC-игры", link: "/callofduty", image: "images/cal of duty.jpg" },
+        { name: "Fortnite", category: "PC-игры", link: "/fortnite", image: "images/fortna.jpg" },
+        { name: "GTA 5 Online", category: "PC-игры", link: "/gta5", image: "images/gta.jpg" },
+        { name: "Minecraft", category: "PC-игры", link: "/minecraft", image: "images/main.jpg" },
+        { name: "Rust", category: "PC-игры", link: "/rust", image: "images/rust.png" },
+        { name: "Roblox", category: "Мобильные игры", link: "/roblox", image: "images/roblox.jpg" },
+        { name: "Discord", category: "Приложения", link: "/discord", image: "images/diccord.jpg" },
+        { name: "Epic Gems", category: "Приложения", link: "/epic-gems", image: "images/epgems.jpg" },
+        { name: "PlayStation", category: "Приложения", link: "/playstation", image: "images/Playstetion.png" },
+        { name: "Spotify", category: "Приложения", link: "/spotify", image: "images/spotifay.jpg" },
+        { name: "Steam", category: "Приложения", link: "/steam", image: "images/steam.jpg" },
+        { name: "Telegram", category: "Приложения", link: "/telegram", image: "images/telegram.jpg" },
+        { name: "Tik Tok", category: "Приложения", link: "/tiktok", image: "images/tiktik.jpg" }
+      ];
+  
+      const searchInput = document.querySelector('.search-input');
+      const searchButton = document.querySelector('.search-btn');
+      const searchResultsContainer = document.getElementById('search-results');
+      function showSearchResults(query) {
+        searchResultsContainer.innerHTML = '';
+        if (!query) {
+          searchResultsContainer.style.display = 'none';
+          return;
+        }
+        const lowerQuery = query.toLowerCase();
+        const filteredItems = items.filter(item =>
+          item.name.toLowerCase().includes(lowerQuery) ||
+          item.category.toLowerCase().includes(lowerQuery)
+        );
+        if (filteredItems.length === 0) {
+          searchResultsContainer.innerHTML = '<div class="no-results">Ничего не найдено</div>';
+        } else {
+          filteredItems.forEach(item => {
+            const resultItem = document.createElement('div');
+            resultItem.classList.add('search-result-item');
+  
+            const imgElement = document.createElement('img');
+            imgElement.src = item.image;
+            imgElement.alt = item.name;
+  
+            const textElement = document.createElement('div');
+            textElement.classList.add('result-text');
+  
+            const nameElement = document.createElement('div');
+            nameElement.classList.add('result-name');
+            nameElement.textContent = item.name;
+  
+            const categoryElement = document.createElement('div');
+            categoryElement.textContent = item.category;
+  
+            textElement.appendChild(nameElement);
+            textElement.appendChild(categoryElement);
+            resultItem.appendChild(imgElement);
+            resultItem.appendChild(textElement);
+  
+            resultItem.addEventListener('click', () => {
+              window.location.href = item.link;
+            });
+  
+            searchResultsContainer.appendChild(resultItem);
+          });
+        }
+        searchResultsContainer.style.display = 'block';
       }
+      searchButton.addEventListener('click', () => {
+        const query = searchInput.value.trim();
+        showSearchResults(query);
+      });
+      searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim();
+        showSearchResults(query);
+      });
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-box') && !e.target.closest('#search-results')) {
+          searchResultsContainer.style.display = 'none';
+        }
+      });
+      
+      // Загрузка пользователей из Firebase
+      const usersRow = document.getElementById('usersRow');
+      firebase.database().ref('users').once('value')
+        .then(snapshot => {
+          snapshot.forEach(userSnap => {
+            const userData = userSnap.val();
+            const avatarUrl = userData.avatar || "images/avatar.jpg";
+            const nickname  = userData.nickname || "Без ника";
+            
+            // Обертка карточки в ссылку для перехода на /seller
+            const userLink = document.createElement('a');
+            userLink.href = "/seller";
+            userLink.className = "user-card";
+  
+            const userImg = document.createElement('img');
+            userImg.classList.add('user-avatar');
+            userImg.src = avatarUrl;
+            userImg.alt = nickname;
+  
+            const userNameDiv = document.createElement('div');
+            userNameDiv.classList.add('user-name');
+            userNameDiv.textContent = nickname;
+  
+            userLink.appendChild(userImg);
+            userLink.appendChild(userNameDiv);
+            usersRow.appendChild(userLink);
+          });
+        })
+        .catch(error => {
+          console.error("Ошибка загрузки пользователей:", error);
+        });
+      
+      // Загрузка товаров с лайками из Firebase
+      const productsRef = firebase.database().ref('products');
+      const productContainer = document.getElementById('productContainer');
+      
+      function createProductCard(key, product) {
+        const isMobile = window.innerWidth <= 768;
+        const imageUrl = (product.photoURLs && product.photoURLs.length > 0) 
+          ? product.photoURLs[0] 
+          : 'https://via.placeholder.com/300x200';
+        const likes = product.likes ? product.likes : 0;
+  
+        // Создаём контейнер карточки
+        const card = document.createElement('div');
+        // Переход на страницу товара при клике на саму карточку (если не по лайкам/кнопке)
+        card.addEventListener('click', function(e) {
+          if (e.target.closest('.pc-likes') || e.target.closest('.product-likes') || e.target.closest('button')) return;
+          window.location.href = `/product-details?id=${key}`;
+        });
+  
+        if (isMobile) {
+          // Новая HTML-разметка для мобильной версии карточки товара
+          card.className = 'product-card'; 
+          card.innerHTML = `
+            <div class="pc-image">
+              <img src="${imageUrl}" alt="${product.name}">
+            </div>
+            <div class="pc-info">
+              <h3>${product.name}</h3>
+              <div class="category">${product.category}</div>
+              <div class="description">${product.description || ""}</div>
+              <div class="pc-price">
+                <span class="current-price">${product.price} ₽</span>
+                ${ product.oldPrice ? `<span class="old-price">${product.oldPrice} ₽</span>` : "" }
+                ${ product.discount ? `<span class="discount">${product.discount}</span>` : "" }
+              </div>
+              <div class="pc-bottom">
+                <div class="pc-likes" onclick="handleLike(event, '${key}', ${likes})">
+                  <i class="fas fa-heart heart"></i>
+                  <span class="like-count">${likes}</span>
+                </div>
+                <button class="buy-btn" onclick="redirectToDetails(event, '${key}')">Купить</button>
+              </div>
+            </div>
+          `;
+        } else {
+          // Структура карточки для ПК (исходная)
+          card.className = 'product-card';
+          card.innerHTML = `
+            <img src="${imageUrl}" alt="${product.name}">
+            <div class="product-likes" onclick="handleLike(event, '${key}', ${likes})">
+              <i class="heart fas fa-heart"></i>
+              <span class="like-count">${likes}</span>
+            </div>
+            <h3>${product.name}</h3>
+            <p class="category">Категория: ${product.category}</p>
+            <div class="price-add">
+              <span class="price">${product.price} ₽</span>
+              <button onclick="redirectToDetails(event, '${key}')">Купить</button>
+            </div>
+          `;
+        }
+  
+        return card;
+      }
+  
+      productsRef.on('value', snapshot => {
+        productContainer.innerHTML = '';
+        const products = snapshot.val();
+        if (products) {
+          Object.keys(products).forEach(key => {
+            const product = products[key];
+            const card = createProductCard(key, product);
+            productContainer.appendChild(card);
+          });
+        } else {
+          productContainer.innerHTML = '<p style="color:#fff;">Товары не найдены.</p>';
+        }
+      });
+  
+      function redirectToDetails(e, productId) {
+        e.stopPropagation();
+        window.location.href = `/product-details?id=${productId}`;
+      }
+  
+      function handleLike(event, productId, currentLikes) {
+        event.stopPropagation();
+        if (localStorage.getItem('liked_' + productId)) {
+          alert("Вы уже поставили лайк этому товару.");
+          return;
+        }
+        const newLikes = currentLikes + 1;
+        firebase.database().ref('products/' + productId).update({ likes: newLikes })
+          .then(() => {
+            console.log("Лайк обновлён для товара " + productId);
+            localStorage.setItem('liked_' + productId, 'true');
+          })
+          .catch(err => {
+            console.error("Ошибка обновления лайка:", err);
+          });
+      }
+      window.handleLike = handleLike;
+      window.redirectToDetails = redirectToDetails;
+      
     });
   </script>
 </body>

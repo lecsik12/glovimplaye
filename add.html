@@ -2,182 +2,257 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>GlovimPlaye | Добавить товар</title>
+  <title>GlovimPay | Добавить товар</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
-  <!-- Firebase v8 -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
-  
-  <!-- CryptoJS для шифрования -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-
-  <!-- Font Awesome для иконок -->
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Фавикон -->
+  <link rel="icon" type="image/png" href="images/logo (2).png" sizes="16x16">
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
-
+  <!-- CryptoJS for AES encryption -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    /* Общие стили */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: Arial, sans-serif;
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
-      background-blend-mode: multiply;
-      background-color: #2b2a2a;
-      color: #fff;
-      padding: 20px;
-      padding-bottom: 70px;
+    :root {
+      --primary-color: #ff6b6b;
+      --primary-hover: #ff3b3b;
+      --bg-light: #fdfdff;
+      --bg-dark: #121212;
+      --text-light: #333;
+      --text-dark: #e0e0e0;
+      --card-shadow: rgba(0,0,0,0.2);
+      --transition-speed: 0.3s;
+      --sidebar-gradient: linear-gradient(135deg, #fffc7f, #ffae7d);
+      --header-gradient: linear-gradient(135deg, #a8ff78, #78ffd6);
+      --button-bg: #ffc107;
+      --button-hover: #ffca28;
+      --border-radius: 12px;
     }
-    header {
-      background: linear-gradient(135deg, #3a3a3a, #222);
-      padding: 20px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      border-radius: 8px;
-      margin-bottom: 20px;
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    .logo-button {
-      background: none;
-      border: none;
-      color: #ff7f50;
-      font-size: 32px;
-      font-weight: bold;
-      cursor: pointer;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-      transition: color 0.3s, transform 0.3s;
+    html, body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background var(--transition-speed), color var(--transition-speed);
     }
-    .logo-button:hover {
-      color: #fff;
-      transform: scale(1.1);
+    body.dark-mode {
+      background: var(--bg-dark);
+      color: var(--text-dark);
     }
-    .top-nav {
-      display: flex;
-      gap: 20px;
-      align-items: center;
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; }
+
+/* Ограничение размера аватарки в сайдбаре */
+.profile-btn .avatar {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Ограничение размера аватарки в нижней мобильной навигации */
+.mobile-nav .profile-nav img {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+
+
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px; position: fixed; top: 0; bottom: 0; left: 0;
+      background: var(--sidebar-gradient); padding: 20px 10px;
+      box-shadow: 2px 0 8px var(--card-shadow);
     }
-    .top-nav a {
-      text-decoration: none;
-      color: #fff;
-      font-size: 16px;
-      transition: color 0.3s;
+    .sidebar .logo {
+      display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px;
     }
-    .top-nav a:hover { color: #ff7f50; }
-    .top-nav a i { margin-right: 5px; }
-    /* Контейнер для формы */
-    .container {
-      background: rgba(48,44,44,0.85);
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 700px;
-      margin: 0 auto;
+    .sidebar .logo img { width: 50px; height: 50px; border-radius: 50%; }
+    .sidebar .logo h1 { font-size: 24px; font-weight: 600; color: var(--text-light); }
+    .sidebar nav a {
+      display: flex; align-items: center; padding: 12px 20px; margin: 5px 0;
+      background: #fff; border-radius: var(--border-radius); color: var(--text-light);
+      transition: background var(--transition-speed);
     }
-    .container h2 { margin-bottom: 15px; text-align: center; }
-    form#addProductForm {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+    .sidebar nav a:hover { background: #f7f7f7; }
+    .nav-icon { width: 30px; text-align: center; margin-right: 10px; }
+
+    /* Desktop header */
+    header.desktop-header {
+      background: var(--header-gradient);
+      padding: 15px 20px;
+      border-radius: var(--border-radius);
+      width: calc(100% - 290px);
+      margin: 0 20px 20px 270px;
+      position: sticky; top: 10px; z-index: 10;
+      display: flex; align-items: center;
     }
-    form#addProductForm label { font-size: 14px; }
-    form#addProductForm input,
-    form#addProductForm select,
-    form#addProductForm textarea {
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
+    .desktop-header .search-box {
+      flex: 1; position: relative;
     }
-    form#addProductForm textarea { resize: vertical; min-height: 60px; }
-    form#addProductForm button {
-      padding: 10px 20px;
-      background: #ff7f50;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      color: #fff;
-      font-size: 16px;
-      transition: background 0.3s;
+    .desktop-header .search-box input {
+      width: 100%; padding: 10px 45px 10px 15px;
+      border: none; border-radius: 25px; background: #fff;
     }
-    form#addProductForm button:hover { background: #ff4500; }
-    /* Футер */
-    footer {
-      background: rgba(71,68,68,0.85);
-      padding: 20px;
-      text-align: center;
-      margin-top: 30px;
-      border-radius: 8px;
-      color: #fff;
+    .desktop-header .search-box button {
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; font-size: 18px; color: #888;
     }
-    .social-links a {
-      margin: 0 10px;
-      color: #fafbfb;
-      font-size: 24px;
-      text-decoration: none;
-      transition: color 0.3s;
+    #themeToggle {
+      background: none; border: none; font-size: 22px; margin-left: 15px; color: #fff;
     }
-    .social-links a:hover { color: #ff4500; }
-    /* Нижняя панель (мобильная навигация) */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      background: #222;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 10px 0;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.5);
-      z-index: 100;
+
+    /* Mobile header */
+    header.mobile-header {
+      display: none; flex-direction: column;
+      position: fixed; top: 0; left: 0; right: 0;
+      background: var(--header-gradient); z-index: 11;
     }
-    .bottom-nav a {
-      text-decoration: none;
-      color: #fff;
-      text-align: center;
-      flex: 1;
-      padding: 5px;
-      font-size: 12px;
+    .mobile-header .header-top {
+      display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;
     }
-    .bottom-nav a i {
-      display: block;
-      font-size: 24px;
-      margin-bottom: 4px;
+    .mobile-header .header-top .logo img { width: 30px; height: 30px; }
+    .mobile-header .header-top .logo h1 { font-size: 20px; margin-left: 10px; }
+    .mobile-header .header-top button { background: none; border: none; font-size: 22px; }
+    .mobile-header .header-search {
+      padding: 10px 20px; position: relative;
     }
-    @media (min-width: 768px) { .bottom-nav { display: none; } }
+    .mobile-header .header-search input {
+      width: 100%; padding: 10px 45px 10px 15px;
+      border: none; border-radius: 25px; background: #fff;
+    }
+    .mobile-header .header-search button {
+      position: absolute; right: 25px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; font-size: 18px; color: #888;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 250px; padding: 20px;
+    }
+
+    /* Add-product form */
+    .form-container {
+      background: #fff; color: #333;
+      padding: 20px; border-radius: var(--border-radius);
+      box-shadow: 0 4px 8px var(--card-shadow);
+      max-width: 800px; margin: 140px auto 60px;
+    }
+    body.dark-mode .form-container {
+      background: #1e1e1e; color: #e0e0e0;
+    }
+    .form-container h2 {
+      text-align: center; margin-bottom: 20px; color: var(--primary-color);
+    }
+    #addProductForm {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    #addProductForm label { font-weight: 600; }
+    #addProductForm input,
+    #addProductForm select,
+    #addProductForm textarea {
+      padding: 10px; border: 1px solid #ccc; border-radius: 6px;
+      font-size: 14px; background: transparent; color: inherit; width: 100%;
+    }
+    #addProductForm button {
+      align-self: flex-start; padding: 10px 20px;
+      background: var(--button-bg); color: #333; border: none;
+      border-radius: 20px; font-weight: 600;
+      transition: background var(--transition-speed);
+    }
+    #addProductForm button:hover { background: var(--button-hover); }
+
+    /* Mobile nav */
+    .mobile-nav { display: none; }
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin: 0; padding: 0; }
+      header.desktop-header { display: none; }
+      header.mobile-header { display: flex; }
+      body { padding-top: 120px; }
+
+      .form-container { margin: 160px 10px 80px; }
+
+      .mobile-nav {
+        display: flex; position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--header-gradient); justify-content: space-around;
+        padding: 10px 0; box-shadow: 0 -2px 8px var(--card-shadow);
+        z-index: 10;
+      }
+      .mobile-nav a {
+        flex: 1; text-align: center; color: #fff; font-size: 12px;
+      }
+      .mobile-nav a i { font-size: 18px; margin-bottom: 4px; }
+      .mobile-nav a.profile-nav img {
+        width: 24px; height: 24px; border-radius: 50%; margin-bottom: 2px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Хедер -->
-  <header>
-    <button class="logo-button" onclick="goToHomePage()">GlovimPlaye</button>
-    <nav class="top-nav">
-      <!-- Дополнительное меню -->
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <img src="images/logo (2).png" alt="Logo">
+      <h1>GlovimPay</h1>
+    </div>
+    <nav>
+      <a href="index.html"><span class="nav-icon"><i class="fas fa-home"></i></span>Главная</a>
+      <a href="catalog.html"><span class="nav-icon"><i class="fas fa-th-list"></i></span>Каталог</a>
+      <a href="add.html"><span class="nav-icon"><i class="fas fa-plus"></i></span>Продать</a>
+      <a href="chat.html"><span class="nav-icon"><i class="fas fa-comment-dots"></i></span>Чат</a>
+      <a href="profile.html" class="profile-btn">
+        <span class="nav-icon">
+          <img src="images/avatar.jpg" class="avatar" alt="Avatar">
+        </span>
+        <span class="nav-text">Профиль</span>
+      </a>
     </nav>
-  </header>
-
-  <!-- Блок авторизации -->
-  <div class="auth-container" id="authContainer" style="text-align:center; margin:50px 0; display:none;">
-    <button id="loginButton" class="login-btn" onclick="login()"
-      style="background:#fff; color:#efedec; border:none; padding:12px 30px; font-size:18px; border-radius:8px; cursor:pointer;">
-        Войти через Google
-    </button>
   </div>
 
-  <!-- Основной контент: Форма добавления товара -->
-  <main id="mainContent" style="display:none;">
-    <div class="container">
+  <!-- Desktop header -->
+  <header class="desktop-header">
+    <div class="search-box">
+      <input type="text" placeholder="Поиск игр и приложений">
+      <button class="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+    <button id="themeToggle"><i class="fas fa-sun"></i></button>
+  </header>
+
+  <!-- Mobile header -->
+  <header class="mobile-header">
+    <div class="header-top">
+      <div class="logo">
+        <img src="images/logo (2).png" alt="Logo">
+        <h1>GlovimPay</h1>
+      </div>
+      <button id="themeToggleMobile"><i class="fas fa-sun"></i></button>
+    </div>
+    <div class="header-search">
+      <input type="text" placeholder="Поиск игр и приложений">
+      <button class="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+  </header>
+
+  <!-- Add-product form -->
+  <div class="main-content" id="mainContent">
+    <div class="form-container">
       <h2>Добавить товар</h2>
       <form id="addProductForm">
         <label for="category">Категория</label>
         <select id="category" required>
-          <option value="">-- Выберите категорию --</option>
+          <option value="">-- Выберите --</option>
           <option value="csgo">CS:GO</option>
           <option value="dota">Dota</option>
           <option value="other">Другое</option>
@@ -185,71 +260,65 @@
 
         <label for="subcategory">Подкатегория</label>
         <select id="subcategory" required>
-          <option value="">-- Выберите подкатегорию --</option>
+          <option value="">-- Выберите --</option>
           <option value="accounts">Аккаунты</option>
           <option value="skins">Скины</option>
-          <option value="stars">Звезды</option>
           <option value="donate">Донат</option>
-          <option value="services">Услуги</option>
           <option value="items">Товары</option>
         </select>
 
         <label for="productName">Название</label>
-        <input type="text" id="productName" required />
+        <input type="text" id="productName" required>
 
-        <label for="publicDescription">Описание товара</label>
-        <textarea id="publicDescription" placeholder="Введите описание товара" required></textarea>
+        <label for="publicDescription">Описание</label>
+        <textarea id="publicDescription" rows="4" required></textarea>
 
-        <label for="sensitiveData">Чувствительные данные товара (будут зашифрованы)</label>
-        <textarea id="sensitiveData" placeholder="Введите дополнительные данные товара" required></textarea>
+        <label for="sensitiveData">Чувствительные данные</label>
+        <textarea id="sensitiveData" rows="3" required></textarea>
 
-        <label for="price">Цена</label>
-        <input type="number" id="price" required />
+        <label for="price">Цена (₽)</label>
+        <input type="number" id="price" min="20" required>
 
         <label for="stock">Наличие (шт.)</label>
-        <input type="number" id="stock" required />
+        <input type="number" id="stock" min="1" required>
 
-        <label for="productPhoto">Фото товара (максимум 3 фото)</label>
-        <input type="file" id="productPhoto" accept="image/*" multiple />
+        <label for="productPhoto">Фото (max 3)</label>
+        <input type="file" id="productPhoto" accept="image/*" multiple>
 
         <button type="submit">Добавить</button>
       </form>
     </div>
-  </main>
+  </div>
 
-  <!-- Нижняя панель (мобильная навигация) -->
-  <div class="bottom-nav">
-    <a href="index.html">
-      <i class="fas fa-home"></i>
-      <span>Главная</span>
-    </a>
-    <a href="add.html">
-      <i class="fas fa-plus"></i>
-      <span>Продать</span>
-    </a>
-    <a href="chat.html">
-      <i class="fas fa-comments"></i>
-      <span>Чат</span>
-    </a>
-    <a href="profile.html">
-      <i class="fas fa-user"></i>
-      <span>Профиль</span>
+  <!-- Mobile nav -->
+  <div class="mobile-nav">
+    <a href="index.html"><i class="fas fa-home"></i><span></span></a>
+    <a href="chat.html"><i class="fas fa-comment-dots"></i><span></span></a>
+    <a href="add.html"><i class="fas fa-plus"></i><span></span></a>
+    <a href="profile.html" class="profile-nav">
+      <img src="images/avatar.jpg" class="avatar" alt="Avatar">
+      <span></span>
     </a>
   </div>
 
-  <!-- Футер -->
-  <footer>
-    <div class="social-links">
-      <a href="https://www.tiktok.com/" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-      <a href="https://www.youtube.com/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-      <a href="https://t.me/" target="_blank" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-    </div>
-    <p>© 2025 GlovimPlaye. Все права защищены.</p>
-  </footer>
+  
 
+  <!-- Firebase и логика -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
   <script>
+    // Переключение темы
+    function toggleTheme(btnId) {
+      document.body.classList.toggle('dark-mode');
+      const icon = document.getElementById(btnId)?.querySelector('i');
+      if (icon) icon.classList.toggle('fa-sun'), icon.classList.toggle('fa-moon');
+    }
+    document.getElementById('themeToggle')?.addEventListener('click', () => toggleTheme('themeToggle'));
+    document.getElementById('themeToggleMobile')?.addEventListener('click', () => toggleTheme('themeToggleMobile'));
+
     // Инициализация Firebase
-    var firebaseConfig = {
+    const cfg = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
       databaseURL: "https://glovimplaye-b1023-default-rtdb.firebaseio.com",
@@ -258,184 +327,103 @@
       messagingSenderId: "553440591519",
       appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
-    firebase.initializeApp(firebaseConfig);
-
-    // Установка постоянства сессии
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .catch(function(error) {
-        console.error("Ошибка установки постоянства сессии:", error);
-      });
+    firebase.initializeApp(cfg);
 
     // Инициализация Supabase
     const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14Znpob2x3ZnNicHB0ZnlpemZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTkxMDksImV4cCI6MjA1NDE3NTEwOX0.SOOnGEvNL8mZTlR9NbbwXrNvwrqi1x4ImGVk8ojrsiw';
+    const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // замените на ваш ключ
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Отображаем контент или кнопку входа
-    firebase.auth().onAuthStateChanged(function(user) {
-      console.log("onAuthStateChanged:", user);
-      if (user) {
-        document.getElementById("authContainer").style.display = "none";
-        document.getElementById("mainContent").style.display = "block";
-        loadUserProfile(user);
-      } else {
-        document.getElementById("authContainer").style.display = "block";
-        document.getElementById("mainContent").style.display = "none";
-      }
-    });
-
-    // Загрузка профиля
-    function loadUserProfile(user) {
-      firebase.database().ref('users/' + user.uid).once('value')
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            console.log("Профиль загружен:", snapshot.val());
-          }
-        })
-        .catch(err => { console.error("Ошибка загрузки профиля:", err); });
-    }
-
-    // Авторизация через Google
-    async function login() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      try {
-        await firebase.auth().signInWithPopup(provider);
-      } catch (error) {
-        console.error("Ошибка входа:", error);
-      }
-    }
-
-    // Переход на главную страницу
-    function goToHomePage() {
-      window.location.href = "index.html";
-    }
-
-    // Функция шифрования
-    function encryptData(data) {
-      const secretKey = "GlovimPlayeSecretKey";
-      return CryptoJS.AES.encrypt(JSON.stringify(data), secretKey).toString();
-    }
-    function decryptData(encryptedData) {
-      const secretKey = "GlovimPlayeSecretKey";
-      const bytes = CryptoJS.AES.decrypt(encryptedData, secretKey);
-      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-    }
-
-    // Обработка отправки формы добавления товара
+    // Обработка формы
     const addForm = document.getElementById('addProductForm');
     addForm.addEventListener('submit', async function(e) {
       e.preventDefault();
 
-      const currentUser = firebase.auth().currentUser;
-      if (!currentUser) {
-        alert("Для добавления товара необходимо войти в систему.");
-        return;
-      }
-
-      // Приведение значений к стандартному виду (все буквы в нижнем регистре)
+      // Сбор и валидация
       const category = document.getElementById('category').value.trim().toLowerCase();
       const subcategory = document.getElementById('subcategory').value.trim().toLowerCase();
       const name = document.getElementById('productName').value.trim();
       const publicDescription = document.getElementById('publicDescription').value.trim();
       const sensitiveData = document.getElementById('sensitiveData').value;
       const price = parseFloat(document.getElementById('price').value);
-      const stock = parseInt(document.getElementById('stock').value);
+      const stock = parseInt(document.getElementById('stock').value, 10);
 
-      // Валидация
-      if (price < 20) {
-        alert("Цена не может быть меньше 20 рублей.");
-        return;
-      }
-      if (publicDescription.length < 15) {
-        alert("Описание товара должно быть минимум 15 символов.");
-        return;
-      }
-      if (name.length < 5) {
-        alert("Название товара должно быть минимум 5 символов.");
-        return;
-      }
+      if (price < 20) return alert('Цена не может быть меньше 20 ₽');
+      if (publicDescription.length < 15) return alert('Описание должно быть минимум 15 символов');
+      if (name.length < 5) return alert('Название минимум 5 символов');
 
-      const photoFiles = document.getElementById('productPhoto').files;
-      if (photoFiles.length > 3) {
-        alert("Можно загрузить максимум 3 фото товара.");
-        return;
-      }
+      const photos = document.getElementById('productPhoto').files;
+      if (photos.length > 3) return alert('Максимум 3 фото');
 
-      let photoURLs = [];
-      // Загрузка фото через Supabase
-      for (const photoFile of photoFiles) {
-        const filePath = `${Date.now()}_${photoFile.name}`;
-        const { data, error } = await supabaseClient.storage
-          .from('products')
-          .upload(filePath, photoFile);
-        if (error) {
-          alert("Ошибка загрузки фото товара: " + error.message);
-          return;
-        }
-        const { data: publicData } = supabaseClient.storage
-          .from('products')
-          .getPublicUrl(filePath);
-        if (publicData && publicData.publicUrl) {
-          photoURLs.push(publicData.publicUrl);
-        } else {
-          alert("Не удалось получить URL загруженного фото товара.");
-          return;
-        }
+      // Загрузка фото
+      const photoURLs = [];
+      for (let file of photos) {
+        const filePath = `${Date.now()}_${file.name}`;
+        const { data, error } = await supabaseClient.storage.from('products').upload(filePath, file);
+        if (error) return alert('Ошибка загрузки фото: ' + error.message);
+        const { data: u } = supabaseClient.storage.from('products').getPublicUrl(filePath);
+        photoURLs.push(u.publicUrl);
       }
 
       // Шифрование чувствительных данных
-      const sensitiveObject = { sensitiveData: sensitiveData };
-      const encryptedData = encryptData(sensitiveObject);
+      const encrypted = CryptoJS.AES.encrypt(JSON.stringify({ sensitiveData }), 'GlovimPlayeSecretKey').toString();
       const commission = price * 0.05;
 
+      // Составляем объект товара
       const newProduct = {
-        category: category, // должно быть, например, "dota" или "csgo"
-        subcategory: subcategory,
-        name: name,
+        category,
+        subcategory,
+        name,
         description: publicDescription,
-        encryptedData: encryptedData,
-        sellerName: currentUser.displayName || "Без имени",
-        sellerAvatar: currentUser.photoURL || "default-avatar.png",
-        sellerId: currentUser.uid,
-        price: price,
-        commission: commission,
-        stock: stock,
-        photoURLs: photoURLs,
-        createdAt: firebase.database.ServerValue.TIMESTAMP
+        encryptedData: encrypted,
+        price,
+        commission,
+        stock,
+        photoURLs,
+        createdAt: Date.now()
       };
 
-      // Сохранение товара в Firebase
-      firebase.database().ref('products').push(newProduct, function(error) {
-        if (error) {
-          alert('Ошибка добавления товара: ' + error.message);
-        } else {
-          alert('Товар успешно добавлен!');
-          addForm.reset();
-          sendTelegramNotification(newProduct);
-        }
+      // Сохраняем в Firebase Realtime DB
+      firebase.database().ref('products').push(newProduct, err => {
+        if (err) return alert('Ошибка добавления: ' + err.message);
+        alert('Товар успешно добавлен!');
+        addForm.reset();
       });
     });
 
-    // Отправка уведомления в Telegram (при наличии настроек)
-    function sendTelegramNotification(product) {
-      const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
-      const TELEGRAM_CHAT_ID = "YOUR_TELEGRAM_CHAT_ID";
-      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-      const text = `Новый товар добавлен!\n\n*Название:* ${product.name}\n*Категория:* ${product.category}\n*Цена:* ${product.price}\n*Комиссия (5%):* ${product.commission}\n*Продавец:* ${product.sellerName}`;
-      fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text: text,
-          parse_mode: "Markdown"
-        })
-      })
-      .then(response => response.json())
-      .then(data => console.log("Telegram уведомление отправлено", data))
-      .catch(error => console.error("Ошибка отправки в Telegram:", error));
-    }
-  </script>
+// после firebase.initializeApp(cfg);
+firebase.auth().onAuthStateChanged(user => {
+  const desktopAvatar = document.querySelector('.profile-btn .avatar');
+  const mobileAvatar  = document.querySelector('.profile-nav img');
+  const defaultAvatar = 'images/avatar.jpg';
 
+  let url = defaultAvatar;
+  if (user) {
+    // пытаемся взять аватар из БД, иначе из профиля Google
+    firebase.database().ref('users/' + user.uid).once('value')
+      .then(snap => {
+        url = snap.val()?.avatar || user.photoURL || defaultAvatar;
+        if (desktopAvatar) desktopAvatar.src = url;
+        if (mobileAvatar)  mobileAvatar.src  = url;
+      })
+      .catch(() => {
+        url = user.photoURL || defaultAvatar;
+        if (desktopAvatar) desktopAvatar.src = url;
+        if (mobileAvatar)  mobileAvatar.src  = url;
+      });
+  } else {
+    // не залогинен — показываем дефолт
+    if (desktopAvatar) desktopAvatar.src = defaultAvatar;
+    if (mobileAvatar)  mobileAvatar.src  = defaultAvatar;
+  }
+});
+
+// можно также установить постоянство сессии
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+
+  </script>
 </body>
 </html>
+
+   

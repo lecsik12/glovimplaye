@@ -1,252 +1,265 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Чат | GlovimPlaye</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>GlovimPlaye | Добавить товар</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 
   <!-- Firebase v8 -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
-  <!-- Font Awesome для иконок -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- CryptoJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
   <style>
     :root {
-      --bg-color: #0e0e0e;
-      --header-bg: #161616;
-      --accent-color: #4fc3f7;
-      --text-color: #ccc;
-      --card-bg: #1e1e1e;
+      --primary-color: #ff6b6b;
+      --primary-hover: #ff3b3b;
+      --bg-light: #fdfdff;
+      --bg-dark: #121212;
+      --text-light: #333;
+      --text-dark: #e0e0e0;
+      --card-shadow: rgba(0,0,0,0.2);
+      --transition-speed: 0.3s;
+      --sidebar-gradient: linear-gradient(135deg, #fffc7f, #ffae7d);
+      --header-gradient: linear-gradient(135deg, #a8ff78, #78ffd6);
+      --border-radius: 12px;
+      --button-bg: #ffc107;
+      --button-hover: #ffca28;
     }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
+    html, body {
+      margin: 0; padding: 0;
       font-family: 'Montserrat', sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
+      background: var(--bg-dark);
+      color: var(--text-dark);
+      transition: background var(--transition-speed), color var(--transition-speed);
     }
-    header {
-      background: var(--header-bg);
-      padding: 15px 20px;
-      text-align: center;
-      border-bottom: 1px solid #333;
+    body.dark-mode {
+      background: var(--bg-light);
+      color: var(--text-light);
     }
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--accent-color);
-      cursor: pointer;
-    }
-    .chat-container {
-      flex: 1;
-      display: flex;
-      overflow: hidden;
-    }
-    /* Сайдбар – здесь только поле поиска и результаты */
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; }
+
     .sidebar {
-      width: 300px;
-      background: #2a2a2a;
-      border-right: 1px solid #333;
-      display: flex;
-      flex-direction: column;
+      width: 250px; position: fixed; top: 0; bottom: 0; left: 0;
+      background: var(--sidebar-gradient); padding: 20px 10px;
+      box-shadow: 2px 0 8px var(--card-shadow);
     }
-    .search-bar {
-      padding: 10px;
-      background: #2a2a2a;
-      border-bottom: 1px solid #333;
+    .sidebar .logo {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; margin-bottom: 30px;
     }
-    .search-bar input {
-      width: 100%;
-      padding: 8px;
+    .sidebar .logo img {
+      width: 50px; height: 50px; border-radius: 50%;
+    }
+    .sidebar .logo h1 {
+      font-size: 24px; font-weight: 600; color: var(--text-dark);
+    }
+    .sidebar nav a {
+      display: flex; align-items: center;
+      padding: 12px 20px; margin: 5px 0;
+      background: #fff; border-radius: var(--border-radius);
+      color: var(--text-dark);
+      transition: background var(--transition-speed);
+    }
+    .sidebar nav a:hover {
+      background: #f7f7f7;
+    }
+    .nav-icon {
+      width: 30px; text-align: center; margin-right: 10px;
+    }
+
+    .main-content {
+      margin-left: 250px; padding: 20px;
+    }
+
+    header.desktop-header {
+      background: var(--header-gradient);
+      padding: 15px 20px;
+      border-radius: var(--border-radius);
+      display: flex; align-items: center;
+      position: sticky; top: 10px; z-index: 10;
+      box-shadow: 0 4px 8px var(--card-shadow);
+      margin-bottom: 20px;
+    }
+    .search-box {
+      flex: 1; position: relative;
+    }
+    .search-box input {
+      width: 100%; padding: 10px 15px;
+      border: none; border-radius: 25px;
+    }
+    #themeToggle {
+      background: none; border: none;
+      font-size: 22px; margin-left: 15px;
+      color: var(--text-dark);
+    }
+
+    .form-container {
+      background: #fff; color: #333;
+      padding: 20px; border-radius: var(--border-radius);
+      box-shadow: 0 4px 8px var(--card-shadow);
+      max-width: 800px; margin: 0 auto;
+    }
+    .form-container.dark-mode {
+      background: #1e1e1e; color: #e0e0e0;
+    }
+    .form-container h2 {
+      margin-bottom: 20px; text-align: center;
+      color: var(--primary-color);
+    }
+    form#addProductForm {
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    form#addProductForm label {
+      font-weight: 600;
+    }
+    form#addProductForm input,
+    form#addProductForm select,
+    form#addProductForm textarea {
+      padding: 10px; border: 1px solid #ccc;
+      border-radius: 6px; font-size: 14px;
+      width: 100%; background: transparent;
+      color: inherit;
+    }
+    form#addProductForm button {
+      align-self: flex-start;
+      padding: 10px 20px;
+      background: var(--button-bg);
+      color: #333;
       border: none;
-      border-radius: 4px;
-      background: #3a3a3a;
-      color: var(--text-color);
-      outline: none;
+      border-radius: 20px;
+      font-weight: 600;
+      transition: background var(--transition-speed);
     }
-    .user-list {
-      flex: 1;
-      overflow-y: auto;
+    form#addProductForm button:hover {
+      background: var(--button-hover);
     }
-    .user-item {
-      display: flex;
-      align-items: center;
-      padding: 10px;
-      border-bottom: 1px solid #333;
-      cursor: pointer;
-      transition: background 0.3s;
+
+    .mobile-nav {
+      display: none;
     }
-    .user-item:hover {
-      background: #3a3a3a;
-    }
-    .user-avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 10px;
-      background: #555;
-    }
-    .user-info {
-      display: flex;
-      flex-direction: column;
-    }
-    .user-name {
-      font-weight: bold;
-      color: #fff;
-    }
-    /* Чат – правая панель */
-    .chat-main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-    .chat-header {
-      background: #2a2a2a;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #333;
-    }
-    .chat-header img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 10px;
-      background: #555;
-    }
-    .chat-title {
-      font-size: 18px;
-      font-weight: bold;
-      color: #fff;
-    }
-    .messages {
-      flex: 1;
-      padding: 10px 20px;
-      overflow-y: auto;
-      background: var(--card-bg);
-      display: flex;
-      flex-direction: column;
-    }
-    .no-chat-selected {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #777;
-      flex-direction: column;
-    }
-    .message {
-      max-width: 60%;
-      margin-bottom: 10px;
-      word-wrap: break-word;
-    }
-    .message .bubble {
-      background: #3a3a3a;
-      padding: 10px;
-      border-radius: 8px;
-      display: inline-block;
-    }
-    .message.self {
-      align-self: flex-end;
-      text-align: right;
-    }
-    .message.self .bubble {
-      background: var(--accent-color);
-      color: var(--bg-color);
-    }
-    .timestamp {
-      font-size: 12px;
-      color: #999;
-      margin-top: 2px;
-    }
-    .chat-input {
-      display: flex;
-      padding: 10px 20px;
-      background: #2a2a2a;
-      border-top: 1px solid #333;
-    }
-    .chat-input input {
-      flex: 1;
-      padding: 10px;
-      border: none;
-      border-radius: 4px;
-      background: #3a3a3a;
-      color: var(--text-color);
-      outline: none;
-    }
-    .chat-input button {
-      margin-left: 10px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      background: var(--accent-color);
-      color: var(--bg-color);
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .chat-input button:hover {
-      background: #80deea;
-    }
-    footer {
-      background: var(--header-bg);
-      text-align: center;
-      padding: 10px;
-      color: #aaa;
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { margin: 0; }
+      header.desktop-header { display: none; }
+      .mobile-nav {
+        display: flex;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--header-gradient);
+        justify-content: space-around;
+        padding: 10px 0;
+        box-shadow: 0 -2px 8px var(--card-shadow);
+        z-index: 100;
+      }
+      .mobile-nav a {
+        color: var(--text-dark);
+        font-size: 12px;
+        text-align: center;
+      }
+      .mobile-nav a i {
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
     }
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo" onclick="window.location.href='index.html'">GlovimPlaye</div>
-  </header>
 
-  <div class="chat-container">
-    <!-- Сайдбар: только поиск, без списка по умолчанию -->
-    <div class="sidebar">
-      <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Введите ник для поиска..." />
-      </div>
-      <div class="user-list" id="userList">
-        <!-- Результаты поиска появятся здесь -->
-      </div>
+  <!-- Сайдбар -->
+  <div class="sidebar">
+    <div class="logo">
+      <img src="images/logo (2).png" alt="Logo">
+      <h1>GlovimPlaye</h1>
     </div>
-    <!-- Чат -->
-    <div class="chat-main">
-      <div class="chat-header" id="chatHeader" style="display: none;">
-        <img src="default-avatar.png" id="chatAvatar" alt="Аватар">
-        <div class="chat-title" id="chatTitle">Имя собеседника</div>
+    <nav>
+      <a href="index.html"><span class="nav-icon"><i class="fas fa-home"></i></span>Главная</a>
+      <a href="catalog.html"><span class="nav-icon"><i class="fas fa-th-list"></i></span>Каталог</a>
+      <a href="add.html"><span class="nav-icon"><i class="fas fa-plus"></i></span>Продать</a>
+      <a href="chat.html"><span class="nav-icon"><i class="fas fa-comment-dots"></i></span>Чат</a>
+      <a href="profile.html"><span class="nav-icon"><i class="fas fa-user"></i></span>Профиль</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <!-- Десктопный хедер -->
+    <header class="desktop-header">
+      <div class="search-box">
+        <input type="text" placeholder="Поиск...">
       </div>
-      <div class="messages" id="messages">
-        <div class="no-chat-selected" id="noChatSelected">
-          <i class="fas fa-comments" style="font-size:50px; color:#4fc3f7;"></i>
-          <p>Найдите собеседника по нику</p>
-        </div>
-      </div>
-      <div class="chat-input" id="chatInput" style="display: none;">
-        <input type="text" id="messageInput" placeholder="Введите сообщение..." />
-        <button id="sendBtn">Отправить</button>
-      </div>
+      <button id="themeToggle"><i class="fas fa-sun"></i></button>
+    </header>
+
+    <!-- Форма добавления товара -->
+    <div class="form-container" id="formContainer">
+      <h2>Добавить товар</h2>
+      <form id="addProductForm">
+        <label for="category">Категория</label>
+        <select id="category" required>
+          <option value="">-- Выберите --</option>
+          <option value="csgo">CS:GO</option>
+          <option value="dota">Dota</option>
+          <option value="other">Другое</option>
+        </select>
+
+        <label for="subcategory">Подкатегория</label>
+        <select id="subcategory" required>
+          <option value="">-- Выберите --</option>
+          <option value="accounts">Аккаунты</option>
+          <option value="skins">Скины</option>
+          <option value="donate">Донат</option>
+          <option value="items">Товары</option>
+        </select>
+
+        <label for="productName">Название</label>
+        <input type="text" id="productName" required />
+
+        <label for="publicDescription">Описание</label>
+        <textarea id="publicDescription" rows="4" required></textarea>
+
+        <label for="sensitiveData">Чувствительные данные</label>
+        <textarea id="sensitiveData" rows="3" required></textarea>
+
+        <label for="price">Цена (₽)</label>
+        <input type="number" id="price" min="20" required />
+
+        <label for="stock">Наличие (шт.)</label>
+        <input type="number" id="stock" min="1" required />
+
+        <label for="productPhoto">Фото (max 3)</label>
+        <input type="file" id="productPhoto" accept="image/*" multiple />
+
+        <button type="submit">Добавить</button>
+      </form>
     </div>
   </div>
 
-  <footer>
-    <p>© 2025 GlovimPlaye. Все права защищены.</p>
-  </footer>
+  <!-- Мобильная навигация -->
+  <div class="mobile-nav">
+    <a href="index.html"><i class="fas fa-home"></i><span>Главная</span></a>
+    <a href="catalog.html"><i class="fas fa-th-list"></i><span>Каталог</span></a>
+    <a href="add.html"><i class="fas fa-plus"></i><span>Продать</span></a>
+    <a href="chat.html"><i class="fas fa-comment-dots"></i><span>Чат</span></a>
+    <a href="profile.html"><i class="fas fa-user"></i><span>Профиль</span></a>
+  </div>
 
+  <!-- Скрипты Firebase, Supabase, CryptoJS и логика формы -->
   <script>
-    // Инициализация Firebase (замените на свои данные)
+    // Firebase config
     var firebaseConfig = {
       apiKey: "AIzaSyAhn2H2BExFFf7GO2k_YDfrwPiV_cYdUBg",
       authDomain: "glovimplaye-b1023.firebaseapp.com",
@@ -257,130 +270,98 @@
       appId: "1:553440591519:web:b7be45a9253689f322acaa"
     };
     firebase.initializeApp(firebaseConfig);
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
-    let currentUser = null;
-    let selectedUserId = null;
-    let chatRoomId = null;
-    let usersData = []; // локальный массив найденных пользователей
+    // Supabase init
+    const supabaseUrl = 'https://mxfzholwfsbpptfyizfe.supabase.co';
+    const supabaseKey = 'YOUR_PUBLIC_ANON_KEY';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Проверка авторизации: если пользователь не авторизован, выполняется анонимный вход
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        firebase.auth().signInAnonymously().catch(err => console.error("Ошибка анонимного входа:", err));
+    // Theme toggle
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = themeBtn.querySelector('i');
+    function applyTheme(theme) {
+      document.body.classList.toggle('dark-mode', theme==='light');
+      themeIcon.className = theme==='light' ? 'fas fa-moon' : 'fas fa-sun';
+      localStorage.setItem('theme', theme);
+    }
+    themeBtn.addEventListener('click', () => {
+      const cur = localStorage.getItem('theme') || 'dark';
+      applyTheme(cur==='dark' ? 'light' : 'dark');
+    });
+    applyTheme(localStorage.getItem('theme') || 'dark');
+
+    // Auth UI
+    const authContainer = document.getElementById('authContainer');
+    const mainContent = document.getElementById('formContainer');
+    firebase.auth().onAuthStateChanged(user => {
+      if(user) {
+        document.getElementById('authContainer')?.remove();
+        mainContent.style.display = 'block';
       } else {
-        currentUser = user;
+        // show your Google login button here if needed
       }
     });
 
-    // Поиск пользователей по нику – при вводе текста выполняется запрос ко всем аккаунтам,
-    // затем результаты фильтруются и выводятся в блоке .user-list.
-    const searchInput = document.getElementById("searchInput");
-    searchInput.addEventListener("input", () => {
-      const query = searchInput.value.trim().toLowerCase();
-      if(query === "") {
-        document.getElementById("userList").innerHTML = "";
-        return;
-      }
-      // Получаем всех пользователей из базы и фильтруем по nickname
-      firebase.database().ref("users").once("value", snapshot => {
-        usersData = [];
-        snapshot.forEach(childSnap => {
-          const uid = childSnap.key;
-          if(uid === currentUser.uid) return; // Исключаем себя
-          const userObj = childSnap.val();
-          userObj.uid = uid;
-          // Если nickname содержит искомый текст, добавляем в массив
-          if((userObj.nickname || "").toLowerCase().includes(query)) {
-            usersData.push(userObj);
-          }
-        });
-        renderUserList(usersData);
-      });
-    });
-
-    // Отображение результатов поиска
-    function renderUserList(users) {
-      const userListDiv = document.getElementById("userList");
-      userListDiv.innerHTML = "";
-      if(users.length === 0) {
-        userListDiv.innerHTML = "<p style='padding:10px;'>Ничего не найдено</p>";
-        return;
-      }
-      users.forEach(userObj => {
-        const userItem = document.createElement("div");
-        userItem.classList.add("user-item");
-        userItem.addEventListener("click", () => selectUser(userObj.uid, userObj.nickname, userObj.avatar));
-        userItem.innerHTML = `
-          <img src="${userObj.avatar || 'default-avatar.png'}" alt="Avatar" class="user-avatar">
-          <div class="user-info">
-            <div class="user-name">${userObj.nickname || "Без ника"}</div>
-          </div>
-        `;
-        userListDiv.appendChild(userItem);
-      });
+    // Encryption helpers
+    function encryptData(data) {
+      return CryptoJS.AES.encrypt(JSON.stringify(data), 'GlovimPlayeSecretKey').toString();
+    }
+    function decryptData(enc) {
+      const bytes = CryptoJS.AES.decrypt(enc, 'GlovimPlayeSecretKey');
+      return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
     }
 
-    // Выбор собеседника по клику на результат поиска
-    function selectUser(uid, nickname, avatar) {
-      selectedUserId = uid;
-      // Формируем уникальный идентификатор чата
-      chatRoomId = currentUser.uid < selectedUserId ? currentUser.uid + "_" + selectedUserId : selectedUserId + "_" + currentUser.uid;
-      
-      // Очищаем блок результатов поиска
-      document.getElementById("userList").innerHTML = "";
-      searchInput.value = "";
-      
-      // Отображаем шапку чата с данными собеседника
-      document.getElementById("chatHeader").style.display = "flex";
-      document.getElementById("chatTitle").innerText = nickname;
-      document.getElementById("chatAvatar").src = avatar || "default-avatar.png";
-      document.getElementById("chatInput").style.display = "flex";
-      document.getElementById("noChatSelected").style.display = "none";
+    // Form submit
+    document.getElementById('addProductForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const user = firebase.auth().currentUser;
+      if(!user) { alert('Войдите чтобы добавить товар'); return; }
 
-      // Очищаем окно сообщений и подписываемся на чат
-      const messagesDiv = document.getElementById("messages");
-      messagesDiv.innerHTML = "";
-      firebase.database().ref("chats/" + chatRoomId).off();
-      firebase.database().ref("chats/" + chatRoomId).on("child_added", snapshot => {
-        const msg = snapshot.val();
-        displayMessage(msg);
-      });
-    }
+      const category = document.getElementById('category').value;
+      const subcategory = document.getElementById('subcategory').value;
+      const name = document.getElementById('productName').value.trim();
+      const publicDescription = document.getElementById('publicDescription').value.trim();
+      const sensitiveData = document.getElementById('sensitiveData').value;
+      const price = parseFloat(document.getElementById('price').value);
+      const stock = parseInt(document.getElementById('stock').value,10);
+      const files = Array.from(document.getElementById('productPhoto').files);
 
-    // Отображение сообщения в чате
-    function displayMessage(msg) {
-      const messagesDiv = document.getElementById("messages");
-      const messageDiv = document.createElement("div");
-      messageDiv.classList.add("message");
-      if(msg.sender === currentUser.uid) {
-        messageDiv.classList.add("self");
+      if(price < 20){ alert('Цена должна быть ≥20 ₽'); return; }
+      if(publicDescription.length < 15){ alert('Описание ≥15 символов'); return; }
+      if(name.length < 5){ alert('Название ≥5 символов'); return; }
+      if(files.length > 3){ alert('Максимум 3 фото'); return; }
+
+      // Upload photos to Supabase
+      const photoURLs = [];
+      for(const file of files){
+        const path = `${Date.now()}_${file.name}`;
+        const { error } = await supabaseClient.storage.from('products').upload(path, file);
+        if(error){ alert('Ошибка загрузки фото: '+error.message); return; }
+        const { publicURL } = supabaseClient.storage.from('products').getPublicUrl(path);
+        photoURLs.push(publicURL);
       }
-      const timeString = new Date(msg.timestamp || Date.now()).toLocaleTimeString("ru-RU", {hour: "2-digit", minute: "2-digit"});
-      messageDiv.innerHTML = `
-        <div class="bubble">${msg.text}</div>
-        <div class="timestamp">${timeString}</div>
-      `;
-      messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    }
 
-    // Отправка сообщения
-    document.getElementById("sendBtn").addEventListener("click", sendMessage);
-    document.getElementById("messageInput").addEventListener("keypress", e => {
-      if(e.key === "Enter") sendMessage();
-    });
-    function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const text = input.value.trim();
-      if(!text || !chatRoomId) return;
-      const messageData = {
-        sender: currentUser.uid,
-        text: text,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
+      const encrypted = encryptData({ sensitiveData });
+      const commission = price * 0.05;
+      const newProd = {
+        category, subcategory, name, description: publicDescription,
+        encryptedData: encrypted,
+        sellerName: user.displayName, sellerAvatar: user.photoURL,
+        sellerId: user.uid, price, commission, stock,
+        photoURLs, createdAt: firebase.database.ServerValue.TIMESTAMP
       };
-      firebase.database().ref("chats/" + chatRoomId).push(messageData);
-      input.value = "";
-    }
+
+      // Save to Firebase
+      firebase.database().ref('products').push(newProd, err => {
+        if(err) alert('Ошибка: '+err.message);
+        else {
+          alert('Товар добавлен!');
+          document.getElementById('addProductForm').reset();
+          // optionally send Telegram notification here
+        }
+      });
+    });
   </script>
 </body>
 </html>
