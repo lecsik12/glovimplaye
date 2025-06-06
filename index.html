@@ -280,8 +280,8 @@
       margin-left: 12px;
       color: var(--primary-color);
     }
-    .mobile-header .header-top button {
-      font-size: 22px;
+    .mobile-header .header-top .theme-toggle {
+      font-size: 20px;
       background: none;
       border: none;
       cursor: pointer;
@@ -298,9 +298,14 @@
       width: 100%;
       height: 360px;
       margin: 0 auto 32px;
-      border-radius: var(--border-radius);
       overflow: hidden;
       box-shadow: var(--card-shadow);
+    }
+    .main-banner.desktop {
+      border-radius: var(--border-radius);
+    }
+    .main-banner.mobile {
+      border-radius: 0;
     }
     .banner-track {
       display: flex;
@@ -609,11 +614,7 @@
     
     @media (max-width: 768px) {
       .sidebar { 
-        transform: translateX(-100%);
-        transition: transform var(--transition-speed);
-      }
-      .sidebar.active {
-        transform: translateX(0);
+        display: none;
       }
       .main-content { 
         margin-left: 0;
@@ -631,8 +632,9 @@
       }
       .main-banner {
         height: 200px;
-        border-radius: 0;
-        margin-bottom: 20px;
+        border-radius: var(--border-radius);
+        margin: 16px;
+        width: calc(100% - 32px);
       }
       .categories {
         flex-wrap: nowrap;
@@ -696,6 +698,7 @@
       .footer-content {
         grid-template-columns: 1fr;
         gap: 24px;
+        padding: 0 16px;
       }
     }
     
@@ -780,8 +783,8 @@
           <img src="images/logo (2).png" alt="GlovimPay Logo">
           <h1>GlovimPay</h1>
         </div>
-        <button id="menuToggle">
-          <i class="fas fa-bars"></i>
+        <button id="themeToggleMobile" class="theme-toggle">
+          <i id="themeIconMobile" class="fas fa-moon"></i>
         </button>
       </div>
       <div class="header-search">
@@ -794,7 +797,7 @@
     </header>
     
     <!-- Слайдер -->
-    <div class="main-banner">
+    <div class="main-banner desktop">
       <div class="banner-track" id="banner-track">
         <div class="banner-slide" style="background-image: url('images/avatar-removebg-preview.png');"></div>
         <div class="banner-slide" style="background-image: url('images/ChatGPT Image 9 апр. 2025 г., 19_52_14.png');"></div>
@@ -814,7 +817,7 @@
       <a href="/accessories">Прочее</a>
     </div>
     
-  
+    
     
     <!-- Секция товаров -->
     <h2 class="section-title">Топ товары</h2>
@@ -903,14 +906,14 @@
       applyTheme(currentTheme === 'light' ? 'dark' : 'light');
     });
     
+    document.getElementById('themeToggleMobile').addEventListener('click', function() {
+      const currentTheme = localStorage.getItem('theme') || 'light';
+      applyTheme(currentTheme === 'light' ? 'dark' : 'light');
+    });
+    
     // Применение сохранённой темы
     const savedTheme = localStorage.getItem('theme') || 'light';
     applyTheme(savedTheme);
-    
-    // Мобильное меню
-    document.getElementById('menuToggle')?.addEventListener('click', function() {
-      document.getElementById('sidebar').classList.toggle('active');
-    });
     
     document.addEventListener('DOMContentLoaded', function() {
       // Инициализация Firebase
@@ -1152,3 +1155,4 @@
   </script>
 </body>
 </html>
+      
